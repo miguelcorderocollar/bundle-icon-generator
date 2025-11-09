@@ -1,9 +1,13 @@
 # Zendesk App Icon Guidelines
 
 ## Required Asset Set
-- `logo.png` — 320×320 PNG-24 with transparency; no rounded corners.
-- `logo-small.png` — 128×128 PNG-24 with transparency; also keep sharp corners.
-- Location-specific SVG icons (e.g., `icon_nav_bar.svg`, `icon_top_bar.svg`, `icon_ticket_editor.svg`) sized via viewBox but visually optimized for 18×18 display inside a 30×30 padded box.
+
+### Logo Assets
+- `assets/logo-small.png` — Small icon displayed in the header of the app. You can still upload and install the app without it, but a default image will appear in the interface. See Marketing assets for the image specifications. Size: 128×128 PNG-24 with transparency; keep sharp corners.
+- `assets/logo.png` — Large icon displayed in the Zendesk admin pages for managing apps. You can still upload and install the app without it but a broken image icon will appear in the interface. See Marketing assets for the image specifications. Size: 320×320 PNG-24 with transparency; no rounded corners.
+
+### Location-Specific Icons
+- `assets/icon_*.svg` — An app in the nav_bar, ticket_editor, or top_bar location requires a respective `icon_nav_bar.svg`, `icon_ticket_editor.svg` or `icon_top_bar.svg` file. See SVG app icons and Top bar, nav bar, and ticket editor icon for the image specifications. Sized via viewBox but visually optimized for 18×18 display inside a 30×30 padded box.
 
 ## File & Naming Conventions
 - Store all assets in the app `assets/` directory.

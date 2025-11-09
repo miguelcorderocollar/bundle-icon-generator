@@ -10,10 +10,67 @@
 - **Dependencies**: License review for redistribution, Node asset pipeline.
 - **Deliverables**: Reusable data adapters, icon catalog JSON persisted client-side or via generated static data.
 
+## 2.5 UI Component Library Setup (shadcn/ui)
+- **Tasks**: Initialize shadcn/ui, configure for Next.js 16 App Router with Tailwind CSS v4, set up component structure, and establish design tokens.
+- **Dependencies**: Tailwind CSS v4 already configured, TypeScript path aliases (`@/*`) in place.
+- **Deliverables**: `components.json` configuration, initial component library structure, theme system integration.
+
+### Setup Instructions
+
+1. **Initialize shadcn/ui**:
+   ```bash
+   npx shadcn@latest init
+   ```
+   
+   Configuration options (tailored for this project):
+   - **Style**: `new-york` (modern, clean aesthetic suitable for developer tools)
+   - **Base color**: `zinc` (neutral, professional)
+   - **CSS variables**: `true` (enables theme customization)
+   - **RSC**: `true` (Next.js 16 App Router uses React Server Components)
+   - **TSX**: `true` (TypeScript project)
+   - **Tailwind config**: Leave empty (Tailwind v4 uses CSS-based config)
+   - **CSS file**: `app/globals.css` (already exists)
+   - **Component directory**: `components/ui` (standard convention)
+   - **Utils directory**: `lib/utils` (create if needed)
+   - **Use alias**: `true` (matches existing `@/*` path alias)
+
+2. **Tailwind CSS v4 Compatibility**:
+   - shadcn/ui components work with Tailwind v4, but ensure CSS variables are properly defined in `app/globals.css`
+   - The `@theme inline` block should include shadcn's CSS variable tokens
+   - Components will use Tailwind's new `@import "tailwindcss"` syntax automatically
+
+3. **Initial Components to Add**:
+   ```bash
+   npx shadcn@latest add button
+   npx shadcn@latest add input
+   npx shadcn@latest add card
+   npx shadcn@latest add dialog
+   npx shadcn@latest add select
+   npx shadcn@latest add slider
+   npx shadcn@latest add tabs
+   npx shadcn@latest add separator
+   ```
+
+4. **Design Token Integration**:
+   - Extend `app/globals.css` with shadcn's CSS variable system for colors, spacing, typography
+   - Ensure dark mode support aligns with existing `prefers-color-scheme` setup
+   - Customize tokens to match Zendesk design language where applicable
+
+5. **Component Structure**:
+   - Place all shadcn components in `components/ui/`
+   - Create custom composed components in `components/` (e.g., `IconSearchBar`, `ColorPicker`)
+   - Use `lib/utils.ts` for shared utilities (cn helper, etc.)
+
+### Best Practices
+- **Copy-Paste Model**: All components are copied into the project, allowing full customization
+- **Composition**: Build complex UI from shadcn primitives (built on Radix UI for accessibility)
+- **Customization**: Modify components directly in `components/ui/` as needed for project-specific requirements
+- **Accessibility**: Leverage Radix UI primitives' built-in ARIA attributes and keyboard navigation
+
 ## 3. Core UI Shell
-- **Tasks**: Build layout with three panes (icon search, customization controls, preview), implement theme tokens, add responsive design system.
-- **Dependencies**: Component library decision (e.g., Radix, Tailwind) and finalized UX wireframes derived from `docs/app-concept.md`.
-- **Deliverables**: Navigable interface skeleton with placeholder data.
+- **Tasks**: Build layout with three panes (icon search, customization controls, preview), implement theme tokens, add responsive design system using shadcn/ui components.
+- **Dependencies**: shadcn/ui setup from Phase 2.5, finalized UX wireframes derived from `docs/app-concept.md`.
+- **Deliverables**: Navigable interface skeleton with placeholder data built on shadcn/ui primitives.
 
 ## 4. Icon Search & Selection
 - **Tasks**: Implement full-text search, filters (pack, tags), sorting, and recent/favorite tracking stored in `localStorage`.
