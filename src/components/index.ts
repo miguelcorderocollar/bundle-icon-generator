@@ -8,9 +8,6 @@ export type { ColorPickerProps } from "./ColorPicker";
 export { EffectSlider } from "./EffectSlider";
 export type { EffectSliderProps } from "./EffectSlider";
 
-export { EffectSelector } from "./EffectSelector";
-export type { EffectSelectorProps } from "./EffectSelector";
-
 export { IconGridItem } from "./IconGridItem";
 export type { IconGridItemProps } from "./IconGridItem";
 
@@ -26,4 +23,7 @@ export type { PreviewPlaceholderProps } from "./PreviewPlaceholder";
 export { PngPreview } from "./PngPreview";
 export { SvgPreview } from "./SvgPreview";
 export type { SvgPreviewProps } from "./SvgPreview";
+
+export { ExportModal } from "./ExportModal";
+export type { ExportModalProps } from "./ExportModal";
 

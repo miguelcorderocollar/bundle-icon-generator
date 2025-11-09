@@ -41,10 +41,11 @@ export async function loadIconCatalog(): Promise<IconCatalog> {
     if (!response.ok) {
       throw new Error(`Failed to load icon catalog: ${response.statusText}`);
     }
-    catalogCache = await response.json();
+    const catalog = await response.json() as IconCatalog;
+    catalogCache = catalog;
     // Reset derived caches whenever we reload the catalog
     searchIndexCache = null;
-    return catalogCache;
+    return catalog;
   } catch (error) {
     console.error("Error loading icon catalog:", error);
     throw error;
@@ -105,15 +106,19 @@ export async function searchIcons(query: string): Promise<IconMetadata[]> {
  */
 export async function filterIconsByPack(
   icons: IconMetadata[],
-  pack: IconPack
+  pack: IconPack | string
 ): Promise<IconMetadata[]> {
   // Map UI pack names to catalog pack names
   const packMap: Record<string, string> = {
     "garden": "zendesk-garden",
     "feather": "feather",
+    "all": "all", // This won't match any icon.pack, but that's fine
   };
   
   const catalogPackName = packMap[pack] || pack;
+  if (catalogPackName === "all") {
+    return icons; // Return all icons if "all" is selected
+  }
   return icons.filter((icon) => icon.pack === catalogPackName);
 }
 

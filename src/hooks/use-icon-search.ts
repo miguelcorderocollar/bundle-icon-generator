@@ -3,10 +3,10 @@
  */
 
 import * as React from "react";
-import type { IconMetadata, IconPack } from "@/src/types/icon";
+import type { IconMetadata } from "@/src/types/icon";
 import { loadIconCatalog, searchIcons, filterIconsByPack } from "@/src/utils/icon-catalog";
 import { getFavorites, getRecentIcons } from "@/src/utils/local-storage";
-import { ICON_PACKS } from "@/src/constants/app";
+import { ICON_PACKS, type IconPack } from "@/src/constants/app";
 import { useDebouncedValue } from "./use-debounced-value";
 
 export type SortOption = "name" | "recent" | "favorites" | "pack";

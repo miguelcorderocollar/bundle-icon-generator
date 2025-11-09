@@ -12,16 +12,22 @@ import { EmptyState } from "@/src/components/EmptyState";
 import { calculateRequiredSvgFiles, hasSvgRequirements } from "@/src/utils/locations";
 import { PREVIEW_TYPES } from "@/src/constants/app";
 import type { AppLocation } from "@/src/types/app-location";
+import type { IconGeneratorState } from "@/src/hooks/use-icon-generator";
+import { ExportModal } from "@/src/components/ExportModal";
 
 export interface PreviewPaneProps {
   selectedLocations?: AppLocation[];
   selectedIconId?: string;
+  state?: IconGeneratorState;
 }
 
 export function PreviewPane({
   selectedLocations = [],
   selectedIconId,
+  state,
 }: PreviewPaneProps) {
+  const [isExportModalOpen, setIsExportModalOpen] = React.useState(false);
+
   const requiredSvgFiles = React.useMemo(
     () => calculateRequiredSvgFiles(selectedLocations),
     [selectedLocations]
@@ -71,19 +77,19 @@ export function PreviewPane({
                 value={PREVIEW_TYPES.PNG}
                 className="mt-4 flex-1 overflow-hidden data-[state=active]:flex"
               >
-                <PngPreview />
+                <PngPreview iconId={selectedIconId} state={state} />
               </TabsContent>
 
               <TabsContent
                 value={PREVIEW_TYPES.SVG}
                 className="mt-4 flex-1 overflow-hidden data-[state=active]:flex"
               >
-                <SvgPreview svgFiles={requiredSvgFiles} />
+                <SvgPreview svgFiles={requiredSvgFiles} iconId={selectedIconId} state={state} />
               </TabsContent>
             </Tabs>
           ) : hasPngFiles ? (
             // Show only PNG preview if no SVG files needed
-            <PngPreview />
+            <PngPreview iconId={selectedIconId} state={state} />
           ) : (
             // No previews available
             <EmptyState
@@ -104,12 +110,25 @@ export function PreviewPane({
                 : `Will export ${requiredSvgFiles.length} SVG files`}
             </div>
           )}
-          <Button className="w-full" size="lg" disabled={!canExport || !hasSelection}>
+          <Button
+            className="w-full"
+            size="lg"
+            disabled={!canExport || !hasSelection}
+            onClick={() => setIsExportModalOpen(true)}
+          >
             <Download className="mr-2 size-4" />
             Export ZIP
           </Button>
         </div>
       </CardContent>
+      {state && (
+        <ExportModal
+          open={isExportModalOpen}
+          onOpenChange={setIsExportModalOpen}
+          state={state}
+          selectedLocations={selectedLocations}
+        />
+      )}
     </Card>
   );
 }

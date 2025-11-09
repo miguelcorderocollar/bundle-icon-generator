@@ -43,12 +43,8 @@ export default function Home() {
               onBackgroundColorChange={actions.setBackgroundColor}
               iconColor={state.iconColor}
               onIconColorChange={actions.setIconColor}
-              selectedEffect={state.selectedEffect}
-              onEffectChange={actions.setSelectedEffect}
-              darkening3dSettings={state.darkening3dSettings}
-              onDarkening3dSettingsChange={actions.setDarkening3dSettings}
-              wipGuidelinesSettings={state.wipGuidelinesSettings}
-              onWipGuidelinesSettingsChange={actions.setWipGuidelinesSettings}
+              iconSize={state.iconSize}
+              onIconSizeChange={actions.setIconSize}
             />
           </div>
 
@@ -57,6 +53,7 @@ export default function Home() {
             <PreviewPane
               selectedLocations={state.selectedLocations}
               selectedIconId={state.selectedIconId}
+              state={state}
             />
           </div>
         </div>

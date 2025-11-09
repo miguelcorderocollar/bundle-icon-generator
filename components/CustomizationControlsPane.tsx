@@ -8,18 +8,11 @@ import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
 import { ColorPicker } from "@/src/components/ColorPicker";
-import { EffectSelector } from "@/src/components/EffectSelector";
+import { EffectSlider } from "@/src/components/EffectSlider";
 import { APP_LOCATION_OPTIONS } from "@/src/utils/app-location-options";
 import { getLocationCountText } from "@/src/utils/locations";
-import { DEFAULT_COLORS } from "@/src/constants/app";
-import {
-  type EffectType,
-  type Darkening3DSettings,
-  type WipGuidelinesSettings,
-  DEFAULT_DARKENING_3D,
-  DEFAULT_WIP_GUIDELINES,
-  EFFECT_TYPES,
-} from "@/src/constants/effects";
+import { DEFAULT_COLORS, ICON_GRID } from "@/src/constants/app";
+import { useDebouncedValue } from "@/src/hooks/use-debounced-value";
 import type { AppLocation } from "@/src/types/app-location";
 
 export interface CustomizationControlsPaneProps {
@@ -29,12 +22,8 @@ export interface CustomizationControlsPaneProps {
   onBackgroundColorChange?: (color: string) => void;
   iconColor?: string;
   onIconColorChange?: (color: string) => void;
-  selectedEffect?: EffectType;
-  onEffectChange?: (effect: EffectType) => void;
-  darkening3dSettings?: Darkening3DSettings;
-  onDarkening3dSettingsChange?: (settings: Darkening3DSettings) => void;
-  wipGuidelinesSettings?: WipGuidelinesSettings;
-  onWipGuidelinesSettingsChange?: (settings: WipGuidelinesSettings) => void;
+  iconSize?: number;
+  onIconSizeChange?: (size: number) => void;
 }
 
 export function CustomizationControlsPane({
@@ -44,15 +33,36 @@ export function CustomizationControlsPane({
   onBackgroundColorChange,
   iconColor = DEFAULT_COLORS.ICON,
   onIconColorChange,
-  selectedEffect = EFFECT_TYPES.NONE,
-  onEffectChange,
-  darkening3dSettings = DEFAULT_DARKENING_3D,
-  onDarkening3dSettingsChange,
-  wipGuidelinesSettings = DEFAULT_WIP_GUIDELINES,
-  onWipGuidelinesSettingsChange,
+  iconSize = ICON_GRID.DEFAULT_ICON_SIZE,
+  onIconSizeChange,
 }: CustomizationControlsPaneProps) {
+  // Debounce icon size changes to prevent lag while dragging slider
+  const [localIconSize, setLocalIconSize] = React.useState(iconSize);
+  const debouncedIconSize = useDebouncedValue(localIconSize, 300);
+  const lastPropSizeRef = React.useRef(iconSize);
+
+  // Update parent when debounced value changes (but only if it's different from prop)
+  React.useEffect(() => {
+    if (onIconSizeChange && debouncedIconSize !== lastPropSizeRef.current) {
+      lastPropSizeRef.current = debouncedIconSize;
+      onIconSizeChange(debouncedIconSize);
+    }
+  }, [debouncedIconSize, onIconSizeChange]);
+
+  // Sync local state when prop changes externally (but only if it's actually different)
+  React.useEffect(() => {
+    if (iconSize !== lastPropSizeRef.current) {
+      lastPropSizeRef.current = iconSize;
+      setLocalIconSize(iconSize);
+    }
+  }, [iconSize]);
+
   const handleLocationsChange = (values: string[]) => {
     onLocationsChange(values as AppLocation[]);
+  };
+
+  const handleIconSizeChange = (value: number) => {
+    setLocalIconSize(value);
   };
 
   return (
@@ -93,6 +103,28 @@ export function CustomizationControlsPane({
 
         <Separator />
 
+        {/* Icon Size */}
+        {onIconSizeChange && (
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium">Icon Size</h3>
+            <EffectSlider
+              id="icon-size"
+              label="Size"
+              value={localIconSize}
+              onChange={handleIconSizeChange}
+              min={ICON_GRID.MIN_ICON_SIZE}
+              max={200}
+              step={4}
+              unit="px"
+            />
+            <p className="text-xs text-muted-foreground">
+              Controls the size of the icon within the canvas. The exported PNG files will still be the correct dimensions (320×320 and 128×128).
+            </p>
+          </div>
+        )}
+
+        <Separator />
+
         {/* Color Controls */}
         <div className="space-y-4">
           <h3 className="text-sm font-medium">Colors</h3>
@@ -113,23 +145,6 @@ export function CustomizationControlsPane({
             />
           )}
         </div>
-
-        <Separator />
-
-        {/* Effects */}
-        {onEffectChange && (
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium">Effects</h3>
-            <EffectSelector
-              selectedEffect={selectedEffect}
-              onEffectChange={onEffectChange}
-              darkening3dSettings={darkening3dSettings}
-              onDarkening3dSettingsChange={onDarkening3dSettingsChange}
-              wipGuidelinesSettings={wipGuidelinesSettings}
-              onWipGuidelinesSettingsChange={onWipGuidelinesSettingsChange}
-            />
-          </div>
-        )}
       </CardContent>
     </Card>
   );

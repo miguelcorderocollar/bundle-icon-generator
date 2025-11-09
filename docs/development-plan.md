@@ -104,4 +104,25 @@
 - AI-assisted icon and color suggestions.
 - Collaborative preset sharing via tokens or cloud sync.
 
+## 10. Visual Effects System (Future Feature)
+- **Purpose**: Add visual effects to enhance icon appearance and provide more customization options.
+- **Proposed Effects**:
+  - **3D Darkening**: Radial gradient effect that darkens from center to edges, creating a 3D appearance on the background.
+  - **Shadow & Glow**: Outer shadow or glow effects around the icon with customizable blur, spread, opacity, and color.
+  - **Border**: Add borders around icons with customizable width, color, and style (solid, dashed, dotted).
+  - **Inner Shadow**: Inner shadow effects for depth with customizable blur, offset, opacity, and color.
+  - **WIP Guidelines**: Grid overlay and crosshair guidelines for design work-in-progress states.
+- **Implementation Notes**:
+  - Effects should be applied during PNG rendering in `src/utils/renderer.ts`.
+  - Each effect should have its own settings interface and default values.
+  - Effects should be optional and can be combined (future enhancement).
+  - Effect settings should be stored in state and persisted in export metadata.
+  - UI controls should be added to `CustomizationControlsPane` with effect-specific sliders and color pickers.
+- **Technical Considerations**:
+  - Effects are applied to the canvas context before/after drawing the icon.
+  - Background effects (like 3D darkening) should be applied before drawing the icon.
+  - Icon effects (like shadow/glow) should be applied during icon drawing.
+  - Overlay effects (like borders) should be applied after drawing the icon.
+  - Consider performance implications of multiple effects on large canvases.
+
 

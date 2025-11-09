@@ -57,18 +57,8 @@ export const SVG_SPECS = {
  * Default color values
  */
 export const DEFAULT_COLORS = {
-  BACKGROUND: "#ffffff",
-  ICON: "#000000",
-} as const;
-
-/**
- * Effect slider defaults
- */
-export const EFFECT_DEFAULTS = {
-  CORNER_DARKENING: 0,
-  SHADOW_OPACITY: 0,
-  MAX_VALUE: 100,
-  STEP: 1,
+  BACKGROUND: "#063940",
+  ICON: "#ffffff",
 } as const;
 
 /**
