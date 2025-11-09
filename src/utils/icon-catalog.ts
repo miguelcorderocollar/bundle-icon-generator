@@ -80,6 +80,15 @@ export async function getIconsByPack(pack: IconPack): Promise<IconMetadata[]> {
  * Get a single icon by ID
  */
 export async function getIconById(id: string): Promise<IconMetadata | null> {
+  // Check if it's an emoji first (emojis are stored in localStorage, not catalog)
+  if (id.startsWith("emoji-")) {
+    if (typeof window !== "undefined") {
+      const { getEmojiById } = await import("./emoji-catalog");
+      return getEmojiById(id);
+    }
+    return null;
+  }
+  
   const catalog = await loadIconCatalog();
   return catalog.icons[id] || null;
 }
@@ -112,6 +121,7 @@ export async function filterIconsByPack(
   const packMap: Record<string, string> = {
     "garden": "zendesk-garden",
     "feather": "feather",
+    "emoji": "emoji",
     "all": "all", // This won't match any icon.pack, but that's fine
   };
   

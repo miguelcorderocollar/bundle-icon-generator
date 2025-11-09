@@ -35,6 +35,13 @@ export interface PngRenderOptions extends SvgRenderOptions {
 }
 
 /**
+ * Check if SVG content contains an image element (emoji indicator)
+ */
+function isRasterizedSvg(content: string): boolean {
+  return /<image[^>]*>/i.test(content);
+}
+
+/**
  * Parse SVG string and extract viewBox/paths
  */
 function parseSvg(svgString: string): {
@@ -45,6 +52,7 @@ function parseSvg(svgString: string): {
   inheritedStrokeWidth?: string;
   inheritedStrokeLinecap?: string;
   inheritedStrokeLinejoin?: string;
+  isRasterized?: boolean;
 } {
   // Remove XML declaration and extract SVG content
   const svgMatch = svgString.match(/<svg[^>]*>([\s\S]*)<\/svg>/i);
@@ -85,6 +93,7 @@ function parseSvg(svgString: string): {
 
   // Extract inner content (paths, circles, etc.)
   const content = svgMatch[1];
+  const isRasterized = isRasterizedSvg(content);
 
   return { 
     viewBox, 
@@ -94,6 +103,7 @@ function parseSvg(svgString: string): {
     inheritedStrokeWidth,
     inheritedStrokeLinecap,
     inheritedStrokeLinejoin,
+    isRasterized,
   };
 }
 
@@ -183,8 +193,13 @@ export function renderSvg(options: SvgRenderOptions): string {
     inheritedStrokeWidth,
     inheritedStrokeLinecap,
     inheritedStrokeLinejoin,
+    isRasterized,
   } = parseSvg(icon.svg);
-  const coloredContent = applySvgColor(content, iconColor);
+  
+  // Skip color transformation for rasterized icons (emojis)
+  // Also check icon metadata flag as fallback
+  const shouldSkipColorTransform = isRasterized || icon.isRasterized;
+  const coloredContent = shouldSkipColorTransform ? content : applySvgColor(content, iconColor);
 
   // Calculate icon size within padded area
   const effectivePadding = Math.max(0, Math.min(padding, size / 2));
@@ -193,6 +208,38 @@ export function renderSvg(options: SvgRenderOptions): string {
   const vbWidth = viewBoxParts[2] || 24;
   const vbHeight = viewBoxParts[3] || 24;
 
+  // For rasterized icons (emojis), render differently - embed the image directly
+  if (shouldSkipColorTransform) {
+    // Extract image element from content
+    const imageMatch = content.match(/<image[^>]*>/i);
+    if (imageMatch) {
+      // Parse the image element to get its href and dimensions
+      const imageTag = imageMatch[0];
+      const hrefMatch = imageTag.match(/href=["']([^"']+)["']/i) || imageTag.match(/xlink:href=["']([^"']+)["']/i);
+      const widthMatch = imageTag.match(/width=["']([^"']+)["']/i);
+      const heightMatch = imageTag.match(/height=["']([^"']+)["']/i);
+      
+      const href = hrefMatch ? hrefMatch[1] : '';
+      const imgWidth = widthMatch ? parseFloat(widthMatch[1]) : vbWidth;
+      const imgHeight = heightMatch ? parseFloat(heightMatch[1]) : vbHeight;
+      
+      // Scale image to fit in padded area
+      const scale = iconSize / Math.max(imgWidth, imgHeight);
+      const scaledWidth = imgWidth * scale;
+      const scaledHeight = imgHeight * scale;
+      const iconX = effectivePadding + (iconSize - scaledWidth) / 2;
+      const iconY = effectivePadding + (iconSize - scaledHeight) / 2;
+      
+      const finalSize = outputSize ?? size;
+      
+      return `<svg width="${finalSize}" height="${finalSize}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <rect width="${size}" height="${size}" fill="${backgroundColor}"/>
+  <image href="${href}" width="${scaledWidth}" height="${scaledHeight}" x="${iconX}" y="${iconY}"/>
+</svg>`;
+    }
+  }
+  
+  // Standard SVG rendering for vector icons
   // Calculate scale to fit icon in padded area
   const scale = iconSize / Math.max(vbWidth, vbHeight);
   const adjustedContent = coloredContent;

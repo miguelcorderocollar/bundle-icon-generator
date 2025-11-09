@@ -13,6 +13,7 @@ export interface IconGridProps {
   selectedIconId?: string;
   onIconSelect?: (iconId: string) => void;
   onFavoriteToggle?: (iconId: string, isFavorite: boolean) => void;
+  onRemove?: (iconId: string) => void;
   searchQuery?: string;
   isLoading?: boolean;
 }
@@ -24,6 +25,7 @@ export function IconGrid({
   selectedIconId,
   onIconSelect,
   onFavoriteToggle,
+  onRemove,
   searchQuery,
   isLoading = false,
 }: IconGridProps) {
@@ -86,6 +88,7 @@ export function IconGrid({
                 isSelected={selectedIconId === icon.id}
                 onClick={() => onIconSelect?.(icon.id)}
                 onFavoriteToggle={onFavoriteToggle}
+                onRemove={onRemove}
                 style={{
                   minHeight: `${iconSize}px`,
                   aspectRatio: "1 / 1",

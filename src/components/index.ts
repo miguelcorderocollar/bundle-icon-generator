@@ -27,3 +27,6 @@ export type { SvgPreviewProps } from "./SvgPreview";
 export { ExportModal } from "./ExportModal";
 export type { ExportModalProps } from "./ExportModal";
 
+export { EmojiInput } from "./EmojiInput";
+export type { EmojiInputProps } from "./EmojiInput";
+

@@ -134,6 +134,7 @@ export function CustomizationControlsPane({
               label="Background Color"
               value={backgroundColor}
               onChange={onBackgroundColorChange}
+              colorType="background"
             />
           )}
           {onIconColorChange && (
@@ -142,6 +143,7 @@ export function CustomizationControlsPane({
               label="Icon Color"
               value={iconColor}
               onChange={onIconColorChange}
+              colorType="icon"
             />
           )}
         </div>

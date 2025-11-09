@@ -13,6 +13,7 @@ import { useIconSearch, type SortOption } from "@/src/hooks/use-icon-search";
 import { ICON_PACKS, type IconPack } from "@/src/constants/app";
 import { addRecentIcon } from "@/src/utils/local-storage";
 import { getFavorites } from "@/src/utils/local-storage";
+import { EmojiInput } from "@/src/components/EmojiInput";
 
 export interface IconSearchPaneProps {
   searchQuery?: string;
@@ -150,10 +151,11 @@ export function IconSearchPane({
           onValueChange={handlePackChange}
           className="flex-1 min-h-0 w-full"
         >
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value={ICON_PACKS.ALL}>All</TabsTrigger>
             <TabsTrigger value={ICON_PACKS.GARDEN}>Garden</TabsTrigger>
             <TabsTrigger value={ICON_PACKS.FEATHER}>Feather</TabsTrigger>
+            <TabsTrigger value={ICON_PACKS.EMOJI}>Emoji</TabsTrigger>
           </TabsList>
 
           <TabsContent
@@ -214,6 +216,46 @@ export function IconSearchPane({
                 isLoading={isLoading}
               />
             )}
+          </TabsContent>
+
+          <TabsContent
+            value={ICON_PACKS.EMOJI}
+            className="mt-4 flex-1 min-h-0 overflow-hidden data-[state=active]:flex data-[state=active]:flex-col"
+          >
+            <div className="flex flex-col gap-4 h-full min-h-0">
+              <EmojiInput
+                onEmojiAdded={(emojiId) => {
+                  // Trigger refresh of icon search to show new emoji
+                  // Use a small delay to ensure the refresh completes before selecting
+                  window.dispatchEvent(new Event("icon-favorites-changed"));
+                  
+                  // Auto-select the newly added emoji so it appears in preview
+                  // Small delay ensures the icon list is refreshed first
+                  if (emojiId) {
+                    setTimeout(() => {
+                      handleIconSelect(emojiId);
+                    }, 100);
+                  }
+                }}
+              />
+              {error ? (
+                <div className="flex items-center justify-center h-full text-destructive">
+                  <p>Error loading icons: {error.message}</p>
+                </div>
+              ) : (
+                <div className="flex-1 min-h-0 overflow-hidden">
+                  <IconGrid
+                    icons={icons}
+                    selectedIconId={selectedIconId}
+                    onIconSelect={handleIconSelect}
+                    onFavoriteToggle={handleFavoriteToggle}
+                    onRemove={selectedPack === ICON_PACKS.EMOJI ? () => {} : undefined}
+                    searchQuery={searchQuery}
+                    isLoading={isLoading}
+                  />
+                </div>
+              )}
+            </div>
           </TabsContent>
         </Tabs>
       </CardContent>

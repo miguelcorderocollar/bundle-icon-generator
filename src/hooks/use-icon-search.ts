@@ -6,6 +6,7 @@ import * as React from "react";
 import type { IconMetadata } from "@/src/types/icon";
 import { loadIconCatalog, searchIcons, filterIconsByPack } from "@/src/utils/icon-catalog";
 import { getFavorites, getRecentIcons } from "@/src/utils/local-storage";
+import { getUserEmojis } from "@/src/utils/emoji-catalog";
 import { ICON_PACKS, type IconPack } from "@/src/constants/app";
 import { useDebouncedValue } from "./use-debounced-value";
 
@@ -97,11 +98,17 @@ export function useIconSearch({
   }, [refreshKey]);
 
   // Trigger refresh when localStorage might have changed
-  // This can be called from parent components when favorites change
+  // This can be called from parent components when favorites change or emojis are added
   React.useEffect(() => {
     const handleStorageChange = () => {
-      // Only re-sort existing results without showing loading state
-      if (cachedResults.length > 0) {
+      // For emoji pack or when emojis might have been added, always do a full refresh
+      // to ensure new emojis appear in the list
+      if (selectedPack === ICON_PACKS.EMOJI || selectedPack === ICON_PACKS.ALL) {
+        // Clear cache and trigger full refresh to include new emojis
+        cacheRef.current.clear();
+        setRefreshKey((prev) => prev + 1);
+      } else if (cachedResults.length > 0) {
+        // For other packs, just re-sort existing results (favorites might have changed)
         const sorted = sortIcons(cachedResults, sortBy);
         setIcons(sorted);
       } else {
@@ -113,14 +120,14 @@ export function useIconSearch({
     // Listen for storage events (from other tabs/windows)
     window.addEventListener("storage", handleStorageChange);
 
-    // Also listen for custom event we can dispatch when favorites change
+    // Also listen for custom event we can dispatch when favorites change or emojis added
     window.addEventListener("icon-favorites-changed", handleStorageChange);
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
       window.removeEventListener("icon-favorites-changed", handleStorageChange);
     };
-  }, [cachedResults, sortBy]);
+  }, [cachedResults, sortBy, selectedPack]);
 
   // Search and filter icons
   React.useEffect(() => {
@@ -154,9 +161,38 @@ export function useIconSearch({
           results = Object.values(catalog.icons);
         }
 
+        // Get user emojis and merge with catalog results
+        const userEmojis = getUserEmojis();
+        
         // Filter by pack if not "all"
         if (selectedPack !== ICON_PACKS.ALL) {
           results = await filterIconsByPack(results, selectedPack);
+          
+          // If emoji pack is selected, include user emojis
+          if (selectedPack === ICON_PACKS.EMOJI) {
+            // Filter emojis by search query if present
+            let filteredEmojis = userEmojis;
+            if (normalizedQuery) {
+              const queryLower = normalizedQuery.toLowerCase();
+              filteredEmojis = userEmojis.filter((emoji) => {
+                const searchText = `${emoji.name} ${emoji.id} ${emoji.keywords.join(" ")}`.toLowerCase();
+                return searchText.includes(queryLower);
+              });
+            }
+            results = [...results, ...filteredEmojis];
+          }
+        } else {
+          // If "all" pack is selected, include all user emojis
+          // Filter emojis by search query if present
+          let filteredEmojis = userEmojis;
+          if (normalizedQuery) {
+            const queryLower = normalizedQuery.toLowerCase();
+            filteredEmojis = userEmojis.filter((emoji) => {
+              const searchText = `${emoji.name} ${emoji.id} ${emoji.keywords.join(" ")}`.toLowerCase();
+              return searchText.includes(queryLower);
+            });
+          }
+          results = [...results, ...filteredEmojis];
         }
 
         // Cache the filtered results (before sorting)

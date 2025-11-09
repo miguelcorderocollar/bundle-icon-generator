@@ -3,16 +3,18 @@
  */
 
 import * as React from "react";
-import { Check, Star } from "lucide-react";
+import { Check, Star, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { IconMetadata } from "@/src/types/icon";
 import { toggleFavorite, isFavorite } from "@/src/utils/local-storage";
+import { removeEmoji } from "@/src/utils/emoji-catalog";
 
 export interface IconGridItemProps {
   icon: IconMetadata;
   isSelected?: boolean;
   onClick?: () => void;
   onFavoriteToggle?: (iconId: string, isFavorite: boolean) => void;
+  onRemove?: (iconId: string) => void;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -22,9 +24,11 @@ export function IconGridItem({
   isSelected = false,
   onClick,
   onFavoriteToggle,
+  onRemove,
   className,
   style,
 }: IconGridItemProps) {
+  const isEmoji = icon.pack === "emoji";
   // Initialize as false to avoid hydration mismatch (localStorage only available client-side)
   const [isFavorited, setIsFavorited] = React.useState(false);
   
@@ -38,6 +42,16 @@ export function IconGridItem({
     const newFavoriteState = toggleFavorite(icon.id);
     setIsFavorited(newFavoriteState);
     onFavoriteToggle?.(icon.id, newFavoriteState);
+  };
+
+  const handleRemoveClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isEmoji && onRemove) {
+      removeEmoji(icon.id);
+      onRemove(icon.id);
+      // Dispatch event to refresh icon list
+      window.dispatchEvent(new Event("icon-favorites-changed"));
+    }
   };
 
   // Lazy load SVG - only render when visible
@@ -122,6 +136,13 @@ export function IconGridItem({
         </div>
       )}
 
+      {/* Emoji indicator badge */}
+      {isEmoji && (
+        <div className="absolute left-1 top-1 rounded-sm bg-blue-500/80 text-white px-1 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="text-[8px] font-medium">EMOJI</span>
+        </div>
+      )}
+
       {/* Favorite button */}
       <div
         role="button"
@@ -136,7 +157,8 @@ export function IconGridItem({
         className={cn(
           "absolute left-1 top-1 rounded-sm p-0.5 opacity-0 transition-opacity group-hover:opacity-100 cursor-pointer",
           "hover:bg-muted focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          isFavorited && "opacity-100"
+          isFavorited && "opacity-100",
+          isEmoji && "top-6" // Move down if emoji badge is shown
         )}
         aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
         onMouseDown={(e) => e.stopPropagation()}
@@ -151,9 +173,36 @@ export function IconGridItem({
         />
       </div>
 
+      {/* Remove button (only for emojis) */}
+      {isEmoji && onRemove && (
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={handleRemoveClick}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              handleRemoveClick(e as any);
+            }
+          }}
+          className={cn(
+            "absolute right-1 top-1 rounded-sm p-0.5 opacity-0 transition-opacity group-hover:opacity-100 cursor-pointer",
+            "hover:bg-destructive/20 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            isSelected && "top-6" // Move down if selection indicator is shown
+          )}
+          aria-label="Remove emoji"
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          <X className="size-3 text-destructive hover:text-destructive/80" />
+        </div>
+      )}
+
       {/* Tooltip with icon name on hover */}
       <div className="absolute bottom-0 left-0 right-0 rounded-b-md bg-black/80 px-1 py-0.5 opacity-0 transition-opacity group-hover:opacity-100">
-        <span className="text-[10px] text-white truncate block">{icon.name}</span>
+        <span className="text-[10px] text-white truncate block">
+          {icon.name}
+          {isEmoji && " (colors cannot be customized)"}
+        </span>
       </div>
     </button>
   );

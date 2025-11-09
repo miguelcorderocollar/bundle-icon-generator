@@ -12,6 +12,7 @@ export const ICON_PACKS = {
   ALL: "all",
   GARDEN: "garden",
   FEATHER: "feather",
+  EMOJI: "emoji",
 } as const;
 
 export type IconPack = typeof ICON_PACKS[keyof typeof ICON_PACKS];
