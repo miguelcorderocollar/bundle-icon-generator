@@ -24,6 +24,7 @@ export interface CustomizationControlsPaneProps {
   onIconColorChange?: (color: string) => void;
   iconSize?: number;
   onIconSizeChange?: (size: number) => void;
+  selectedIconId?: string;
 }
 
 export function CustomizationControlsPane({
@@ -35,6 +36,7 @@ export function CustomizationControlsPane({
   onIconColorChange,
   iconSize = ICON_GRID.DEFAULT_ICON_SIZE,
   onIconSizeChange,
+  selectedIconId,
 }: CustomizationControlsPaneProps) {
   // Debounce icon size changes to prevent lag while dragging slider
   const [localIconSize, setLocalIconSize] = React.useState(iconSize);
@@ -137,7 +139,7 @@ export function CustomizationControlsPane({
               colorType="background"
             />
           )}
-          {onIconColorChange && (
+          {onIconColorChange && !selectedIconId?.startsWith("emoji-") && (
             <ColorPicker
               id="icon-color"
               label="Icon Color"

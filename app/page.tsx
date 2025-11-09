@@ -45,6 +45,7 @@ export default function Home() {
               onIconColorChange={actions.setIconColor}
               iconSize={state.iconSize}
               onIconSizeChange={actions.setIconSize}
+              selectedIconId={state.selectedIconId}
             />
           </div>
 
