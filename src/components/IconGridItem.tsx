@@ -136,13 +136,6 @@ export function IconGridItem({
         </div>
       )}
 
-      {/* Emoji indicator badge */}
-      {isEmoji && (
-        <div className="absolute left-1 top-1 rounded-sm bg-blue-500/80 text-white px-1 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-          <span className="text-[8px] font-medium">EMOJI</span>
-        </div>
-      )}
-
       {/* Favorite button */}
       <div
         role="button"
@@ -157,8 +150,7 @@ export function IconGridItem({
         className={cn(
           "absolute left-1 top-1 rounded-sm p-0.5 opacity-0 transition-opacity group-hover:opacity-100 cursor-pointer",
           "hover:bg-muted focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          isFavorited && "opacity-100",
-          isEmoji && "top-6" // Move down if emoji badge is shown
+          isFavorited && "opacity-100"
         )}
         aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
         onMouseDown={(e) => e.stopPropagation()}

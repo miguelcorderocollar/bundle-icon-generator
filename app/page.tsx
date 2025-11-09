@@ -21,7 +21,7 @@ import { useTheme } from "@/src/components/ThemeProvider";
 export default function Home() {
   const { state, actions } = useIconGenerator();
   const [isInfoOpen, setIsInfoOpen] = React.useState(false);
-  const { theme, toggleTheme } = useTheme();
+  const { theme, mounted, toggleTheme } = useTheme();
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
@@ -40,10 +40,12 @@ export default function Home() {
               onClick={toggleTheme}
               aria-label="Toggle theme"
             >
-              {theme === "light" ? (
+              {mounted && theme === "light" ? (
                 <Moon className="h-5 w-5" />
-              ) : (
+              ) : mounted && theme === "dark" ? (
                 <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
               )}
             </Button>
             <Dialog open={isInfoOpen} onOpenChange={setIsInfoOpen}>

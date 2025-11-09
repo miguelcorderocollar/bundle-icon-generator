@@ -6,6 +6,7 @@ type Theme = "light" | "dark";
 
 interface ThemeProviderContextType {
   theme: Theme;
+  mounted: boolean;
   setTheme: (theme: Theme) => void;
   toggleTheme: () => void;
 }
@@ -26,11 +27,16 @@ export function ThemeProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const [mounted, setMounted] = React.useState(false);
   const [theme, setThemeState] = React.useState<Theme>(() => {
     if (typeof window === "undefined") return "light";
     const stored = localStorage.getItem("theme") as Theme | null;
     return stored || getSystemTheme();
   });
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     const root = window.document.documentElement;
@@ -50,10 +56,11 @@ export function ThemeProvider({
   const value = React.useMemo(
     () => ({
       theme,
+      mounted,
       setTheme,
       toggleTheme,
     }),
-    [theme, setTheme, toggleTheme]
+    [theme, mounted, setTheme, toggleTheme]
   );
 
   return (
