@@ -15,11 +15,23 @@ export function PreviewHeader({ iconMetadata }: PreviewHeaderProps) {
   // Render icon SVG for display - preserve original structure to respect theme
   const iconSvgContent = React.useMemo(() => {
     if (!iconMetadata) return null;
-    return prepareSvgForDisplay(iconMetadata.svg, {
-      width: 48,
-      height: 48,
-      className: "icon-preview-svg",
-    });
+    
+    // For custom SVGs, preserve aspect ratio
+    const isCustomSvg = iconMetadata.pack === "custom-svg";
+    const displayOptions = isCustomSvg
+      ? {
+          width: 48,
+          height: 48,
+          className: "icon-preview-svg",
+          preserveAspectRatio: true,
+        }
+      : {
+          width: 48,
+          height: 48,
+          className: "icon-preview-svg",
+        };
+    
+    return prepareSvgForDisplay(iconMetadata.svg, displayOptions);
   }, [iconMetadata]);
 
   if (!iconMetadata) {
@@ -29,10 +41,10 @@ export function PreviewHeader({ iconMetadata }: PreviewHeaderProps) {
   return (
     <div className="mt-4 flex items-center gap-4 rounded-lg border bg-muted/30 p-3">
       {/* Icon Display */}
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-background border">
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-background border overflow-hidden">
         {iconSvgContent ? (
           <div
-            className="flex h-full w-full items-center justify-center p-2 [&_svg]:w-full [&_svg]:h-full text-foreground"
+            className="flex h-full w-full items-center justify-center p-2 [&_svg]:max-w-full [&_svg]:max-h-full [&_svg]:w-auto [&_svg]:h-auto text-foreground"
             dangerouslySetInnerHTML={{ __html: iconSvgContent }}
           />
         ) : (

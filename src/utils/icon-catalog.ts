@@ -89,6 +89,27 @@ export async function getIconById(id: string): Promise<IconMetadata | null> {
     return null;
   }
   
+  // Check if it's a custom SVG (stored in sessionStorage)
+  // The id is already the full key (e.g., "custom-svg-1234567890")
+  if (id.startsWith("custom-svg-")) {
+    if (typeof window !== "undefined") {
+      const svg = sessionStorage.getItem(id);
+      if (svg) {
+        const allowColorOverrideStr = sessionStorage.getItem(`${id}-allowColorOverride`);
+        const allowColorOverride = allowColorOverrideStr !== null ? allowColorOverrideStr === "true" : false;
+        return {
+          id,
+          name: "Custom SVG",
+          pack: "custom-svg" as IconPack,
+          svg,
+          keywords: ["custom", "svg", "user"],
+          allowColorOverride,
+        };
+      }
+    }
+    return null;
+  }
+  
   const catalog = await loadIconCatalog();
   return catalog.icons[id] || null;
 }
@@ -122,6 +143,7 @@ export async function filterIconsByPack(
     "garden": "zendesk-garden",
     "feather": "feather",
     "emoji": "emoji",
+    "custom-svg": "custom-svg",
     "all": "all", // This won't match any icon.pack, but that's fine
   };
   

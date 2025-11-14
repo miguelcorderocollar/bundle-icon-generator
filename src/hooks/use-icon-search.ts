@@ -185,6 +185,29 @@ export function useIconSearch({
         // Get user emojis and merge with catalog results
         const userEmojis = getUserEmojis();
         
+        // Get custom SVGs from sessionStorage
+        const customSvgs: IconMetadata[] = [];
+        if (typeof window !== "undefined") {
+          for (let i = 0; i < sessionStorage.length; i++) {
+            const key = sessionStorage.key(i);
+            if (key?.startsWith("custom-svg-") && !key.endsWith("-allowColorOverride")) {
+              const svg = sessionStorage.getItem(key);
+              if (svg) {
+                const allowColorOverrideStr = sessionStorage.getItem(`${key}-allowColorOverride`);
+                const allowColorOverride = allowColorOverrideStr !== null ? allowColorOverrideStr === "true" : false;
+                customSvgs.push({
+                  id: key,
+                  name: "Custom SVG",
+                  pack: "custom-svg" as IconPack,
+                  svg,
+                  keywords: ["custom", "svg", "user"],
+                  allowColorOverride,
+                });
+              }
+            }
+          }
+        }
+        
         // Filter by pack if not "all"
         if (selectedPack !== ICON_PACKS.ALL) {
           results = await filterIconsByPack(results, selectedPack);
@@ -201,9 +224,20 @@ export function useIconSearch({
               });
             }
             results = [...results, ...filteredEmojis];
+          } else if (selectedPack === ICON_PACKS.CUSTOM_SVG) {
+            // If custom SVG pack is selected, include custom SVGs
+            let filteredCustomSvgs = customSvgs;
+            if (normalizedQuery) {
+              const queryLower = normalizedQuery.toLowerCase();
+              filteredCustomSvgs = customSvgs.filter((svg) => {
+                const searchText = `${svg.name} ${svg.id} ${svg.keywords.join(" ")}`.toLowerCase();
+                return searchText.includes(queryLower);
+              });
+            }
+            results = [...results, ...filteredCustomSvgs];
           }
         } else {
-          // If "all" pack is selected, include all user emojis
+          // If "all" pack is selected, include all user emojis and custom SVGs
           // Filter emojis by search query if present
           let filteredEmojis = userEmojis;
           if (normalizedQuery) {
@@ -213,7 +247,18 @@ export function useIconSearch({
               return searchText.includes(queryLower);
             });
           }
-          results = [...results, ...filteredEmojis];
+          
+          // Filter custom SVGs by search query if present
+          let filteredCustomSvgs = customSvgs;
+          if (normalizedQuery) {
+            const queryLower = normalizedQuery.toLowerCase();
+            filteredCustomSvgs = customSvgs.filter((svg) => {
+              const searchText = `${svg.name} ${svg.id} ${svg.keywords.join(" ")}`.toLowerCase();
+              return searchText.includes(queryLower);
+            });
+          }
+          
+          results = [...results, ...filteredEmojis, ...filteredCustomSvgs];
         }
 
         // Cache the filtered results (before sorting)

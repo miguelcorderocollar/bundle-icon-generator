@@ -1,7 +1,7 @@
 /**
  * Icon pack metadata
  */
-export type IconPack = 'zendesk-garden' | 'feather' | 'emoji';
+export type IconPack = 'zendesk-garden' | 'feather' | 'emoji' | 'custom-svg';
 
 /**
  * Icon pack license information
@@ -32,6 +32,8 @@ export interface IconMetadata {
   size?: number;
   /** Whether this icon is rasterized (e.g., emoji) and cannot have colors customized */
   isRasterized?: boolean;
+  /** Whether color customization should be applied (for custom SVGs) */
+  allowColorOverride?: boolean;
 }
 
 /**

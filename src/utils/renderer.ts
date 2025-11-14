@@ -203,9 +203,12 @@ export function renderSvg(options: SvgRenderOptions): string {
     isRasterized,
   } = parseSvg(icon.svg);
   
-  // Skip color transformation for rasterized icons (emojis)
+  // Skip color transformation for rasterized icons (emojis) or if color override is disabled
   // Also check icon metadata flag as fallback
-  const shouldSkipColorTransform = isRasterized || icon.isRasterized;
+  const shouldSkipColorTransform = 
+    isRasterized || 
+    icon.isRasterized || 
+    (icon.allowColorOverride === false);
   const coloredContent = shouldSkipColorTransform ? content : applySvgColor(content, iconColor);
 
   // Calculate icon size within padded area

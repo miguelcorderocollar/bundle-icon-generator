@@ -139,6 +139,7 @@ export function CustomizationControlsPane({
               value={iconColor}
               onChange={onIconColorChange}
               colorType="icon"
+              isCustomSvg={selectedIconId?.startsWith("custom-svg-")}
             />
           )}
           {onBackgroundColorChange && (

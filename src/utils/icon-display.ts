@@ -13,6 +13,7 @@ export function prepareSvgForDisplay(
     width?: string | number;
     height?: string | number;
     className?: string;
+    preserveAspectRatio?: boolean;
   } = {}
 ): string | null {
   try {
@@ -21,19 +22,27 @@ export function prepareSvgForDisplay(
     const svgElement = svgDoc.querySelector("svg");
     if (!svgElement) return null;
 
-    // Set size attributes
-    if (options.width !== undefined) {
-      svgElement.setAttribute("width", String(options.width));
-    }
-    if (options.height !== undefined) {
-      svgElement.setAttribute("height", String(options.height));
+    // If preserveAspectRatio is true, use max-width/max-height instead of fixed dimensions
+    if (options.preserveAspectRatio) {
+      const style = svgElement.getAttribute("style") || "";
+      const maxWidth = options.width !== undefined ? `max-width: ${options.width}px;` : "";
+      const maxHeight = options.height !== undefined ? `max-height: ${options.height}px;` : "";
+      svgElement.setAttribute("style", `${style} ${maxWidth} ${maxHeight} display: block;`.trim());
+    } else {
+      // Set size attributes
+      if (options.width !== undefined) {
+        svgElement.setAttribute("width", String(options.width));
+      }
+      if (options.height !== undefined) {
+        svgElement.setAttribute("height", String(options.height));
+      }
+      svgElement.setAttribute("style", "display: block;");
     }
     
     // Set optional attributes
     if (options.className) {
       svgElement.setAttribute("class", options.className);
     }
-    svgElement.setAttribute("style", "display: block;");
 
     // Don't modify fill/stroke - preserve original SVG structure
     // The SVGs already use currentColor where appropriate

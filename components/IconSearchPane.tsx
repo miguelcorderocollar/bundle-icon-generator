@@ -4,9 +4,9 @@ import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { Search, X, Shuffle } from "lucide-react";
 import { IconGrid } from "@/src/components/IconGrid";
 import { useKeyboardShortcuts } from "@/src/hooks/use-keyboard-shortcuts";
@@ -15,6 +15,7 @@ import { ICON_PACKS, type IconPack } from "@/src/constants/app";
 import { addRecentIcon } from "@/src/utils/local-storage";
 import { getFavorites } from "@/src/utils/local-storage";
 import { EmojiInput } from "@/src/components/EmojiInput";
+import { CustomSvgInput } from "@/src/components/CustomSvgInput";
 
 export interface IconSearchPaneProps {
   searchQuery?: string;
@@ -175,83 +176,39 @@ export function IconSearchPane({
           </Select>
         </div>
 
-        {/* Filters Tabs */}
-        <Tabs
-          value={selectedPack}
-          onValueChange={handlePackChange}
-          className="flex-1 min-h-0 w-full"
-        >
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value={ICON_PACKS.ALL}>All</TabsTrigger>
-            <TabsTrigger value={ICON_PACKS.GARDEN}>Garden</TabsTrigger>
-            <TabsTrigger value={ICON_PACKS.FEATHER}>Feather</TabsTrigger>
-            <TabsTrigger value={ICON_PACKS.EMOJI}>Emoji</TabsTrigger>
-          </TabsList>
+        {/* Icon Pack Selector */}
+        <div className="space-y-2">
+          <Label htmlFor="icon-pack-select">Icon Pack</Label>
+          <Select value={selectedPack} onValueChange={handlePackChange}>
+            <SelectTrigger id="icon-pack-select" className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ICON_PACKS.ALL}>All</SelectItem>
+              <SelectItem value={ICON_PACKS.GARDEN}>Garden</SelectItem>
+              <SelectItem value={ICON_PACKS.FEATHER}>Feather</SelectItem>
+              <SelectItem value={ICON_PACKS.EMOJI}>Emoji</SelectItem>
+              <SelectItem value={ICON_PACKS.CUSTOM_SVG}>Custom SVG</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-          <TabsContent
-            value={ICON_PACKS.ALL}
-            className="mt-4 flex-1 min-h-0 overflow-hidden data-[state=active]:flex data-[state=active]:flex-col"
-          >
-            {error ? (
-              <div className="flex items-center justify-center h-full text-destructive">
-                <p>Error loading icons: {error.message}</p>
-              </div>
-            ) : (
-              <IconGrid
-                icons={icons}
-                selectedIconId={selectedIconId}
-                onIconSelect={handleIconSelect}
-                onFavoriteToggle={handleFavoriteToggle}
-                searchQuery={searchQuery}
-                isLoading={isLoading}
-              />
-            )}
-          </TabsContent>
-
-          <TabsContent
-            value={ICON_PACKS.GARDEN}
-            className="mt-4 flex-1 min-h-0 overflow-hidden data-[state=active]:flex data-[state=active]:flex-col"
-          >
-            {error ? (
-              <div className="flex items-center justify-center h-full text-destructive">
-                <p>Error loading icons: {error.message}</p>
-              </div>
-            ) : (
-              <IconGrid
-                icons={icons}
-                selectedIconId={selectedIconId}
-                onIconSelect={handleIconSelect}
-                onFavoriteToggle={handleFavoriteToggle}
-                searchQuery={searchQuery}
-                isLoading={isLoading}
-              />
-            )}
-          </TabsContent>
-
-          <TabsContent
-            value={ICON_PACKS.FEATHER}
-            className="mt-4 flex-1 min-h-0 overflow-hidden data-[state=active]:flex data-[state=active]:flex-col"
-          >
-            {error ? (
-              <div className="flex items-center justify-center h-full text-destructive">
-                <p>Error loading icons: {error.message}</p>
-              </div>
-            ) : (
-              <IconGrid
-                icons={icons}
-                selectedIconId={selectedIconId}
-                onIconSelect={handleIconSelect}
-                onFavoriteToggle={handleFavoriteToggle}
-                searchQuery={searchQuery}
-                isLoading={isLoading}
-              />
-            )}
-          </TabsContent>
-
-          <TabsContent
-            value={ICON_PACKS.EMOJI}
-            className="mt-4 flex-1 min-h-0 overflow-hidden data-[state=active]:flex data-[state=active]:flex-col"
-          >
+        {/* Content based on selected pack */}
+        <div className="flex-1 min-h-0 overflow-hidden">
+          {selectedPack === ICON_PACKS.CUSTOM_SVG ? (
+            <CustomSvgInput
+              onSelect={(svg, allowColorOverride = false) => {
+                // Create a custom icon ID and select it
+                const customIconId = `custom-svg-${Date.now()}`;
+                // Store custom SVG and color override preference
+                if (typeof window !== "undefined") {
+                  sessionStorage.setItem(customIconId, svg);
+                  sessionStorage.setItem(`${customIconId}-allowColorOverride`, String(allowColorOverride));
+                }
+                handleIconSelect(customIconId);
+              }}
+            />
+          ) : selectedPack === ICON_PACKS.EMOJI ? (
             <div className="flex flex-col gap-4 h-full min-h-0">
               <EmojiInput
                 onEmojiAdded={(emojiId) => {
@@ -286,8 +243,21 @@ export function IconSearchPane({
                 </div>
               )}
             </div>
-          </TabsContent>
-        </Tabs>
+          ) : error ? (
+            <div className="flex items-center justify-center h-full text-destructive">
+              <p>Error loading icons: {error.message}</p>
+            </div>
+          ) : (
+            <IconGrid
+              icons={icons}
+              selectedIconId={selectedIconId}
+              onIconSelect={handleIconSelect}
+              onFavoriteToggle={handleFavoriteToggle}
+              searchQuery={searchQuery}
+              isLoading={isLoading}
+            />
+          )}
+        </div>
       </CardContent>
     </Card>
   );

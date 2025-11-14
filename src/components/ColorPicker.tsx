@@ -5,6 +5,8 @@
 import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getRecentColors, addColorToHistory, type ColorType } from "@/src/utils/color-history";
 import { useDebouncedValue } from "@/src/hooks/use-debounced-value";
@@ -16,6 +18,7 @@ export interface ColorPickerProps {
   onChange: (value: string) => void;
   className?: string;
   colorType?: ColorType;
+  isCustomSvg?: boolean;
 }
 
 export function ColorPicker({
@@ -25,6 +28,7 @@ export function ColorPicker({
   onChange,
   className,
   colorType,
+  isCustomSvg = false,
 }: ColorPickerProps) {
   const [recentColors, setRecentColors] = React.useState<string[]>([]);
   
@@ -65,7 +69,23 @@ export function ColorPicker({
 
   return (
     <div className={cn("space-y-2", className)}>
-      <Label htmlFor={id}>{label}</Label>
+      <div className="flex items-center gap-2">
+        <Label htmlFor={id}>{label}</Label>
+        {isCustomSvg && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="size-3.5 text-muted-foreground" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="max-w-xs">
+                  Color customization replaces all <code className="text-xs bg-muted px-1 py-0.5 rounded">fill</code> and <code className="text-xs bg-muted px-1 py-0.5 rounded">stroke</code> colors in the SVG, except for <code className="text-xs bg-muted px-1 py-0.5 rounded">none</code>, <code className="text-xs bg-muted px-1 py-0.5 rounded">transparent</code>, and gradient/pattern references.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+      </div>
       <div className="flex gap-2">
         <input
           id={id}
