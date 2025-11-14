@@ -8,11 +8,13 @@ import { Download } from "lucide-react";
 import { PngPreview } from "@/src/components/PngPreview";
 import { SvgPreview } from "@/src/components/SvgPreview";
 import { EmptyState } from "@/src/components/EmptyState";
+import { PreviewHeader } from "@/src/components/PreviewHeader";
 import { calculateRequiredSvgFiles, hasSvgRequirements } from "@/src/utils/locations";
 import { PREVIEW_TYPES } from "@/src/constants/app";
 import type { AppLocation } from "@/src/types/app-location";
 import type { IconGeneratorState } from "@/src/hooks/use-icon-generator";
 import { ExportModal } from "@/src/components/ExportModal";
+import { useIconMetadata } from "@/src/hooks/use-icon-metadata";
 
 export interface PreviewPaneProps {
   selectedLocations?: AppLocation[];
@@ -26,6 +28,7 @@ export function PreviewPane({
   state,
 }: PreviewPaneProps) {
   const [isExportModalOpen, setIsExportModalOpen] = React.useState(false);
+  const iconMetadata = useIconMetadata(selectedIconId);
 
   const requiredSvgFiles = React.useMemo(
     () => calculateRequiredSvgFiles(selectedLocations),
@@ -41,6 +44,7 @@ export function PreviewPane({
     <Card className="flex h-full flex-col">
       <CardHeader className="flex-shrink-0">
         <CardTitle>Preview</CardTitle>
+        <PreviewHeader iconMetadata={iconMetadata} />
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-4 overflow-hidden p-6">
         {/* Preview Content Area - Scrollable */}

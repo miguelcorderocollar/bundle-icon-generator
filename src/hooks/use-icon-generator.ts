@@ -5,6 +5,8 @@
 import * as React from "react";
 import type { AppLocation } from "@/src/types/app-location";
 import { ICON_PACKS, type IconPack } from "@/src/constants/app";
+import { loadIconCatalog } from "@/src/utils/icon-catalog";
+import { getUserEmojis } from "@/src/utils/emoji-catalog";
 
 export interface IconGeneratorState {
   selectedLocations: AppLocation[];
@@ -33,11 +35,45 @@ const DEFAULT_STATE: IconGeneratorState = {
   iconColor: "#ffffff",
   searchQuery: "",
   selectedPack: ICON_PACKS.ALL,
-  iconSize: 64,
+  iconSize: 123,
 };
 
 export function useIconGenerator() {
   const [state, setState] = React.useState<IconGeneratorState>(DEFAULT_STATE);
+  const [hasInitializedRandomIcon, setHasInitializedRandomIcon] = React.useState(false);
+
+  // Initialize with a random icon on first load
+  React.useEffect(() => {
+    if (hasInitializedRandomIcon || typeof window === "undefined") return;
+
+    async function initializeRandomIcon() {
+      try {
+        // Load icon catalog
+        const catalog = await loadIconCatalog();
+        const allIcons = Object.values(catalog.icons);
+        
+        // Get user emojis if available
+        const userEmojis = getUserEmojis();
+        
+        // Combine all icons
+        const combinedIcons = [...allIcons, ...userEmojis];
+        
+        // Select a random icon if any are available
+        if (combinedIcons.length > 0) {
+          const randomIndex = Math.floor(Math.random() * combinedIcons.length);
+          const randomIcon = combinedIcons[randomIndex];
+          setState((prev) => ({ ...prev, selectedIconId: randomIcon.id }));
+        }
+        
+        setHasInitializedRandomIcon(true);
+      } catch (error) {
+        console.error("Failed to initialize random icon:", error);
+        setHasInitializedRandomIcon(true);
+      }
+    }
+
+    initializeRandomIcon();
+  }, [hasInitializedRandomIcon]);
 
   const actions: IconGeneratorActions = React.useMemo(
     () => ({

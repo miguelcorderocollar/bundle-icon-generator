@@ -16,3 +16,5 @@ export type { SortOption, UseIconSearchOptions, UseIconSearchResult } from "./us
 
 export { useDebouncedValue } from "./use-debounced-value";
 
+export { useIconMetadata } from "./use-icon-metadata";
+

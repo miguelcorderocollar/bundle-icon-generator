@@ -57,3 +57,4 @@ export function addColorToHistory(type: ColorType, color: string): void {
   }
 }
 
+

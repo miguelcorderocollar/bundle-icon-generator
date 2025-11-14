@@ -20,6 +20,9 @@ export type { EmptyStateProps } from "./EmptyState";
 export { PreviewPlaceholder } from "./PreviewPlaceholder";
 export type { PreviewPlaceholderProps } from "./PreviewPlaceholder";
 
+export { PreviewHeader } from "./PreviewHeader";
+export type { PreviewHeaderProps } from "./PreviewHeader";
+
 export { PngPreview } from "./PngPreview";
 export { SvgPreview } from "./SvgPreview";
 export type { SvgPreviewProps } from "./SvgPreview";

@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Search, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, X, Shuffle } from "lucide-react";
 import { IconGrid } from "@/src/components/IconGrid";
 import { useKeyboardShortcuts } from "@/src/hooks/use-keyboard-shortcuts";
 import { useIconSearch, type SortOption } from "@/src/hooks/use-icon-search";
@@ -79,6 +80,13 @@ export function IconSearchPane({
     onIconSelect?.(iconId);
   };
 
+  const handleRandomIcon = () => {
+    if (icons.length === 0) return;
+    const randomIndex = Math.floor(Math.random() * icons.length);
+    const randomIcon = icons[randomIndex];
+    handleIconSelect(randomIcon.id);
+  };
+
   useKeyboardShortcuts({
     onSearchFocus: handleFocusSearch,
     onEscape: handleClearSearch,
@@ -91,40 +99,62 @@ export function IconSearchPane({
       </CardHeader>
       <CardContent className="flex flex-1 min-h-0 flex-col gap-4 overflow-hidden">
         {/* Search Input */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-          <Input
-            ref={searchInputRef}
-            placeholder={`Search icons... (Press ${isMac ? "⌘K" : "Ctrl+K"} to focus)`}
-            className="pl-9 pr-9"
-            type="text"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            onKeyDown={(e) => {
-              if (e.key === "Escape") {
-                handleClearSearch();
-              }
-            }}
-          />
-          {searchQuery && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    onClick={handleClearSearch}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-sm p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
-                    aria-label="Clear search"
-                  >
-                    <X className="size-4" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Clear search (Esc)</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <Input
+              ref={searchInputRef}
+              placeholder={`Search icons... (Press ${isMac ? "⌘K" : "Ctrl+K"} to focus)`}
+              className="pl-9 pr-9"
+              type="text"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  handleClearSearch();
+                }
+              }}
+            />
+            {searchQuery && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={handleClearSearch}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-sm p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+                      aria-label="Clear search"
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Clear search (Esc)</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={handleRandomIcon}
+                  disabled={icons.length === 0 || isLoading}
+                  aria-label="Random icon"
+                  className="cursor-pointer"
+                >
+                  <Shuffle className="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Pick a random icon</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         {/* Sort Control */}

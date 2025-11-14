@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import type { IconMetadata } from "@/src/types/icon";
 import { toggleFavorite, isFavorite } from "@/src/utils/local-storage";
 import { removeEmoji } from "@/src/utils/emoji-catalog";
+import { prepareSvgForDisplay } from "@/src/utils/icon-display";
 
 export interface IconGridItemProps {
   icon: IconMetadata;
@@ -78,28 +79,11 @@ export function IconGridItem({
   // Render SVG icon - preserve original structure completely
   const svgContent = React.useMemo(() => {
     if (!isVisible) return null;
-    
-    try {
-      // Parse SVG and only modify size attributes, preserve everything else
-      const parser = new DOMParser();
-      const svgDoc = parser.parseFromString(icon.svg, "image/svg+xml");
-      const svgElement = svgDoc.querySelector("svg");
-      if (!svgElement) return null;
-
-      // Only set size attributes, preserve all original fill/stroke/colors
-      svgElement.setAttribute("width", "100%");
-      svgElement.setAttribute("height", "100%");
-      svgElement.setAttribute("class", "icon-svg");
-      svgElement.setAttribute("style", "display: block;");
-
-      // Don't modify fill/stroke - preserve original SVG structure
-      // The SVGs already use currentColor where appropriate
-
-      return svgElement.outerHTML;
-    } catch (error) {
-      console.error("Error parsing SVG:", error);
-      return null;
-    }
+    return prepareSvgForDisplay(icon.svg, {
+      width: "100%",
+      height: "100%",
+      className: "icon-svg",
+    });
   }, [icon.svg, isVisible]);
 
   return (

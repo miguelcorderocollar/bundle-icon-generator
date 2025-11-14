@@ -110,7 +110,7 @@ function parseSvg(svgString: string): {
 /**
  * Apply color transformation to SVG content
  */
-function applySvgColor(svgContent: string, color: string): string {
+export function applySvgColor(svgContent: string, color: string): string {
   // Replace fill and stroke attributes with the desired color
   // Preserve transparent/negative-space directives like "none" or "url(#foo)"
   let result = svgContent;
