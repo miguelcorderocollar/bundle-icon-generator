@@ -33,9 +33,9 @@
     "feather-icons": "^4.29.2",
     "jszip": "^3.10.1",
     "lucide-react": "^0.553.0",
-    "next": "16.0.1",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
+    "next": "^16.1.1",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "remixicon": "^4.7.0",
     "tailwind-merge": "^3.4.0"
   },
@@ -46,7 +46,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.0.1",
+    "eslint-config-next": "^16.1.1",
     "tailwindcss": "^4",
     "tsx": "^4.20.6",
     "typescript": "^5"
