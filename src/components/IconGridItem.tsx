@@ -45,6 +45,16 @@ export function IconGridItem({
     onFavoriteToggle?.(icon.id, newFavoriteState);
   };
 
+  const handleFavoriteKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      e.stopPropagation();
+      const newFavoriteState = toggleFavorite(icon.id);
+      setIsFavorited(newFavoriteState);
+      onFavoriteToggle?.(icon.id, newFavoriteState);
+    }
+  };
+
   const handleRemoveClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isEmoji && onRemove) {
@@ -52,6 +62,19 @@ export function IconGridItem({
       onRemove(icon.id);
       // Dispatch event to refresh icon list
       window.dispatchEvent(new Event("icon-favorites-changed"));
+    }
+  };
+
+  const handleRemoveKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      e.stopPropagation();
+      if (isEmoji && onRemove) {
+        removeEmoji(icon.id);
+        onRemove(icon.id);
+        // Dispatch event to refresh icon list
+        window.dispatchEvent(new Event("icon-favorites-changed"));
+      }
     }
   };
 
@@ -125,12 +148,7 @@ export function IconGridItem({
         role="button"
         tabIndex={0}
         onClick={handleFavoriteClick}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            handleFavoriteClick(e as React.MouseEvent);
-          }
-        }}
+        onKeyDown={handleFavoriteKeyDown}
         className={cn(
           "absolute left-1 top-1 rounded-sm p-0.5 opacity-0 transition-opacity group-hover:opacity-100 cursor-pointer",
           "hover:bg-muted focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -155,12 +173,7 @@ export function IconGridItem({
           role="button"
           tabIndex={0}
           onClick={handleRemoveClick}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              handleRemoveClick(e as React.MouseEvent);
-            }
-          }}
+          onKeyDown={handleRemoveKeyDown}
           className={cn(
             "absolute right-1 top-1 rounded-sm p-0.5 opacity-0 transition-opacity group-hover:opacity-100 cursor-pointer",
             "hover:bg-destructive/20 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
