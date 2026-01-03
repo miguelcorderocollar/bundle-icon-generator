@@ -20,6 +20,7 @@ import type { IconGeneratorState } from "../hooks/use-icon-generator";
 import type { AppLocation } from "../types/app-location";
 import { generateExportZip, downloadZip, validateExport } from "../utils/export-controller";
 import { getRequiredExportVariants } from "../types/export";
+import { isCustomImageIcon } from "../utils/locations";
 
 export interface ExportModalProps {
   open: boolean;
@@ -48,10 +49,16 @@ export function ExportModal({
     }
   }, [open, state, selectedLocations]);
 
-  const variants = React.useMemo(
-    () => getRequiredExportVariants(selectedLocations),
-    [selectedLocations]
-  );
+  const isCustomImage = isCustomImageIcon(state.selectedIconId);
+
+  // For custom images, filter out SVG variants
+  const variants = React.useMemo(() => {
+    const allVariants = getRequiredExportVariants(selectedLocations);
+    if (isCustomImage) {
+      return allVariants.filter((v) => v.format === "png");
+    }
+    return allVariants;
+  }, [selectedLocations, isCustomImage]);
 
   const handleExport = async () => {
     setIsExporting(true);

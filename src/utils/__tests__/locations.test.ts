@@ -3,6 +3,8 @@ import {
   calculateRequiredSvgFiles,
   hasSvgRequirements,
   getLocationCountText,
+  getSvgRequiringLocations,
+  isCustomImageIcon,
 } from "../locations";
 import type { AppLocation } from "../../types/app-location";
 
@@ -139,6 +141,55 @@ describe("locations", () => {
 
     it("returns plural for large counts", () => {
       expect(getLocationCountText(10)).toBe("10 locations selected");
+    });
+  });
+
+  describe("getSvgRequiringLocations", () => {
+    it("returns array of SVG-requiring locations", () => {
+      const result = getSvgRequiringLocations();
+      expect(result).toContain("nav_bar");
+      expect(result).toContain("top_bar");
+      expect(result).toContain("ticket_editor");
+    });
+
+    it("does not include non-SVG locations", () => {
+      const result = getSvgRequiringLocations();
+      expect(result).not.toContain("ticket_sidebar");
+      expect(result).not.toContain("background");
+      expect(result).not.toContain("modal");
+    });
+
+    it("returns 3 locations", () => {
+      const result = getSvgRequiringLocations();
+      expect(result).toHaveLength(3);
+    });
+  });
+
+  describe("isCustomImageIcon", () => {
+    it("returns true for custom image ID pattern", () => {
+      expect(isCustomImageIcon("custom-image-1234567890")).toBe(true);
+    });
+
+    it("returns true for any custom-image- prefix", () => {
+      expect(isCustomImageIcon("custom-image-abc")).toBe(true);
+      expect(isCustomImageIcon("custom-image-")).toBe(true);
+    });
+
+    it("returns false for custom SVG IDs", () => {
+      expect(isCustomImageIcon("custom-svg-1234567890")).toBe(false);
+    });
+
+    it("returns false for regular icon IDs", () => {
+      expect(isCustomImageIcon("feather-home")).toBe(false);
+      expect(isCustomImageIcon("garden-alert")).toBe(false);
+    });
+
+    it("returns false for undefined", () => {
+      expect(isCustomImageIcon(undefined)).toBe(false);
+    });
+
+    it("returns false for empty string", () => {
+      expect(isCustomImageIcon("")).toBe(false);
     });
   });
 });

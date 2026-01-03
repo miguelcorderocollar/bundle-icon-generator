@@ -16,7 +16,10 @@ import { addRecentIcon } from "@/src/utils/local-storage";
 import { getFavorites } from "@/src/utils/local-storage";
 import { EmojiInput } from "@/src/components/EmojiInput";
 import { CustomSvgInput } from "@/src/components/CustomSvgInput";
+import { CustomImageInput } from "@/src/components/CustomImageInput";
 import { getRemixIconCategories } from "@/src/utils/icon-catalog";
+import { hasSvgRequirements } from "@/src/utils/locations";
+import type { AppLocation } from "@/src/types/app-location";
 
 export interface IconSearchPaneProps {
   searchQuery?: string;
@@ -25,6 +28,8 @@ export interface IconSearchPaneProps {
   onPackChange?: (pack: IconPack) => void;
   selectedIconId?: string;
   onIconSelect?: (iconId: string) => void;
+  /** Selected app locations - used to disable Custom Image when SVG locations are selected */
+  selectedLocations?: AppLocation[];
 }
 
 export function IconSearchPane({
@@ -34,6 +39,7 @@ export function IconSearchPane({
   onPackChange,
   selectedIconId,
   onIconSelect,
+  selectedLocations = [],
 }: IconSearchPaneProps) {
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const [isMac, setIsMac] = React.useState<boolean>(false); // Default to false to avoid hydration mismatch
@@ -41,6 +47,9 @@ export function IconSearchPane({
   const [favorites, setFavorites] = React.useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(null);
   const [remixiconCategories, setRemixiconCategories] = React.useState<string[]>([]);
+
+  // Check if SVG-requiring locations are selected (disables Custom Image option)
+  const hasSvgLocationsSelected = hasSvgRequirements(selectedLocations);
 
   React.useEffect(() => {
     setIsMac(navigator.platform.toUpperCase().indexOf("MAC") >= 0);
@@ -204,6 +213,27 @@ export function IconSearchPane({
               <SelectItem value={ICON_PACKS.REMIXICON}>RemixIcon</SelectItem>
               <SelectItem value={ICON_PACKS.EMOJI}>Emoji</SelectItem>
               <SelectItem value={ICON_PACKS.CUSTOM_SVG}>Custom SVG</SelectItem>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="w-full">
+                      <SelectItem 
+                        value={ICON_PACKS.CUSTOM_IMAGE} 
+                        disabled={hasSvgLocationsSelected}
+                      >
+                        Custom Image
+                      </SelectItem>
+                    </span>
+                  </TooltipTrigger>
+                  {hasSvgLocationsSelected && (
+                    <TooltipContent side="left">
+                      <p className="max-w-xs">
+                        Custom images cannot be used with locations that require SVG icons (Nav Bar, Top Bar, Ticket Editor)
+                      </p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             </SelectContent>
           </Select>
         </div>
@@ -233,7 +263,15 @@ export function IconSearchPane({
 
         {/* Content based on selected pack */}
         <div className="flex-1 min-h-0 overflow-hidden">
-          {selectedPack === ICON_PACKS.CUSTOM_SVG ? (
+          {selectedPack === ICON_PACKS.CUSTOM_IMAGE ? (
+            <CustomImageInput
+              onSelect={(imageId) => {
+                handleIconSelect(imageId);
+              }}
+              disabled={hasSvgLocationsSelected}
+              disabledMessage="Custom images cannot be used with locations that require SVG icons (Nav Bar, Top Bar, Ticket Editor). Please deselect these locations first."
+            />
+          ) : selectedPack === ICON_PACKS.CUSTOM_SVG ? (
             <CustomSvgInput
               onSelect={(svg, allowColorOverride = false) => {
                 // Create a custom icon ID and select it

@@ -16,6 +16,10 @@ export interface MultiSelectOption {
   label: string;
   value: string;
   description?: string;
+  /** Whether this option is disabled */
+  disabled?: boolean;
+  /** Tooltip to show when disabled */
+  disabledReason?: string;
 }
 
 interface MultiSelectProps {
@@ -106,33 +110,49 @@ export function MultiSelect({
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" align="start">
         <div className="max-h-[300px] overflow-y-auto p-2">
-          {options.map((option) => (
-            <div
-              key={option.value}
-              className="flex items-start space-x-2 rounded-sm px-2 py-1.5 hover:bg-accent"
-            >
-              <Checkbox
-                id={option.value}
-                checked={selected.includes(option.value)}
-                onCheckedChange={() => handleToggle(option.value)}
-                className="mt-0.5"
-              />
-              <label
-                htmlFor={option.value}
-                className="flex-1 cursor-pointer text-sm peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                <div className="font-medium leading-none">{option.label}</div>
-                {option.description && (
-                  <div className="mt-1 text-xs text-muted-foreground">
-                    {option.description}
-                  </div>
+          {options.map((option) => {
+            const isDisabled = option.disabled ?? false;
+            const optionContent = (
+              <div
+                key={option.value}
+                className={cn(
+                  "flex items-start space-x-2 rounded-sm px-2 py-1.5",
+                  isDisabled ? "opacity-50 cursor-not-allowed" : "hover:bg-accent"
                 )}
-              </label>
-              {selected.includes(option.value) && (
-                <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-              )}
-            </div>
-          ))}
+              >
+                <Checkbox
+                  id={option.value}
+                  checked={selected.includes(option.value)}
+                  onCheckedChange={() => !isDisabled && handleToggle(option.value)}
+                  disabled={isDisabled}
+                  className="mt-0.5"
+                />
+                <label
+                  htmlFor={option.value}
+                  className={cn(
+                    "flex-1 text-sm",
+                    isDisabled ? "cursor-not-allowed" : "cursor-pointer"
+                  )}
+                >
+                  <div className="font-medium leading-none">{option.label}</div>
+                  {option.description && (
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      {option.description}
+                    </div>
+                  )}
+                  {isDisabled && option.disabledReason && (
+                    <div className="mt-1 text-xs text-destructive/70">
+                      {option.disabledReason}
+                    </div>
+                  )}
+                </label>
+                {selected.includes(option.value) && (
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                )}
+              </div>
+            );
+            return <React.Fragment key={option.value}>{optionContent}</React.Fragment>;
+          })}
         </div>
       </PopoverContent>
     </Popover>

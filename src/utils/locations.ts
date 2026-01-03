@@ -45,3 +45,21 @@ export function getLocationCountText(count: number): string {
   return `${count} location${count !== 1 ? "s" : ""} selected`;
 }
 
+/**
+ * Get locations that require SVG icons
+ * These are incompatible with custom image uploads
+ */
+export function getSvgRequiringLocations(): AppLocation[] {
+  return APP_LOCATIONS
+    .filter((loc) => loc.requiresIcon === true)
+    .map((loc) => loc.value);
+}
+
+/**
+ * Check if an icon ID represents a custom uploaded image
+ */
+export function isCustomImageIcon(iconId: string | undefined): boolean {
+  if (!iconId) return false;
+  return iconId.startsWith("custom-image-");
+}
+

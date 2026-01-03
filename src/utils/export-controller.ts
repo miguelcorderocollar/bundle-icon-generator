@@ -8,9 +8,10 @@ import type { IconGeneratorState } from "../hooks/use-icon-generator";
 import type { AppLocation } from "../types/app-location";
 import type { ExportMetadata, ExportVariant } from "../types/export";
 import { getRequiredExportVariants } from "../types/export";
-import { generateExportAssets } from "./renderer";
+import { generateExportAssets, renderPngFromImage } from "./renderer";
 import { getIconById } from "./icon-catalog";
 import { isSolidColor, isGradient } from "./gradients";
+import { isCustomImageIcon, hasSvgRequirements } from "./locations";
 
 /**
  * Export result
@@ -35,23 +36,79 @@ export async function generateExportZip(
     throw new Error("No icon selected");
   }
 
-  // Get icon metadata
+  const isCustomImage = isCustomImageIcon(state.selectedIconId);
+
+  // Get required export variants
+  let variants = getRequiredExportVariants(selectedLocations);
+
+  // For custom images, filter out SVG variants (they can only export PNG)
+  if (isCustomImage) {
+    variants = variants.filter((v) => v.format === "png");
+  }
+
+  // Create ZIP
+  const zip = new JSZip();
+  const filenames: string[] = [];
+
+  if (isCustomImage) {
+    // Custom image export - use renderPngFromImage directly
+    const imageDataUrl = typeof window !== "undefined" 
+      ? sessionStorage.getItem(state.selectedIconId) 
+      : null;
+
+    if (!imageDataUrl) {
+      throw new Error("Custom image data not found");
+    }
+
+    for (const variant of variants) {
+      const blob = await renderPngFromImage({
+        imageDataUrl,
+        backgroundColor: state.backgroundColor,
+        size: state.iconSize,
+        width: variant.width,
+        height: variant.height,
+      });
+      zip.file(variant.filename, blob);
+      filenames.push(variant.filename);
+    }
+
+    // Create metadata for custom image
+    const metadata: ExportMetadata = {
+      exportedAt: new Date().toISOString(),
+      iconId: state.selectedIconId,
+      iconName: "Custom Image",
+      customization: {
+        backgroundColor: state.backgroundColor,
+        iconColor: state.iconColor,
+        iconSize: state.iconSize,
+      },
+      locations: selectedLocations,
+      variants: filenames,
+    };
+
+    // Add metadata as JSON
+    zip.file("export-metadata.json", JSON.stringify(metadata, null, 2));
+
+    // Generate ZIP blob
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+
+    return {
+      zipBlob,
+      metadata,
+      filenames,
+    };
+  }
+
+  // Standard icon export
   const icon = await getIconById(state.selectedIconId);
   if (!icon) {
     throw new Error(`Icon not found: ${state.selectedIconId}`);
   }
 
-  // Get required export variants
-  const variants = getRequiredExportVariants(selectedLocations);
-
   // Generate all assets
   const assets = await generateExportAssets(icon, state, variants);
 
-  // Create ZIP
-  const zip = new JSZip();
-
   // Add all assets to ZIP
-  const filenames: string[] = [];
   for (const [filename, blob] of assets.entries()) {
     zip.file(filename, blob);
     filenames.push(filename);
@@ -119,23 +176,37 @@ export function validateExport(
     errors.push("No icon selected");
   }
 
+  const isCustomImage = isCustomImageIcon(state.selectedIconId);
+
   // Check location selection
   if (selectedLocations.length === 0) {
     warnings.push("No app locations selected - only default PNGs will be exported");
   }
 
-  // Check color contrast (basic validation)
-  // For gradients, use the first stop color for contrast check
-  const bgColor = isSolidColor(state.backgroundColor)
-    ? state.backgroundColor
-    : isGradient(state.backgroundColor)
-    ? state.backgroundColor.stops[0]?.color || "#000000"
-    : "#000000";
-  const bgLuminance = getLuminance(bgColor);
-  const iconLuminance = getLuminance(state.iconColor);
-  const contrast = Math.abs(bgLuminance - iconLuminance);
-  if (contrast < 0.3) {
-    warnings.push("Low contrast between background and icon colors - may affect legibility");
+  // Check for custom image with SVG locations (should be prevented by UI, but double-check)
+  if (isCustomImage && hasSvgRequirements(selectedLocations)) {
+    warnings.push("Custom images cannot be exported as SVG. SVG locations will be skipped.");
+  }
+
+  // Check custom image info
+  if (isCustomImage) {
+    warnings.push("Custom image will be exported as PNG only (logo.png and logo-small.png)");
+  }
+
+  // Check color contrast (basic validation) - skip for custom images
+  if (!isCustomImage) {
+    // For gradients, use the first stop color for contrast check
+    const bgColor = isSolidColor(state.backgroundColor)
+      ? state.backgroundColor
+      : isGradient(state.backgroundColor)
+      ? state.backgroundColor.stops[0]?.color || "#000000"
+      : "#000000";
+    const bgLuminance = getLuminance(bgColor);
+    const iconLuminance = getLuminance(state.iconColor);
+    const contrast = Math.abs(bgLuminance - iconLuminance);
+    if (contrast < 0.3) {
+      warnings.push("Low contrast between background and icon colors - may affect legibility");
+    }
   }
 
   return {

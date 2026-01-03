@@ -446,6 +446,106 @@ export async function renderPng(options: PngRenderOptions): Promise<Blob> {
   });
 }
 
+/**
+ * Render options for PNG from custom image
+ */
+export interface ImageRenderOptions {
+  /** Base64 data URL of the image */
+  imageDataUrl: string;
+  /** Background color (hex) or gradient */
+  backgroundColor: BackgroundValue;
+  /** Size slider value (48-200), controls fill percentage */
+  size: number;
+  /** Canvas width */
+  width: number;
+  /** Canvas height */
+  height: number;
+}
+
+/**
+ * Render PNG from a custom uploaded image (PNG/JPG/WebP)
+ * This is used for custom images that can't be converted to SVG
+ */
+export async function renderPngFromImage(options: ImageRenderOptions): Promise<Blob> {
+  const {
+    imageDataUrl,
+    backgroundColor,
+    size,
+    width,
+    height,
+  } = options;
+
+  // Create canvas
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    throw new Error("Failed to get canvas context");
+  }
+
+  // Fill background (solid color or gradient)
+  if (isGradient(backgroundColor)) {
+    const gradient = createCanvasGradient(ctx, backgroundColor, width, height);
+    ctx.fillStyle = gradient;
+  } else {
+    ctx.fillStyle = backgroundColor;
+  }
+  ctx.fillRect(0, 0, width, height);
+
+  // Load the image from data URL
+  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("Failed to load custom image"));
+    image.src = imageDataUrl;
+  });
+
+  // Calculate target size based on slider (same formula as icons)
+  // Map size (48-200) to percentage (30%-100%)
+  const canvasSize = Math.min(width, height);
+  const minSize = 48;
+  const maxSize = 200;
+  const sizePercent = Math.max(0.3, Math.min(1.0, (size - minSize) / (maxSize - minSize) * 0.7 + 0.3));
+  const targetSize = canvasSize * sizePercent;
+
+  // Calculate scale to fit image within target size while preserving aspect ratio
+  const imgAspect = img.width / img.height;
+  let drawWidth: number;
+  let drawHeight: number;
+
+  if (imgAspect >= 1) {
+    // Image is wider than tall (or square)
+    drawWidth = targetSize;
+    drawHeight = targetSize / imgAspect;
+  } else {
+    // Image is taller than wide
+    drawHeight = targetSize;
+    drawWidth = targetSize * imgAspect;
+  }
+
+  // Center the image on the canvas
+  const drawX = (width - drawWidth) / 2;
+  const drawY = (height - drawHeight) / 2;
+
+  // Draw the image
+  ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+
+  // Convert to blob
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error("Failed to convert canvas to blob"));
+        }
+      },
+      "image/png",
+      1.0
+    );
+  });
+}
 
 /**
  * Zendesk location SVG filenames that require transparent backgrounds
