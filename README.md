@@ -41,23 +41,20 @@ Explore the product vision in `docs/app-concept.md` and phased roadmap in `docs/
 - **State Management**: React hooks with localStorage for persistence
 
 ## Prerequisites
-- Node.js 18+ (or Bun if preferred).
-- Package manager: npm (default) or bun/pnpm/yarn.
+- Bun 1.0+ (recommended) or Node.js 18+ with npm/pnpm/yarn
 
 ## Setup
 
 Install dependencies:
 
 ```bash
-npm install
-# or
 bun install
 ```
 
 Start the development server:
 
 ```bash
-npm run dev
+bun run dev
 ```
 
 Open http://localhost:3000 to access the app. The server hot-reloads when files change.
@@ -65,8 +62,8 @@ Open http://localhost:3000 to access the app. The server hot-reloads when files 
 Additional scripts:
 
 ```bash
-npm run generate-icons  # Generate icon catalog from icon packs
-npm run lint            # Run ESLint
+bun run generate-icons  # Generate icon catalog from icon packs
+bun run lint            # Run ESLint
 ```
 
 The `generate-icons` script processes icons from installed icon packs and generates a unified catalog at `public/icon-catalog.json`. Run this after installing or updating icon pack dependencies.

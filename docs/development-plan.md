@@ -19,7 +19,7 @@
 
 1. **Initialize shadcn/ui**:
    ```bash
-   npx shadcn@latest init
+   bunx shadcn@latest init
    ```
    
    Configuration options (tailored for this project):
@@ -41,14 +41,14 @@
 
 3. **Initial Components to Add**:
    ```bash
-   npx shadcn@latest add button
-   npx shadcn@latest add input
-   npx shadcn@latest add card
-   npx shadcn@latest add dialog
-   npx shadcn@latest add select
-   npx shadcn@latest add slider
-   npx shadcn@latest add tabs
-   npx shadcn@latest add separator
+   bunx shadcn@latest add button
+   bunx shadcn@latest add input
+   bunx shadcn@latest add card
+   bunx shadcn@latest add dialog
+   bunx shadcn@latest add select
+   bunx shadcn@latest add slider
+   bunx shadcn@latest add tabs
+   bunx shadcn@latest add separator
    ```
 
 4. **Design Token Integration**:
