@@ -128,7 +128,7 @@ export function IconGridItem({
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            handleFavoriteClick(e as any);
+            handleFavoriteClick(e as React.MouseEvent);
           }
         }}
         className={cn(
@@ -158,7 +158,7 @@ export function IconGridItem({
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
-              handleRemoveClick(e as any);
+              handleRemoveClick(e as React.MouseEvent);
             }
           }}
           className={cn(
