@@ -6,15 +6,19 @@ import * as React from "react";
 import type { IconMetadata } from "../types/icon";
 import { prepareSvgForDisplay } from "../utils/icon-display";
 import { formatPackName } from "../utils/icon-pack";
+import { ImageIcon } from "lucide-react";
 
 export interface PreviewHeaderProps {
   iconMetadata: IconMetadata | null;
 }
 
 export function PreviewHeader({ iconMetadata }: PreviewHeaderProps) {
+  // Check if this is a custom image
+  const isCustomImage = iconMetadata?.isCustomImage || iconMetadata?.pack === "custom-image";
+
   // Render icon SVG for display - preserve original structure to respect theme
   const iconSvgContent = React.useMemo(() => {
-    if (!iconMetadata) return null;
+    if (!iconMetadata || isCustomImage) return null;
     
     // For custom SVGs, preserve aspect ratio
     const isCustomSvg = iconMetadata.pack === "custom-svg";
@@ -32,7 +36,7 @@ export function PreviewHeader({ iconMetadata }: PreviewHeaderProps) {
         };
     
     return prepareSvgForDisplay(iconMetadata.svg, displayOptions);
-  }, [iconMetadata]);
+  }, [iconMetadata, isCustomImage]);
 
   if (!iconMetadata) {
     return null;
@@ -42,7 +46,18 @@ export function PreviewHeader({ iconMetadata }: PreviewHeaderProps) {
     <div className="mt-4 flex items-center gap-4 rounded-lg border bg-muted/30 p-3">
       {/* Icon Display */}
       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-background border overflow-hidden">
-        {iconSvgContent ? (
+        {isCustomImage && iconMetadata.imageDataUrl ? (
+          // Show thumbnail of uploaded custom image
+          // eslint-disable-next-line @next/next/no-img-element
+          <img 
+            src={iconMetadata.imageDataUrl} 
+            alt="Custom image"
+            className="max-w-full max-h-full object-contain p-1"
+          />
+        ) : isCustomImage ? (
+          // Fallback icon for custom image without data
+          <ImageIcon className="size-6 text-muted-foreground" />
+        ) : iconSvgContent ? (
           <div
             className="flex h-full w-full items-center justify-center p-2 [&_svg]:max-w-full [&_svg]:max-h-full [&_svg]:w-auto [&_svg]:h-auto text-foreground"
             dangerouslySetInnerHTML={{ __html: iconSvgContent }}

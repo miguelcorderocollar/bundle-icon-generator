@@ -7,11 +7,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { PreviewPlaceholder } from "./PreviewPlaceholder";
 import { PNG_SPECS } from "@/src/constants/app";
 import type { IconGeneratorState } from "../hooks/use-icon-generator";
-import { renderPng } from "../utils/renderer";
+import { renderPng, renderPngFromImage } from "../utils/renderer";
 import { getIconById } from "../utils/icon-catalog";
 import { useDebouncedValue } from "../hooks/use-debounced-value";
 import type { BackgroundValue } from "../utils/gradients";
 import { DEFAULT_COLORS } from "@/src/constants/app";
+import { isCustomImageIcon } from "../utils/locations";
 
 export interface PngPreviewProps {
   iconId?: string;
@@ -70,36 +71,76 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
     async function generatePreviews() {
       try {
         if (!iconId || !debouncedState) return;
-        const icon = await getIconById(iconId);
-        if (!icon || cancelled) return;
 
-        // Generate logo.png
-        const logoBlob = await renderPng({
-          icon,
-          backgroundColor: debouncedState.backgroundColor,
-          iconColor: debouncedState.iconColor,
-          size: debouncedState.iconSize,
-          width: PNG_SPECS.LOGO.width,
-          height: PNG_SPECS.LOGO.height,
-        });
+        // Check if this is a custom image
+        const isCustomImage = isCustomImageIcon(iconId);
+        
+        if (isCustomImage) {
+          // Get image data from sessionStorage
+          const imageDataUrl = typeof window !== "undefined" 
+            ? sessionStorage.getItem(iconId) 
+            : null;
+          
+          if (!imageDataUrl || cancelled) return;
 
-        if (cancelled) return;
-        const logoUrl = URL.createObjectURL(logoBlob);
-        setLogoUrl(logoUrl);
+          // Generate logo.png from custom image
+          const logoBlob = await renderPngFromImage({
+            imageDataUrl,
+            backgroundColor: debouncedState.backgroundColor,
+            size: debouncedState.iconSize,
+            width: PNG_SPECS.LOGO.width,
+            height: PNG_SPECS.LOGO.height,
+          });
 
-        // Generate logo-small.png
-        const logoSmallBlob = await renderPng({
-          icon,
-          backgroundColor: debouncedState.backgroundColor,
-          iconColor: debouncedState.iconColor,
-          size: debouncedState.iconSize,
-          width: PNG_SPECS.LOGO_SMALL.width,
-          height: PNG_SPECS.LOGO_SMALL.height,
-        });
+          if (cancelled) return;
+          const logoUrl = URL.createObjectURL(logoBlob);
+          setLogoUrl(logoUrl);
 
-        if (cancelled) return;
-        const logoSmallUrl = URL.createObjectURL(logoSmallBlob);
-        setLogoSmallUrl(logoSmallUrl);
+          // Generate logo-small.png from custom image
+          const logoSmallBlob = await renderPngFromImage({
+            imageDataUrl,
+            backgroundColor: debouncedState.backgroundColor,
+            size: debouncedState.iconSize,
+            width: PNG_SPECS.LOGO_SMALL.width,
+            height: PNG_SPECS.LOGO_SMALL.height,
+          });
+
+          if (cancelled) return;
+          const logoSmallUrl = URL.createObjectURL(logoSmallBlob);
+          setLogoSmallUrl(logoSmallUrl);
+        } else {
+          // Standard icon rendering
+          const icon = await getIconById(iconId);
+          if (!icon || cancelled) return;
+
+          // Generate logo.png
+          const logoBlob = await renderPng({
+            icon,
+            backgroundColor: debouncedState.backgroundColor,
+            iconColor: debouncedState.iconColor,
+            size: debouncedState.iconSize,
+            width: PNG_SPECS.LOGO.width,
+            height: PNG_SPECS.LOGO.height,
+          });
+
+          if (cancelled) return;
+          const logoUrl = URL.createObjectURL(logoBlob);
+          setLogoUrl(logoUrl);
+
+          // Generate logo-small.png
+          const logoSmallBlob = await renderPng({
+            icon,
+            backgroundColor: debouncedState.backgroundColor,
+            iconColor: debouncedState.iconColor,
+            size: debouncedState.iconSize,
+            width: PNG_SPECS.LOGO_SMALL.width,
+            height: PNG_SPECS.LOGO_SMALL.height,
+          });
+
+          if (cancelled) return;
+          const logoSmallUrl = URL.createObjectURL(logoSmallBlob);
+          setLogoSmallUrl(logoSmallUrl);
+        }
       } catch (error) {
         console.error("Error generating PNG previews:", error);
       } finally {

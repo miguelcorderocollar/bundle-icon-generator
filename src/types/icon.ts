@@ -1,7 +1,7 @@
 /**
  * Icon pack metadata
  */
-export type IconPack = 'zendesk-garden' | 'feather' | 'remixicon' | 'emoji' | 'custom-svg';
+export type IconPack = 'zendesk-garden' | 'feather' | 'remixicon' | 'emoji' | 'custom-svg' | 'custom-image';
 
 /**
  * Icon pack license information
@@ -24,7 +24,7 @@ export interface IconMetadata {
   pack: IconPack;
   /** Variant identifier (e.g., 'fill', 'stroke', '12', '16') */
   variant?: string;
-  /** SVG content */
+  /** SVG content (required for SVG icons, empty string for custom images) */
   svg: string;
   /** Searchable keywords */
   keywords: string[];
@@ -36,6 +36,10 @@ export interface IconMetadata {
   isRasterized?: boolean;
   /** Whether color customization should be applied (for custom SVGs) */
   allowColorOverride?: boolean;
+  /** Whether this is a custom uploaded image (PNG/JPG/WebP) - only for PNG export */
+  isCustomImage?: boolean;
+  /** Base64 data URL for custom images */
+  imageDataUrl?: string;
 }
 
 /**

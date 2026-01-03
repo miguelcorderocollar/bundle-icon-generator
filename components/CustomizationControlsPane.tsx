@@ -11,12 +11,14 @@ import { ColorPicker } from "@/src/components/ColorPicker";
 import { EffectSlider } from "@/src/components/EffectSlider";
 import { BackgroundControls } from "@/src/components/BackgroundControls";
 import { APP_LOCATION_OPTIONS } from "@/src/utils/app-location-options";
-import { getLocationCountText } from "@/src/utils/locations";
+import { getLocationCountText, getSvgRequiringLocations, isCustomImageIcon } from "@/src/utils/locations";
 import { DEFAULT_COLORS, ICON_GRID } from "@/src/constants/app";
 import { useDebouncedValue } from "@/src/hooks/use-debounced-value";
 import type { AppLocation } from "@/src/types/app-location";
 import type { BackgroundValue } from "@/src/utils/gradients";
 import { hasSvgRequirements } from "@/src/utils/locations";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ImageIcon } from "lucide-react";
 
 export interface CustomizationControlsPaneProps {
   selectedLocations: AppLocation[];
@@ -47,6 +49,29 @@ export function CustomizationControlsPane({
 }: CustomizationControlsPaneProps) {
   // Check if SVG files are required for selected locations
   const hasSvgFiles = hasSvgRequirements(selectedLocations);
+  
+  // Check if current icon is a custom image (disables SVG locations)
+  const isCustomImage = isCustomImageIcon(selectedIconId);
+  
+  // Get SVG-requiring locations to disable them when custom image is selected
+  const svgRequiringLocations = getSvgRequiringLocations();
+  
+  // Build location options with disabled state for custom images
+  const locationOptions = React.useMemo(() => {
+    if (!isCustomImage) {
+      return APP_LOCATION_OPTIONS;
+    }
+    
+    return APP_LOCATION_OPTIONS.map((option) => {
+      // Disable SVG-requiring locations and "all_locations" when custom image is selected
+      const isSvgLocation = svgRequiringLocations.includes(option.value as AppLocation) || option.value === "all_locations";
+      return {
+        ...option,
+        disabled: isSvgLocation,
+        disabledReason: isSvgLocation ? "Requires SVG (not available for custom images)" : undefined,
+      };
+    });
+  }, [isCustomImage, svgRequiringLocations]);
 
   // Debounce icon size changes to prevent lag while dragging slider
   const [localIconSize, setLocalIconSize] = React.useState(iconSize);
@@ -126,11 +151,19 @@ export function CustomizationControlsPane({
             </TooltipProvider>
           </div>
           <MultiSelect
-            options={APP_LOCATION_OPTIONS}
+            options={locationOptions}
             selected={selectedLocations}
             onChange={handleLocationsChange}
             placeholder="Select app locations..."
           />
+          {isCustomImage && (
+            <Alert className="mt-2">
+              <ImageIcon className="size-4" />
+              <AlertDescription className="text-xs">
+                Custom images can only be exported as PNG. Locations requiring SVG icons are disabled.
+              </AlertDescription>
+            </Alert>
+          )}
           {selectedLocations.length > 0 && (
             <p className="text-xs text-muted-foreground">
               {getLocationCountText(selectedLocations.length)}

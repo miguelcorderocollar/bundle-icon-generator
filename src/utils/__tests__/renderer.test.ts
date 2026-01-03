@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { applySvgColor, renderSvg, type SvgRenderOptions } from "../renderer";
+import { applySvgColor, renderSvg, type SvgRenderOptions, type ImageRenderOptions } from "../renderer";
 import type { IconMetadata } from "../../types/icon";
 
 describe("renderer", () => {
@@ -290,6 +290,44 @@ describe("renderer", () => {
 
       // Original color should be preserved
       expect(result).toContain("#ff5500");
+    });
+  });
+
+  describe("ImageRenderOptions type", () => {
+    it("has required properties", () => {
+      // Type check - this verifies the interface exists and has correct shape
+      const options: ImageRenderOptions = {
+        imageDataUrl: "data:image/png;base64,abc123",
+        backgroundColor: "#000000",
+        size: 100,
+        width: 320,
+        height: 320,
+      };
+
+      expect(options.imageDataUrl).toBe("data:image/png;base64,abc123");
+      expect(options.backgroundColor).toBe("#000000");
+      expect(options.size).toBe(100);
+      expect(options.width).toBe(320);
+      expect(options.height).toBe(320);
+    });
+
+    it("accepts gradient as backgroundColor", () => {
+      const options: ImageRenderOptions = {
+        imageDataUrl: "data:image/png;base64,abc123",
+        backgroundColor: {
+          type: "linear",
+          angle: 45,
+          stops: [
+            { color: "#ff0000", offset: 0 },
+            { color: "#0000ff", offset: 100 },
+          ],
+        },
+        size: 100,
+        width: 320,
+        height: 320,
+      };
+
+      expect(options.backgroundColor).toHaveProperty("type", "linear");
     });
   });
 });

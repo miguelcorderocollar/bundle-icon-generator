@@ -143,6 +143,7 @@ export default function Home() {
               onPackChange={actions.setSelectedPack}
               selectedIconId={state.selectedIconId}
               onIconSelect={actions.setSelectedIconId}
+              selectedLocations={state.selectedLocations}
             />
           </div>
 

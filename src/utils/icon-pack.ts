@@ -13,6 +13,8 @@ export function formatPackName(pack: IconPack | string): string {
     "feather": "Feather",
     "remixicon": "RemixIcon",
     "emoji": "Emoji",
+    "custom-svg": "Custom SVG",
+    "custom-image": "Custom Image",
   };
   return packMap[pack] || pack;
 }
