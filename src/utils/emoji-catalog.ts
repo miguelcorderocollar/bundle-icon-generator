@@ -49,11 +49,11 @@ export async function addEmoji(emoji: string): Promise<IconMetadata> {
   try {
     // Create metadata for the emoji
     const metadata = await createEmojiMetadata(emoji);
-    
+
     // Check if already exists
     const existing = getUserEmojis();
     const exists = existing.some((e) => e.id === metadata.id);
-    
+
     if (exists) {
       // Return existing emoji
       return existing.find((e) => e.id === metadata.id)!;
@@ -62,7 +62,7 @@ export async function addEmoji(emoji: string): Promise<IconMetadata> {
     // Add to catalog
     const updated = [...existing, metadata];
     localStorage.setItem(EMOJI_CATALOG_KEY, JSON.stringify(updated));
-    
+
     return metadata;
   } catch (error) {
     console.error("Error adding emoji to catalog:", error);
@@ -108,4 +108,3 @@ export function clearEmojiCatalog(): void {
 export function hasEmoji(emojiId: string): boolean {
   return getUserEmojis().some((emoji) => emoji.id === emojiId);
 }
-

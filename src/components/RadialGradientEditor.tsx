@@ -25,13 +25,21 @@ export function RadialGradientEditor({
   const lastPropGradientRef = React.useRef(gradient);
 
   // Debounce gradient changes to avoid excessive re-renders while adjusting
-  const gradientKey = React.useMemo(() => JSON.stringify(localGradient), [localGradient]);
+  const gradientKey = React.useMemo(
+    () => JSON.stringify(localGradient),
+    [localGradient]
+  );
   const debouncedGradientKey = useDebouncedValue(gradientKey, 300);
 
   // Update parent when debounced gradient changes
   React.useEffect(() => {
-    const debouncedGradient = JSON.parse(debouncedGradientKey) as RadialGradient;
-    if (JSON.stringify(debouncedGradient) !== JSON.stringify(lastPropGradientRef.current)) {
+    const debouncedGradient = JSON.parse(
+      debouncedGradientKey
+    ) as RadialGradient;
+    if (
+      JSON.stringify(debouncedGradient) !==
+      JSON.stringify(lastPropGradientRef.current)
+    ) {
       lastPropGradientRef.current = debouncedGradient;
       onGradientChange(debouncedGradient);
     }
@@ -39,7 +47,9 @@ export function RadialGradientEditor({
 
   // Sync local state when prop changes externally
   React.useEffect(() => {
-    if (JSON.stringify(gradient) !== JSON.stringify(lastPropGradientRef.current)) {
+    if (
+      JSON.stringify(gradient) !== JSON.stringify(lastPropGradientRef.current)
+    ) {
       lastPropGradientRef.current = gradient;
       setLocalGradient(gradient);
     }
@@ -107,7 +117,11 @@ export function RadialGradientEditor({
             <div key={index} className="space-y-2">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground min-w-[60px]">
-                  {index === 0 ? "Center" : index === localGradient.stops.length - 1 ? "Edge" : `Stop ${index + 1}`}
+                  {index === 0
+                    ? "Center"
+                    : index === localGradient.stops.length - 1
+                      ? "Edge"
+                      : `Stop ${index + 1}`}
                 </span>
                 <ColorPicker
                   id={`gradient-stop-${index}`}
@@ -124,4 +138,3 @@ export function RadialGradientEditor({
     </div>
   );
 }
-

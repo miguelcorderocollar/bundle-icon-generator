@@ -17,12 +17,12 @@ function getStorageKey(type: ColorType): string {
  */
 export function getRecentColors(type: ColorType): string[] {
   if (typeof window === "undefined") return [];
-  
+
   try {
     const key = getStorageKey(type);
     const stored = localStorage.getItem(key);
     if (!stored) return [];
-    
+
     const colors = JSON.parse(stored) as string[];
     // Validate that all items are valid hex colors
     return colors.filter((color) => /^#[0-9A-Fa-f]{6}$/.test(color));
@@ -37,24 +37,24 @@ export function getRecentColors(type: ColorType): string[] {
  */
 export function addColorToHistory(type: ColorType, color: string): void {
   if (typeof window === "undefined") return;
-  
+
   // Validate color format
   if (!/^#[0-9A-Fa-f]{6}$/.test(color)) return;
-  
+
   try {
     const key = getStorageKey(type);
     const current = getRecentColors(type);
-    
+
     // Remove the color if it already exists (to avoid duplicates)
-    const filtered = current.filter((c) => c.toLowerCase() !== color.toLowerCase());
-    
+    const filtered = current.filter(
+      (c) => c.toLowerCase() !== color.toLowerCase()
+    );
+
     // Add the new color at the beginning
     const updated = [color, ...filtered].slice(0, MAX_HISTORY_SIZE);
-    
+
     localStorage.setItem(key, JSON.stringify(updated));
   } catch (error) {
     console.error(`Error saving color history for ${type}:`, error);
   }
 }
-
-

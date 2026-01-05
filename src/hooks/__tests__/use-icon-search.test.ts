@@ -3,36 +3,37 @@ import { renderHook, waitFor } from "@testing-library/react";
 import type { IconMetadata } from "../../types/icon";
 
 // Create mock data factory (must be defined before mocks since mocks are hoisted)
-const createMockIcons = () => ({
-  "zendesk-arrow-left": {
-    id: "zendesk-arrow-left",
-    name: "Arrow Left",
-    pack: "zendesk",
-    tags: ["arrow", "navigation", "left"],
-    svg: "<svg></svg>",
-  },
-  "zendesk-arrow-right": {
-    id: "zendesk-arrow-right",
-    name: "Arrow Right",
-    pack: "zendesk",
-    tags: ["arrow", "navigation", "right"],
-    svg: "<svg></svg>",
-  },
-  "feather-check": {
-    id: "feather-check",
-    name: "Check",
-    pack: "feather",
-    tags: ["check", "done", "success"],
-    svg: "<svg></svg>",
-  },
-  "feather-x": {
-    id: "feather-x",
-    name: "X",
-    pack: "feather",
-    tags: ["close", "remove", "delete"],
-    svg: "<svg></svg>",
-  },
-} as Record<string, IconMetadata>);
+const createMockIcons = () =>
+  ({
+    "zendesk-arrow-left": {
+      id: "zendesk-arrow-left",
+      name: "Arrow Left",
+      pack: "zendesk",
+      tags: ["arrow", "navigation", "left"],
+      svg: "<svg></svg>",
+    },
+    "zendesk-arrow-right": {
+      id: "zendesk-arrow-right",
+      name: "Arrow Right",
+      pack: "zendesk",
+      tags: ["arrow", "navigation", "right"],
+      svg: "<svg></svg>",
+    },
+    "feather-check": {
+      id: "feather-check",
+      name: "Check",
+      pack: "feather",
+      tags: ["check", "done", "success"],
+      svg: "<svg></svg>",
+    },
+    "feather-x": {
+      id: "feather-x",
+      name: "X",
+      pack: "feather",
+      tags: ["close", "remove", "delete"],
+      svg: "<svg></svg>",
+    },
+  }) as Record<string, IconMetadata>;
 
 // Mock the icon catalog
 vi.mock("../../utils/icon-catalog", () => {
@@ -76,13 +77,19 @@ vi.mock("../../utils/icon-catalog", () => {
       return Object.values(mockIcons).filter(
         (icon) =>
           icon.name.toLowerCase().includes(queryLower) ||
-          icon.tags.some((tag: string) => tag.toLowerCase().includes(queryLower))
+          icon.tags.some((tag: string) =>
+            tag.toLowerCase().includes(queryLower)
+          )
       );
     }),
-    filterIconsByPack: vi.fn().mockImplementation(async (icons: IconMetadata[], pack: string) => {
-      return icons.filter((icon) => icon.pack === pack);
-    }),
-    filterIconsByCategory: vi.fn().mockImplementation((icons: IconMetadata[]) => icons),
+    filterIconsByPack: vi
+      .fn()
+      .mockImplementation(async (icons: IconMetadata[], pack: string) => {
+        return icons.filter((icon) => icon.pack === pack);
+      }),
+    filterIconsByCategory: vi
+      .fn()
+      .mockImplementation((icons: IconMetadata[]) => icons),
   };
 });
 
@@ -157,10 +164,13 @@ describe("useIconSearch", () => {
 
       // Should find arrow icons
       expect(result.current.icons.length).toBeGreaterThan(0);
-      expect(result.current.icons.every((icon) => 
-        icon.name.toLowerCase().includes("arrow") ||
-        icon.tags.some((tag) => tag.toLowerCase().includes("arrow"))
-      )).toBe(true);
+      expect(
+        result.current.icons.every(
+          (icon) =>
+            icon.name.toLowerCase().includes("arrow") ||
+            icon.tags.some((tag) => tag.toLowerCase().includes("arrow"))
+        )
+      ).toBe(true);
     });
 
     it("returns empty for non-matching query", async () => {
@@ -192,7 +202,9 @@ describe("useIconSearch", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(result.current.icons.every((icon) => icon.pack === "zendesk")).toBe(true);
+      expect(
+        result.current.icons.every((icon) => icon.pack === "zendesk")
+      ).toBe(true);
     });
 
     it("shows all packs when 'all' is selected", async () => {

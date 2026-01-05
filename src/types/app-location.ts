@@ -82,7 +82,8 @@ export const APP_LOCATIONS: AppLocationInfo[] = [
   {
     value: "background",
     label: "Background",
-    description: "No UI, always running in the background to receive special events",
+    description:
+      "No UI, always running in the background to receive special events",
     requiresIcon: false,
   },
   {
@@ -96,7 +97,9 @@ export const APP_LOCATIONS: AppLocationInfo[] = [
 /**
  * Get location info by value
  */
-export function getLocationInfo(value: AppLocation): AppLocationInfo | undefined {
+export function getLocationInfo(
+  value: AppLocation
+): AppLocationInfo | undefined {
   return APP_LOCATIONS.find((loc) => loc.value === value);
 }
 
@@ -106,4 +109,3 @@ export function getLocationInfo(value: AppLocation): AppLocationInfo | undefined
 export function getLocationsRequiringIcons(): AppLocationInfo[] {
   return APP_LOCATIONS.filter((loc) => loc.requiresIcon === true);
 }
-

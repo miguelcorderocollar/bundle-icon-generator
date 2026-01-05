@@ -4,9 +4,18 @@
 
 import * as React from "react";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { BackgroundModeToggle, type BackgroundMode } from "./BackgroundModeToggle";
+import {
+  BackgroundModeToggle,
+  type BackgroundMode,
+} from "./BackgroundModeToggle";
 import { LinearGradientEditor } from "./LinearGradientEditor";
 import { RadialGradientEditor } from "./RadialGradientEditor";
 import { ColorPicker } from "./ColorPicker";
@@ -26,7 +35,11 @@ export interface BackgroundControlsProps {
   className?: string;
 }
 
-export function BackgroundControls({ value, onChange, className }: BackgroundControlsProps) {
+export function BackgroundControls({
+  value,
+  onChange,
+  className,
+}: BackgroundControlsProps) {
   // Determine current mode
   const mode: BackgroundMode = isGradient(value) ? "gradient" : "solid";
 
@@ -83,7 +96,10 @@ export function BackgroundControls({ value, onChange, className }: BackgroundCon
             {/* Gradient Type Selector */}
             <div className="space-y-2">
               <Label className="text-xs">Gradient Type</Label>
-              <Select value={gradientType} onValueChange={handleGradientTypeChange}>
+              <Select
+                value={gradientType}
+                onValueChange={handleGradientTypeChange}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -114,4 +130,3 @@ export function BackgroundControls({ value, onChange, className }: BackgroundCon
     </div>
   );
 }
-

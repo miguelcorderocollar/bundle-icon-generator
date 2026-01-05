@@ -22,11 +22,7 @@ function getSystemTheme(): Theme {
     : "light";
 }
 
-export function ThemeProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = React.useState(false);
   const [theme, setThemeState] = React.useState<Theme>(() => {
     if (typeof window === "undefined") return "light";
@@ -77,4 +73,3 @@ export function useTheme() {
   }
   return context;
 }
-

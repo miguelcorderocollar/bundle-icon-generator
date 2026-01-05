@@ -19,7 +19,8 @@ export const metadata: Metadata = {
     default: "Zendesk App Icon Generator",
     template: "%s | Zendesk App Icon Generator",
   },
-  description: "Generate compliant Zendesk app icon bundles. A local-first tool for crafting Zendesk app icons with customizable colors, effects, and one-click export.",
+  description:
+    "Generate compliant Zendesk app icon bundles. A local-first tool for crafting Zendesk app icons with customizable colors, effects, and one-click export.",
   keywords: [
     "Zendesk",
     "app icon",
@@ -38,7 +39,9 @@ export const metadata: Metadata = {
   ],
   creator: "Miguel Cordero Collar",
   publisher: "Miguel Cordero Collar",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+  ),
   alternates: {
     canonical: "/",
   },
@@ -47,7 +50,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "/",
     title: "Zendesk App Icon Generator",
-    description: "Generate compliant Zendesk app icon bundles. A local-first tool for crafting Zendesk app icons with customizable colors, effects, and one-click export.",
+    description:
+      "Generate compliant Zendesk app icon bundles. A local-first tool for crafting Zendesk app icons with customizable colors, effects, and one-click export.",
     siteName: "Zendesk App Icon Generator",
     images: [
       {
@@ -61,7 +65,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Zendesk App Icon Generator",
-    description: "Generate compliant Zendesk app icon bundles. A local-first tool for crafting Zendesk app icons.",
+    description:
+      "Generate compliant Zendesk app icon bundles. A local-first tool for crafting Zendesk app icons.",
     images: ["/logo.png"],
     creator: "@miguelcorderocollar",
   },
@@ -138,9 +143,7 @@ export default function RootLayout({
             `,
           }}
         />
-        <ThemeProvider>
-          {children}
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
         <Analytics />
       </body>
     </html>

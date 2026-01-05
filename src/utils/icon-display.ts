@@ -25,9 +25,14 @@ export function prepareSvgForDisplay(
     // If preserveAspectRatio is true, use max-width/max-height instead of fixed dimensions
     if (options.preserveAspectRatio) {
       const style = svgElement.getAttribute("style") || "";
-      const maxWidth = options.width !== undefined ? `max-width: ${options.width}px;` : "";
-      const maxHeight = options.height !== undefined ? `max-height: ${options.height}px;` : "";
-      svgElement.setAttribute("style", `${style} ${maxWidth} ${maxHeight} display: block;`.trim());
+      const maxWidth =
+        options.width !== undefined ? `max-width: ${options.width}px;` : "";
+      const maxHeight =
+        options.height !== undefined ? `max-height: ${options.height}px;` : "";
+      svgElement.setAttribute(
+        "style",
+        `${style} ${maxWidth} ${maxHeight} display: block;`.trim()
+      );
     } else {
       // Set size attributes
       if (options.width !== undefined) {
@@ -38,7 +43,7 @@ export function prepareSvgForDisplay(
       }
       svgElement.setAttribute("style", "display: block;");
     }
-    
+
     // Set optional attributes
     if (options.className) {
       svgElement.setAttribute("class", options.className);
@@ -53,4 +58,3 @@ export function prepareSvgForDisplay(
     return null;
   }
 }
-

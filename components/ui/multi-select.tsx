@@ -117,13 +117,17 @@ export function MultiSelect({
                 key={option.value}
                 className={cn(
                   "flex items-start space-x-2 rounded-sm px-2 py-1.5",
-                  isDisabled ? "opacity-50 cursor-not-allowed" : "hover:bg-accent"
+                  isDisabled
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-accent"
                 )}
               >
                 <Checkbox
                   id={option.value}
                   checked={selected.includes(option.value)}
-                  onCheckedChange={() => !isDisabled && handleToggle(option.value)}
+                  onCheckedChange={() =>
+                    !isDisabled && handleToggle(option.value)
+                  }
                   disabled={isDisabled}
                   className="mt-0.5"
                 />
@@ -151,11 +155,14 @@ export function MultiSelect({
                 )}
               </div>
             );
-            return <React.Fragment key={option.value}>{optionContent}</React.Fragment>;
+            return (
+              <React.Fragment key={option.value}>
+                {optionContent}
+              </React.Fragment>
+            );
           })}
         </div>
       </PopoverContent>
     </Popover>
   );
 }
-

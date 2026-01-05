@@ -33,7 +33,7 @@ export function EmojiInput({ onEmojiAdded, className }: EmojiInputProps) {
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     const pastedText = e.clipboardData.getData("text");
     const emoji = extractEmoji(pastedText);
-    
+
     if (emoji) {
       e.preventDefault();
       setInputValue(emoji);
@@ -43,7 +43,7 @@ export function EmojiInput({ onEmojiAdded, className }: EmojiInputProps) {
 
   const handleAddEmoji = async (emoji?: string) => {
     const emojiToAdd = emoji || extractEmoji(inputValue);
-    
+
     if (!emojiToAdd) {
       setError("Please enter or paste a valid emoji");
       return;
@@ -60,14 +60,14 @@ export function EmojiInput({ onEmojiAdded, className }: EmojiInputProps) {
 
     try {
       const metadata = await addEmoji(emojiToAdd);
-      
+
       setInputValue("");
       setSuccess(true);
-      
+
       // Always call onEmojiAdded with the metadata ID (whether new or existing)
       // This allows the parent to select it and show it in preview
       onEmojiAdded?.(metadata.id);
-      
+
       // Clear success message after a delay
       setTimeout(() => setSuccess(false), 2000);
     } catch (err) {
@@ -115,25 +115,25 @@ export function EmojiInput({ onEmojiAdded, className }: EmojiInputProps) {
           Add
         </Button>
       </div>
-      
+
       {error && (
         <Alert variant="destructive">
           <AlertCircle className="size-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
-      
+
       {success && (
         <Alert>
           <CheckCircle2 className="size-4" />
           <AlertDescription>Emoji added successfully!</AlertDescription>
         </Alert>
       )}
-      
+
       <p className="text-xs text-muted-foreground">
-        Tip: You can paste emojis directly into the input field, or type them manually.
+        Tip: You can paste emojis directly into the input field, or type them
+        manually.
       </p>
     </div>
   );
 }
-

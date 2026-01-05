@@ -1,7 +1,13 @@
 /**
  * Icon pack metadata
  */
-export type IconPack = 'zendesk-garden' | 'feather' | 'remixicon' | 'emoji' | 'custom-svg' | 'custom-image';
+export type IconPack =
+  | "zendesk-garden"
+  | "feather"
+  | "remixicon"
+  | "emoji"
+  | "custom-svg"
+  | "custom-image";
 
 /**
  * Icon pack license information
@@ -59,4 +65,3 @@ export interface IconCatalog {
   /** Icons grouped by pack */
   byPack: Record<IconPack, string[]>;
 }
-

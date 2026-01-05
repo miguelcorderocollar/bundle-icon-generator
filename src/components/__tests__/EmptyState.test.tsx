@@ -15,12 +15,16 @@ describe("EmptyState", () => {
         description="Try a different search query"
       />
     );
-    expect(screen.getByText("Try a different search query")).toBeInTheDocument();
+    expect(
+      screen.getByText("Try a different search query")
+    ).toBeInTheDocument();
   });
 
   it("does not render description when not provided", () => {
     render(<EmptyState title="No results" />);
-    expect(screen.queryByText("Try a different search query")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Try a different search query")
+    ).not.toBeInTheDocument();
   });
 
   it("renders icon when provided", () => {
@@ -42,13 +46,11 @@ describe("EmptyState", () => {
 
   it("has correct semantic structure", () => {
     render(
-      <EmptyState
-        title="Empty Title"
-        description="Empty description text"
-      />
+      <EmptyState title="Empty Title" description="Empty description text" />
     );
     // Title should be in an h3
-    expect(screen.getByRole("heading", { level: 3 })).toHaveTextContent("Empty Title");
+    expect(screen.getByRole("heading", { level: 3 })).toHaveTextContent(
+      "Empty Title"
+    );
   });
 });
-

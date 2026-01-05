@@ -2,38 +2,47 @@
 
 /**
  * Icon Catalog Generator
- * 
+ *
  * This script ingests icons from various icon packs, normalizes their metadata,
  * and generates a unified catalog JSON file that can be used by the application.
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import { ingestZendeskGardenIcons, LICENSE as gardenLicense } from '../src/adapters/zendesk-garden';
-import { ingestFeatherIcons, LICENSE as featherLicense } from '../src/adapters/feather';
-import { ingestRemixIconIcons, LICENSE as remixiconLicense } from '../src/adapters/remixicon';
-import type { IconCatalog, IconPack } from '../src/types/icon';
+import * as fs from "fs";
+import * as path from "path";
+import {
+  ingestZendeskGardenIcons,
+  LICENSE as gardenLicense,
+} from "../src/adapters/zendesk-garden";
+import {
+  ingestFeatherIcons,
+  LICENSE as featherLicense,
+} from "../src/adapters/feather";
+import {
+  ingestRemixIconIcons,
+  LICENSE as remixiconLicense,
+} from "../src/adapters/remixicon";
+import type { IconCatalog, IconPack } from "../src/types/icon";
 
-const PROJECT_ROOT = path.resolve(__dirname, '..');
-const NODE_MODULES_PATH = path.join(PROJECT_ROOT, 'node_modules');
-const OUTPUT_PATH = path.join(PROJECT_ROOT, 'public', 'icon-catalog.json');
+const PROJECT_ROOT = path.resolve(__dirname, "..");
+const NODE_MODULES_PATH = path.join(PROJECT_ROOT, "node_modules");
+const OUTPUT_PATH = path.join(PROJECT_ROOT, "public", "icon-catalog.json");
 
 /**
  * Generate the icon catalog
  */
 function generateCatalog(): IconCatalog {
-  console.log('🔄 Starting icon catalog generation...\n');
+  console.log("🔄 Starting icon catalog generation...\n");
 
   // Ingest icons from all packs
-  console.log('📦 Ingesting Zendesk Garden icons...');
+  console.log("📦 Ingesting Zendesk Garden icons...");
   const gardenIcons = ingestZendeskGardenIcons(NODE_MODULES_PATH);
   console.log(`   ✓ Found ${gardenIcons.length} Zendesk Garden icons`);
 
-  console.log('📦 Ingesting Feather icons...');
+  console.log("📦 Ingesting Feather icons...");
   const featherIcons = ingestFeatherIcons(NODE_MODULES_PATH);
   console.log(`   ✓ Found ${featherIcons.length} Feather icons`);
 
-  console.log('📦 Ingesting RemixIcon icons...');
+  console.log("📦 Ingesting RemixIcon icons...");
   const remixiconIcons = ingestRemixIconIcons(NODE_MODULES_PATH);
   console.log(`   ✓ Found ${remixiconIcons.length} RemixIcon icons\n`);
 
@@ -42,14 +51,14 @@ function generateCatalog(): IconCatalog {
   const totalIcons = allIcons.length;
 
   // Build icon index
-  const icons: Record<string, typeof allIcons[0]> = {};
+  const icons: Record<string, (typeof allIcons)[0]> = {};
   const byPack: Record<IconPack, string[]> = {
-    'zendesk-garden': [],
+    "zendesk-garden": [],
     feather: [],
     remixicon: [],
     emoji: [],
-    'custom-svg': [],
-    'custom-image': [],
+    "custom-svg": [],
+    "custom-image": [],
   };
 
   for (const icon of allIcons) {
@@ -60,28 +69,28 @@ function generateCatalog(): IconCatalog {
   // Generate catalog
   const catalog: IconCatalog = {
     meta: {
-      version: '1.0.0',
+      version: "1.0.0",
       generatedAt: new Date().toISOString(),
       totalIcons,
     },
     licenses: {
-      'zendesk-garden': gardenLicense,
+      "zendesk-garden": gardenLicense,
       feather: featherLicense,
       remixicon: remixiconLicense,
       emoji: {
-        name: 'User-provided emojis',
-        type: 'User Content',
-        url: '',
+        name: "User-provided emojis",
+        type: "User Content",
+        url: "",
       },
-      'custom-svg': {
-        name: 'User-provided custom SVG',
-        type: 'User Content',
-        url: '',
+      "custom-svg": {
+        name: "User-provided custom SVG",
+        type: "User Content",
+        url: "",
       },
-      'custom-image': {
-        name: 'User-provided custom image',
-        type: 'User Content',
-        url: '',
+      "custom-image": {
+        name: "User-provided custom image",
+        type: "User Content",
+        url: "",
       },
     },
     icons,
@@ -106,20 +115,18 @@ function main() {
     }
 
     // Write catalog to file
-    fs.writeFileSync(
-      OUTPUT_PATH,
-      JSON.stringify(catalog, null, 2),
-      'utf-8'
-    );
+    fs.writeFileSync(OUTPUT_PATH, JSON.stringify(catalog, null, 2), "utf-8");
 
-    console.log('✅ Icon catalog generated successfully!');
+    console.log("✅ Icon catalog generated successfully!");
     console.log(`   📄 Output: ${OUTPUT_PATH}`);
     console.log(`   📊 Total icons: ${catalog.meta.totalIcons}`);
-    console.log(`   📦 Zendesk Garden: ${catalog.byPack['zendesk-garden'].length}`);
+    console.log(
+      `   📦 Zendesk Garden: ${catalog.byPack["zendesk-garden"].length}`
+    );
     console.log(`   📦 Feather: ${catalog.byPack.feather.length}`);
     console.log(`   📦 RemixIcon: ${catalog.byPack.remixicon.length}\n`);
   } catch (error) {
-    console.error('❌ Error generating icon catalog:', error);
+    console.error("❌ Error generating icon catalog:", error);
     process.exit(1);
   }
 }
@@ -130,4 +137,3 @@ if (require.main === module) {
 }
 
 export { generateCatalog };
-

@@ -10,12 +10,11 @@ import type { IconPack } from "../types/icon";
 export function formatPackName(pack: IconPack | string): string {
   const packMap: Record<string, string> = {
     "zendesk-garden": "Garden",
-    "feather": "Feather",
-    "remixicon": "RemixIcon",
-    "emoji": "Emoji",
+    feather: "Feather",
+    remixicon: "RemixIcon",
+    emoji: "Emoji",
     "custom-svg": "Custom SVG",
     "custom-image": "Custom Image",
   };
   return packMap[pack] || pack;
 }
-

@@ -6,9 +6,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: process.env.CI
-    ? [["html"], ["list"]]
-    : "html",
+  reporter: process.env.CI ? [["html"], ["list"]] : "html",
   use: {
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
@@ -38,4 +36,3 @@ export default defineConfig({
     timeout: 120 * 1000,
   },
 });
-

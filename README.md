@@ -35,12 +35,14 @@ Zendesk App Icon Generator is a local-first tool for crafting compliant Zendesk 
 Explore the product vision in `docs/app-concept.md` and phased roadmap in `docs/development-plan.md`. Zendesk-specific requirements are summarized in `docs/zendesk-icon-docs.md`.
 
 ## Tech Stack
+
 - **Framework**: Next.js 16 (App Router) with React 19 and TypeScript
 - **Styling**: Tailwind CSS v4 with shadcn/ui component library
 - **Icons**: Client-side rendering via SVG/canvas and local ZIP generation using JSZip
 - **State Management**: React hooks with localStorage for persistence
 
 ## Prerequisites
+
 - Bun 1.0+ (recommended) or Node.js 18+ with npm/pnpm/yarn
 
 ## Setup
@@ -69,6 +71,7 @@ bun run lint            # Run ESLint
 The `generate-icons` script processes icons from installed icon packs and generates a unified catalog at `public/icon-catalog.json`. Run this after installing or updating icon pack dependencies.
 
 ## Project Structure
+
 - `app/` — Next.js App Router pages and layout
 - `components/` — React components (main UI panes and shadcn/ui components)
 - `src/` — Core application code:
@@ -83,6 +86,7 @@ The `generate-icons` script processes icons from installed icon packs and genera
 - `scripts/` — Build and data processing scripts (icon catalog generation)
 
 ## Icon Sources & Licensing
+
 - **Bundled icon packs**:
   - [`@zendeskgarden/svg-icons`](https://github.com/zendeskgarden/svg-icons) (Apache-2.0)
   - [`feather-icons`](https://github.com/feathericons/feather) (MIT)
@@ -91,17 +95,20 @@ The `generate-icons` script processes icons from installed icon packs and genera
 - All icon packs maintain their original licenses. Attribution is displayed in the app's About dialog.
 
 ## Development Guidelines
+
 - Keep the app local-first and avoid backend dependencies
 - Follow TypeScript best practices with strict typing
 - Use shadcn/ui components for consistent UI patterns
 - Maintain separation of concerns: hooks for state, utils for business logic, components for UI
 
 ## Contributing
+
 1. Create a feature branch.
 2. Implement changes with clear commits and update or add documentation/tests as needed.
 3. Open a pull request describing the change, linked to relevant docs or issues.
 
 ### Code Style
+
 - Adhere to the shared ESLint/TypeScript configuration.
 - Prefer functional React components and typed props/state.
 - Use consistent naming for icon variants and maintain a single source of truth for Zendesk size/naming rules.

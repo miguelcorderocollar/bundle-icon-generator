@@ -14,12 +14,13 @@ export interface PreviewHeaderProps {
 
 export function PreviewHeader({ iconMetadata }: PreviewHeaderProps) {
   // Check if this is a custom image
-  const isCustomImage = iconMetadata?.isCustomImage || iconMetadata?.pack === "custom-image";
+  const isCustomImage =
+    iconMetadata?.isCustomImage || iconMetadata?.pack === "custom-image";
 
   // Render icon SVG for display - preserve original structure to respect theme
   const iconSvgContent = React.useMemo(() => {
     if (!iconMetadata || isCustomImage) return null;
-    
+
     // For custom SVGs, preserve aspect ratio
     const isCustomSvg = iconMetadata.pack === "custom-svg";
     const displayOptions = isCustomSvg
@@ -34,7 +35,7 @@ export function PreviewHeader({ iconMetadata }: PreviewHeaderProps) {
           height: 48,
           className: "icon-preview-svg",
         };
-    
+
     return prepareSvgForDisplay(iconMetadata.svg, displayOptions);
   }, [iconMetadata, isCustomImage]);
 
@@ -49,8 +50,8 @@ export function PreviewHeader({ iconMetadata }: PreviewHeaderProps) {
         {isCustomImage && iconMetadata.imageDataUrl ? (
           // Show thumbnail of uploaded custom image
           // eslint-disable-next-line @next/next/no-img-element
-          <img 
-            src={iconMetadata.imageDataUrl} 
+          <img
+            src={iconMetadata.imageDataUrl}
             alt="Custom image"
             className="max-w-full max-h-full object-contain p-1"
           />
@@ -79,4 +80,3 @@ export function PreviewHeader({ iconMetadata }: PreviewHeaderProps) {
     </div>
   );
 }
-

@@ -5,7 +5,7 @@
 
 import type { BackgroundValue } from "./gradients";
 
-const STORAGE_PREFIX = 'zdk-icon-generator';
+const STORAGE_PREFIX = "zdk-icon-generator";
 const FAVORITES_KEY = `${STORAGE_PREFIX}:favorites`;
 const RECENT_KEY = `${STORAGE_PREFIX}:recent`;
 const MAX_RECENT_ITEMS = 20;
@@ -14,7 +14,7 @@ const MAX_RECENT_ITEMS = 20;
  * Get favorites from localStorage
  */
 export function getFavorites(): string[] {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return [];
   }
 
@@ -26,7 +26,7 @@ export function getFavorites(): string[] {
     const favorites = JSON.parse(stored);
     return Array.isArray(favorites) ? favorites : [];
   } catch (error) {
-    console.error('Error reading favorites from localStorage:', error);
+    console.error("Error reading favorites from localStorage:", error);
     return [];
   }
 }
@@ -35,7 +35,7 @@ export function getFavorites(): string[] {
  * Add an icon to favorites
  */
 export function addFavorite(iconId: string): void {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
 
@@ -46,7 +46,7 @@ export function addFavorite(iconId: string): void {
       localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
     }
   } catch (error) {
-    console.error('Error adding favorite to localStorage:', error);
+    console.error("Error adding favorite to localStorage:", error);
   }
 }
 
@@ -54,7 +54,7 @@ export function addFavorite(iconId: string): void {
  * Remove an icon from favorites
  */
 export function removeFavorite(iconId: string): void {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
 
@@ -63,7 +63,7 @@ export function removeFavorite(iconId: string): void {
     const filtered = favorites.filter((id) => id !== iconId);
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(filtered));
   } catch (error) {
-    console.error('Error removing favorite from localStorage:', error);
+    console.error("Error removing favorite from localStorage:", error);
   }
 }
 
@@ -73,7 +73,7 @@ export function removeFavorite(iconId: string): void {
 export function toggleFavorite(iconId: string): boolean {
   const favorites = getFavorites();
   const isFavorite = favorites.includes(iconId);
-  
+
   if (isFavorite) {
     removeFavorite(iconId);
     return false;
@@ -94,7 +94,7 @@ export function isFavorite(iconId: string): boolean {
  * Get recent icons from localStorage
  */
 export function getRecentIcons(): string[] {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return [];
   }
 
@@ -106,7 +106,7 @@ export function getRecentIcons(): string[] {
     const recent = JSON.parse(stored);
     return Array.isArray(recent) ? recent : [];
   } catch (error) {
-    console.error('Error reading recent icons from localStorage:', error);
+    console.error("Error reading recent icons from localStorage:", error);
     return [];
   }
 }
@@ -115,7 +115,7 @@ export function getRecentIcons(): string[] {
  * Add an icon to recent list (most recent first)
  */
 export function addRecentIcon(iconId: string): void {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
 
@@ -129,7 +129,7 @@ export function addRecentIcon(iconId: string): void {
     const trimmed = filtered.slice(0, MAX_RECENT_ITEMS);
     localStorage.setItem(RECENT_KEY, JSON.stringify(trimmed));
   } catch (error) {
-    console.error('Error adding recent icon to localStorage:', error);
+    console.error("Error adding recent icon to localStorage:", error);
   }
 }
 
@@ -137,14 +137,14 @@ export function addRecentIcon(iconId: string): void {
  * Clear recent icons
  */
 export function clearRecentIcons(): void {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
 
   try {
     localStorage.removeItem(RECENT_KEY);
   } catch (error) {
-    console.error('Error clearing recent icons from localStorage:', error);
+    console.error("Error clearing recent icons from localStorage:", error);
   }
 }
 
@@ -167,14 +167,14 @@ export interface PersistedGeneratorState {
  * Save generator state to localStorage
  */
 export function saveGeneratorState(state: PersistedGeneratorState): void {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
 
   try {
     localStorage.setItem(GENERATOR_STATE_KEY, JSON.stringify(state));
   } catch (error) {
-    console.error('Error saving generator state to localStorage:', error);
+    console.error("Error saving generator state to localStorage:", error);
   }
 }
 
@@ -182,7 +182,7 @@ export function saveGeneratorState(state: PersistedGeneratorState): void {
  * Load generator state from localStorage
  */
 export function loadGeneratorState(): PersistedGeneratorState | null {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return null;
   }
 
@@ -193,7 +193,7 @@ export function loadGeneratorState(): PersistedGeneratorState | null {
     }
     return JSON.parse(stored) as PersistedGeneratorState;
   } catch (error) {
-    console.error('Error loading generator state from localStorage:', error);
+    console.error("Error loading generator state from localStorage:", error);
     return null;
   }
 }
@@ -202,15 +202,13 @@ export function loadGeneratorState(): PersistedGeneratorState | null {
  * Clear generator state from localStorage
  */
 export function clearGeneratorState(): void {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
 
   try {
     localStorage.removeItem(GENERATOR_STATE_KEY);
   } catch (error) {
-    console.error('Error clearing generator state from localStorage:', error);
+    console.error("Error clearing generator state from localStorage:", error);
   }
 }
-
-

@@ -18,7 +18,7 @@ export const ICON_PACKS = {
   CUSTOM_IMAGE: "custom-image",
 } as const;
 
-export type IconPack = typeof ICON_PACKS[keyof typeof ICON_PACKS];
+export type IconPack = (typeof ICON_PACKS)[keyof typeof ICON_PACKS];
 
 /**
  * Preview types
@@ -28,7 +28,7 @@ export const PREVIEW_TYPES = {
   SVG: "svg",
 } as const;
 
-export type PreviewType = typeof PREVIEW_TYPES[keyof typeof PREVIEW_TYPES];
+export type PreviewType = (typeof PREVIEW_TYPES)[keyof typeof PREVIEW_TYPES];
 
 /**
  * PNG file specifications
@@ -81,4 +81,3 @@ export const ICON_GRID = {
   MIN_ICON_SIZE: 48, // px - minimum icon size
   GAP: 8, // px - gap between icons
 } as const;
-

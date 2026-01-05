@@ -36,4 +36,3 @@ export function useKeyboardShortcuts({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onSearchFocus, onEscape]);
 }
-

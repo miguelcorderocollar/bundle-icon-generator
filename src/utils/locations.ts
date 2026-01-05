@@ -2,19 +2,29 @@
  * Utility functions for working with app locations
  */
 
-import { APP_LOCATIONS, getLocationInfo, type AppLocation } from "@/src/types/app-location";
+import {
+  APP_LOCATIONS,
+  getLocationInfo,
+  type AppLocation,
+} from "@/src/types/app-location";
 
 /**
  * Calculate which SVG files are required based on selected locations
  */
-export function calculateRequiredSvgFiles(selectedLocations: AppLocation[]): string[] {
+export function calculateRequiredSvgFiles(
+  selectedLocations: AppLocation[]
+): string[] {
   const svgFiles: string[] = [];
-  
+
   selectedLocations.forEach((location) => {
     if (location === "all_locations") {
       // If "all locations" is selected, get all locations that require icons
       APP_LOCATIONS.forEach((loc) => {
-        if (loc.requiresIcon && loc.iconFileName && !svgFiles.includes(loc.iconFileName)) {
+        if (
+          loc.requiresIcon &&
+          loc.iconFileName &&
+          !svgFiles.includes(loc.iconFileName)
+        ) {
           svgFiles.push(loc.iconFileName);
         }
       });
@@ -27,7 +37,7 @@ export function calculateRequiredSvgFiles(selectedLocations: AppLocation[]): str
       }
     }
   });
-  
+
   return svgFiles.sort();
 }
 
@@ -50,9 +60,9 @@ export function getLocationCountText(count: number): string {
  * These are incompatible with custom image uploads
  */
 export function getSvgRequiringLocations(): AppLocation[] {
-  return APP_LOCATIONS
-    .filter((loc) => loc.requiresIcon === true)
-    .map((loc) => loc.value);
+  return APP_LOCATIONS.filter((loc) => loc.requiresIcon === true).map(
+    (loc) => loc.value
+  );
 }
 
 /**
@@ -62,4 +72,3 @@ export function isCustomImageIcon(iconId: string | undefined): boolean {
   if (!iconId) return false;
   return iconId.startsWith("custom-image-");
 }
-

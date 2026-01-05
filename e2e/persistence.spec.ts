@@ -23,7 +23,7 @@ test.describe("localStorage Persistence", () => {
       // Check that the color was restored
       const restoredInput = page.locator('input[type="color"]').nth(1);
       const value = await restoredInput.inputValue();
-      
+
       // Value should be the saved color
       expect(value.toLowerCase()).toBe("#00ff00");
     }
@@ -51,7 +51,7 @@ test.describe("localStorage Persistence", () => {
       // Check restoration
       const restoredInput = page.locator('input[type="color"]').first();
       const value = await restoredInput.inputValue();
-      
+
       expect(value.toLowerCase()).toBe("#ff5500");
     }
   });
@@ -71,7 +71,7 @@ test.describe("localStorage Persistence", () => {
 
       // Select a specific pack (e.g., Feather)
       const featherOption = page.getByRole("option", { name: /feather/i });
-      
+
       if (await featherOption.isVisible()) {
         await featherOption.click();
         await page.waitForTimeout(600);
@@ -84,7 +84,7 @@ test.describe("localStorage Persistence", () => {
         // Check that pack is restored
         const restoredSelector = page.getByRole("combobox").first();
         const text = await restoredSelector.textContent();
-        
+
         if (text) {
           expect(text.toLowerCase()).toContain("feather");
         }
@@ -106,7 +106,7 @@ test.describe("localStorage Persistence", () => {
 
       // Select a location
       const topBarOption = page.getByText(/top bar/i);
-      
+
       if (await topBarOption.isVisible()) {
         await topBarOption.click();
         await page.keyboard.press("Escape"); // Close dropdown
@@ -121,7 +121,7 @@ test.describe("localStorage Persistence", () => {
         // Look for badge or indicator
         const fileCountText = page.getByText(/will export/i);
         const text = await fileCountText.textContent();
-        
+
         // If top_bar was saved, file count should be > 2 (includes SVG)
         if (text) {
           expect(text).toContain("export");
@@ -148,7 +148,7 @@ test.describe("localStorage Persistence", () => {
     // Search should be empty
     const restoredSearch = page.getByPlaceholder(/search/i);
     const value = await restoredSearch.inputValue();
-    
+
     expect(value).toBe("");
   });
 
@@ -178,9 +178,8 @@ test.describe("localStorage Persistence", () => {
     // Should have default values (not #123456)
     const restoredInput = page.locator('input[type="color"]').first();
     const value = await restoredInput.inputValue();
-    
+
     // Default background color is #063940
     expect(value.toLowerCase()).not.toBe("#123456");
   });
 });
-

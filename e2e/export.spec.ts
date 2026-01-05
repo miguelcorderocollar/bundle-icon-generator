@@ -15,14 +15,14 @@ test.describe("Export Flow", () => {
 
   test("export button is enabled when icon is selected", async ({ page }) => {
     const exportButton = page.getByRole("button", { name: /export zip/i });
-    
+
     // App auto-selects a random icon, so button should be enabled
     await expect(exportButton).toBeEnabled();
   });
 
   test("clicking export opens export modal", async ({ page }) => {
     const exportButton = page.getByRole("button", { name: /export zip/i });
-    
+
     if (await exportButton.isEnabled()) {
       await exportButton.click();
 
@@ -31,7 +31,7 @@ test.describe("Export Flow", () => {
 
       // Modal should be visible (look for dialog role or modal content)
       const modal = page.getByRole("dialog");
-      
+
       if (await modal.isVisible()) {
         await expect(modal).toBeVisible();
       }
@@ -40,14 +40,14 @@ test.describe("Export Flow", () => {
 
   test("export modal shows file list", async ({ page }) => {
     const exportButton = page.getByRole("button", { name: /export zip/i });
-    
+
     if (await exportButton.isEnabled()) {
       await exportButton.click();
       await page.waitForTimeout(500);
 
       // Should show files that will be exported
       const modal = page.getByRole("dialog");
-      
+
       if (await modal.isVisible()) {
         // Should mention PNG files
         const pngText = modal.getByText(/\.png/i);
@@ -60,17 +60,19 @@ test.describe("Export Flow", () => {
 
   test("export modal has download button", async ({ page }) => {
     const exportButton = page.getByRole("button", { name: /export zip/i });
-    
+
     if (await exportButton.isEnabled()) {
       await exportButton.click();
       await page.waitForTimeout(500);
 
       const modal = page.getByRole("dialog");
-      
+
       if (await modal.isVisible()) {
         // Look for download/export button in modal
-        const downloadButton = modal.getByRole("button", { name: /download|export/i });
-        
+        const downloadButton = modal.getByRole("button", {
+          name: /download|export/i,
+        });
+
         if (await downloadButton.isVisible()) {
           await expect(downloadButton).toBeVisible();
         }
@@ -80,13 +82,13 @@ test.describe("Export Flow", () => {
 
   test("export modal can be closed", async ({ page }) => {
     const exportButton = page.getByRole("button", { name: /export zip/i });
-    
+
     if (await exportButton.isEnabled()) {
       await exportButton.click();
       await page.waitForTimeout(500);
 
       const modal = page.getByRole("dialog");
-      
+
       if (await modal.isVisible()) {
         // Press Escape to close
         await page.keyboard.press("Escape");
@@ -111,21 +113,21 @@ test.describe("Export Flow", () => {
 
     // Find and click location selector
     const locationButton = page.getByRole("button", { name: /location/i });
-    
+
     if (await locationButton.isVisible()) {
       await locationButton.click();
       await page.waitForTimeout(300);
 
       // Select a location that requires SVG (like top_bar)
       const topBarOption = page.getByText(/top bar/i);
-      
+
       if (await topBarOption.isVisible()) {
         await topBarOption.click();
         await page.waitForTimeout(300);
 
         // File count should have changed
         const newText = await fileCountText.textContent();
-        
+
         // Text should include more files now (e.g., "Will export 3 files" instead of "2 files")
         if (initialText && newText) {
           // Just verify the text updated or still shows file count
@@ -135,4 +137,3 @@ test.describe("Export Flow", () => {
     }
   });
 });
-

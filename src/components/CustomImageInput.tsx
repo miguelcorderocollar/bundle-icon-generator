@@ -39,18 +39,26 @@ export function CustomImageInput({
   const [error, setError] = React.useState<string | null>(null);
 
   const onDrop = React.useCallback(
-    (acceptedFiles: File[], fileRejections: Array<{ file: File; errors: readonly { code: string; message: string }[] }>) => {
+    (
+      acceptedFiles: File[],
+      fileRejections: Array<{
+        file: File;
+        errors: readonly { code: string; message: string }[];
+      }>
+    ) => {
       setError(null);
 
       // Handle rejected files
       if (fileRejections.length > 0) {
         const rejection = fileRejections[0];
         const errorCode = rejection.errors[0]?.code;
-        
+
         if (errorCode === "file-too-large") {
           setError(`File is too large. Maximum size is 2MB.`);
         } else if (errorCode === "file-invalid-type") {
-          setError("Invalid file type. Please upload a PNG, JPG, or WebP image.");
+          setError(
+            "Invalid file type. Please upload a PNG, JPG, or WebP image."
+          );
         } else {
           setError("Failed to upload file. Please try again.");
         }
@@ -98,7 +106,12 @@ export function CustomImageInput({
   };
 
   return (
-    <div className={cn("flex flex-col h-full min-h-0 space-y-4 overflow-y-auto", className)}>
+    <div
+      className={cn(
+        "flex flex-col h-full min-h-0 space-y-4 overflow-y-auto",
+        className
+      )}
+    >
       {/* Disabled warning */}
       {disabled && disabledMessage && (
         <Alert>
@@ -133,11 +146,13 @@ export function CustomImageInput({
             isDragActive && "border-primary bg-primary/5",
             disabled && "opacity-50 cursor-not-allowed",
             !disabled && !isDragActive && "hover:border-muted-foreground/50",
-            imageDataUrl ? "border-primary/50 bg-primary/5" : "border-muted-foreground/25"
+            imageDataUrl
+              ? "border-primary/50 bg-primary/5"
+              : "border-muted-foreground/25"
           )}
         >
           <input {...getInputProps()} />
-          
+
           {imageDataUrl ? (
             <div className="flex flex-col items-center gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -191,11 +206,10 @@ export function CustomImageInput({
       <Alert className="flex-shrink-0">
         <ImageIcon className="size-4" />
         <AlertDescription>
-          Custom images can only be used for PNG exports (logo.png, logo-small.png). 
-          SVG locations require vector icons.
+          Custom images can only be used for PNG exports (logo.png,
+          logo-small.png). SVG locations require vector icons.
         </AlertDescription>
       </Alert>
     </div>
   );
 }
-

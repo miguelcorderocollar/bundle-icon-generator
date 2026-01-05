@@ -6,7 +6,13 @@ import { useIconGenerator } from "../use-icon-generator";
 vi.mock("../../utils/icon-catalog", () => ({
   loadIconCatalog: vi.fn().mockResolvedValue({
     icons: {
-      "test-icon": { id: "test-icon", name: "Test Icon", pack: "test", tags: [], svg: "<svg></svg>" },
+      "test-icon": {
+        id: "test-icon",
+        name: "Test Icon",
+        pack: "test",
+        tags: [],
+        svg: "<svg></svg>",
+      },
     },
   }),
 }));
@@ -43,7 +49,9 @@ describe("useIconGenerator", () => {
     it("provides action functions", () => {
       const { result } = renderHook(() => useIconGenerator());
 
-      expect(typeof result.current.actions.setSelectedLocations).toBe("function");
+      expect(typeof result.current.actions.setSelectedLocations).toBe(
+        "function"
+      );
       expect(typeof result.current.actions.setSelectedIconId).toBe("function");
       expect(typeof result.current.actions.setBackgroundColor).toBe("function");
       expect(typeof result.current.actions.setIconColor).toBe("function");
@@ -62,7 +70,10 @@ describe("useIconGenerator", () => {
         result.current.actions.setSelectedLocations(["top_bar", "nav_bar"]);
       });
 
-      expect(result.current.state.selectedLocations).toEqual(["top_bar", "nav_bar"]);
+      expect(result.current.state.selectedLocations).toEqual([
+        "top_bar",
+        "nav_bar",
+      ]);
     });
 
     it("setSelectedIconId updates icon", async () => {
@@ -227,7 +238,9 @@ describe("useIconGenerator", () => {
 
       // Wait a tick for the effect to run
       await waitFor(() => {
-        const stored = localStorage.getItem("zdk-icon-generator:generator-state");
+        const stored = localStorage.getItem(
+          "zdk-icon-generator:generator-state"
+        );
         if (stored) {
           const parsed = JSON.parse(stored);
           expect(parsed.iconColor).toBe("#ff0000");
@@ -248,4 +261,3 @@ describe("useIconGenerator", () => {
     });
   });
 });
-

@@ -58,9 +58,13 @@ describe("ColorPicker", () => {
 
   it("calls onChange when color picker changes", () => {
     const onChange = vi.fn();
-    const { container } = render(<ColorPicker {...defaultProps} onChange={onChange} />);
+    const { container } = render(
+      <ColorPicker {...defaultProps} onChange={onChange} />
+    );
 
-    const colorPicker = container.querySelector('input[type="color"]') as HTMLInputElement;
+    const colorPicker = container.querySelector(
+      'input[type="color"]'
+    ) as HTMLInputElement;
     fireEvent.change(colorPicker, { target: { value: "#00ff00" } });
 
     expect(onChange).toHaveBeenCalledWith("#00ff00");
@@ -78,7 +82,7 @@ describe("ColorPicker", () => {
 
   it("renders recent color buttons", () => {
     render(<ColorPicker {...defaultProps} colorType="background" />);
-    
+
     // Should have buttons for the mocked recent colors
     const buttons = screen.getAllByRole("button");
     expect(buttons.length).toBe(3); // 3 mocked recent colors
@@ -86,7 +90,13 @@ describe("ColorPicker", () => {
 
   it("calls onChange when recent color is clicked", async () => {
     const onChange = vi.fn();
-    render(<ColorPicker {...defaultProps} onChange={onChange} colorType="background" />);
+    render(
+      <ColorPicker
+        {...defaultProps}
+        onChange={onChange}
+        colorType="background"
+      />
+    );
 
     const recentColorButtons = screen.getAllByRole("button");
     await userEvent.click(recentColorButtons[0]);
@@ -144,4 +154,3 @@ describe("ColorPicker", () => {
     });
   });
 });
-

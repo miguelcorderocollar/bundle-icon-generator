@@ -4,7 +4,12 @@
 
 import * as React from "react";
 import type { IconMetadata, IconPack as IconPackType } from "@/src/types/icon";
-import { loadIconCatalog, searchIcons, filterIconsByPack, filterIconsByCategory } from "@/src/utils/icon-catalog";
+import {
+  loadIconCatalog,
+  searchIcons,
+  filterIconsByPack,
+  filterIconsByCategory,
+} from "@/src/utils/icon-catalog";
 import { getFavorites, getRecentIcons } from "@/src/utils/local-storage";
 import { getUserEmojis } from "@/src/utils/emoji-catalog";
 import { ICON_PACKS, type IconPack } from "@/src/constants/app";
@@ -29,15 +34,12 @@ export interface UseIconSearchResult {
  * Sort icons based on the selected option
  * Reads favorites and recent fresh from localStorage to ensure up-to-date sorting
  */
-function sortIcons(
-  icons: IconMetadata[],
-  sortBy: SortOption
-): IconMetadata[] {
+function sortIcons(icons: IconMetadata[], sortBy: SortOption): IconMetadata[] {
   const sorted = [...icons];
 
   // Read fresh from localStorage each time to ensure we have latest data
-  const favorites = typeof window !== 'undefined' ? getFavorites() : [];
-  const recent = typeof window !== 'undefined' ? getRecentIcons() : [];
+  const favorites = typeof window !== "undefined" ? getFavorites() : [];
+  const recent = typeof window !== "undefined" ? getRecentIcons() : [];
 
   switch (sortBy) {
     case "name":
@@ -156,7 +158,7 @@ export function useIconSearch({
   React.useEffect(() => {
     let cancelled = false;
     const normalizedQuery = debouncedQuery.trim();
-    const cacheKey = `${normalizedQuery.toLowerCase()}::${selectedPack}::${selectedCategory || 'all'}`;
+    const cacheKey = `${normalizedQuery.toLowerCase()}::${selectedPack}::${selectedCategory || "all"}`;
     const cached = cacheRef.current.get(cacheKey);
 
     if (cached) {
@@ -186,17 +188,25 @@ export function useIconSearch({
 
         // Get user emojis and merge with catalog results
         const userEmojis = getUserEmojis();
-        
+
         // Get custom SVGs from sessionStorage
         const customSvgs: IconMetadata[] = [];
         if (typeof window !== "undefined") {
           for (let i = 0; i < sessionStorage.length; i++) {
             const key = sessionStorage.key(i);
-            if (key?.startsWith("custom-svg-") && !key.endsWith("-allowColorOverride")) {
+            if (
+              key?.startsWith("custom-svg-") &&
+              !key.endsWith("-allowColorOverride")
+            ) {
               const svg = sessionStorage.getItem(key);
               if (svg) {
-                const allowColorOverrideStr = sessionStorage.getItem(`${key}-allowColorOverride`);
-                const allowColorOverride = allowColorOverrideStr !== null ? allowColorOverrideStr === "true" : false;
+                const allowColorOverrideStr = sessionStorage.getItem(
+                  `${key}-allowColorOverride`
+                );
+                const allowColorOverride =
+                  allowColorOverrideStr !== null
+                    ? allowColorOverrideStr === "true"
+                    : false;
                 customSvgs.push({
                   id: key,
                   name: "Custom SVG",
@@ -209,11 +219,11 @@ export function useIconSearch({
             }
           }
         }
-        
+
         // Filter by pack if not "all"
         if (selectedPack !== ICON_PACKS.ALL) {
           results = await filterIconsByPack(results, selectedPack);
-          
+
           // If emoji pack is selected, include user emojis
           if (selectedPack === ICON_PACKS.EMOJI) {
             // Filter emojis by search query if present
@@ -221,7 +231,8 @@ export function useIconSearch({
             if (normalizedQuery) {
               const queryLower = normalizedQuery.toLowerCase();
               filteredEmojis = userEmojis.filter((emoji) => {
-                const searchText = `${emoji.name} ${emoji.id} ${emoji.keywords.join(" ")}`.toLowerCase();
+                const searchText =
+                  `${emoji.name} ${emoji.id} ${emoji.keywords.join(" ")}`.toLowerCase();
                 return searchText.includes(queryLower);
               });
             }
@@ -232,7 +243,8 @@ export function useIconSearch({
             if (normalizedQuery) {
               const queryLower = normalizedQuery.toLowerCase();
               filteredCustomSvgs = customSvgs.filter((svg) => {
-                const searchText = `${svg.name} ${svg.id} ${svg.keywords.join(" ")}`.toLowerCase();
+                const searchText =
+                  `${svg.name} ${svg.id} ${svg.keywords.join(" ")}`.toLowerCase();
                 return searchText.includes(queryLower);
               });
             }
@@ -245,21 +257,23 @@ export function useIconSearch({
           if (normalizedQuery) {
             const queryLower = normalizedQuery.toLowerCase();
             filteredEmojis = userEmojis.filter((emoji) => {
-              const searchText = `${emoji.name} ${emoji.id} ${emoji.keywords.join(" ")}`.toLowerCase();
+              const searchText =
+                `${emoji.name} ${emoji.id} ${emoji.keywords.join(" ")}`.toLowerCase();
               return searchText.includes(queryLower);
             });
           }
-          
+
           // Filter custom SVGs by search query if present
           let filteredCustomSvgs = customSvgs;
           if (normalizedQuery) {
             const queryLower = normalizedQuery.toLowerCase();
             filteredCustomSvgs = customSvgs.filter((svg) => {
-              const searchText = `${svg.name} ${svg.id} ${svg.keywords.join(" ")}`.toLowerCase();
+              const searchText =
+                `${svg.name} ${svg.id} ${svg.keywords.join(" ")}`.toLowerCase();
               return searchText.includes(queryLower);
             });
           }
-          
+
           results = [...results, ...filteredEmojis, ...filteredCustomSvgs];
         }
 
@@ -283,7 +297,9 @@ export function useIconSearch({
         }
       } catch (err) {
         if (!cancelled && currentRequestId === requestIdRef.current) {
-          setError(err instanceof Error ? err : new Error("Failed to search icons"));
+          setError(
+            err instanceof Error ? err : new Error("Failed to search icons")
+          );
           setIsLoading(false);
         }
       }
@@ -308,4 +324,3 @@ export function useIconSearch({
 
   return { icons, isLoading, error };
 }
-

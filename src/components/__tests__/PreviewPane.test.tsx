@@ -17,9 +17,8 @@ vi.mock("../SvgPreview", () => ({
 }));
 
 vi.mock("../ExportModal", () => ({
-  ExportModal: ({ open }: { open: boolean }) => (
-    open ? <div data-testid="export-modal">Export Modal</div> : null
-  ),
+  ExportModal: ({ open }: { open: boolean }) =>
+    open ? <div data-testid="export-modal">Export Modal</div> : null,
 }));
 
 vi.mock("../../hooks/use-icon-metadata", () => ({
@@ -53,7 +52,9 @@ describe("PreviewPane", () => {
 
   it("shows Export ZIP button", () => {
     render(<PreviewPane selectedIconId="test-icon" />);
-    expect(screen.getByRole("button", { name: /export zip/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /export zip/i })
+    ).toBeInTheDocument();
   });
 
   it("disables export button when no icon selected", () => {
@@ -63,12 +64,7 @@ describe("PreviewPane", () => {
 
   it("enables export button when icon is selected", () => {
     const state = createMockState({ selectedIconId: "test-icon" });
-    render(
-      <PreviewPane
-        selectedIconId="test-icon"
-        state={state}
-      />
-    );
+    render(<PreviewPane selectedIconId="test-icon" state={state} />);
     expect(screen.getByRole("button", { name: /export zip/i })).toBeEnabled();
   });
 
@@ -111,4 +107,3 @@ describe("PreviewPane", () => {
     expect(screen.getByText(/will export/i)).toBeInTheDocument();
   });
 });
-

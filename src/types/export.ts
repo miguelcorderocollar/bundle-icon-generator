@@ -70,7 +70,9 @@ export const EXPORT_VARIANTS: ExportVariant[] = [
 /**
  * Calculate which export variants are required given selected locations
  */
-export function getRequiredExportVariants(selectedLocations: AppLocation[]): ExportVariant[] {
+export function getRequiredExportVariants(
+  selectedLocations: AppLocation[]
+): ExportVariant[] {
   const variants: ExportVariant[] = [];
   const seen = new Set<string>();
 
@@ -101,7 +103,9 @@ export function getRequiredExportVariants(selectedLocations: AppLocation[]): Exp
 
     const isRequired =
       hasAllLocations ||
-      variant.requiredFor.some((location) => selectedLocations.includes(location));
+      variant.requiredFor.some((location) =>
+        selectedLocations.includes(location)
+      );
 
     if (isRequired) {
       addVariant(variant);
@@ -126,4 +130,3 @@ export interface ExportMetadata {
   locations: AppLocation[];
   variants: string[];
 }
-

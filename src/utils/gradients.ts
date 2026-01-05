@@ -29,14 +29,18 @@ export function isGradient(value: BackgroundValue): value is Gradient {
 /**
  * Check if a background value is a linear gradient
  */
-export function isLinearGradient(value: BackgroundValue): value is LinearGradient {
+export function isLinearGradient(
+  value: BackgroundValue
+): value is LinearGradient {
   return isGradient(value) && value.type === "linear";
 }
 
 /**
  * Check if a background value is a radial gradient
  */
-export function isRadialGradient(value: BackgroundValue): value is RadialGradient {
+export function isRadialGradient(
+  value: BackgroundValue
+): value is RadialGradient {
   return isGradient(value) && value.type === "radial";
 }
 
@@ -99,7 +103,9 @@ export function linearGradientToSvgDef(
   const y2 = 0.5 + Math.cos(angleRad) * 0.5;
 
   const stops = gradient.stops
-    .map((stop) => `<stop offset="${stop.offset}%" stop-color="${stop.color}" />`)
+    .map(
+      (stop) => `<stop offset="${stop.offset}%" stop-color="${stop.color}" />`
+    )
     .join("\n    ");
 
   return `<defs>
@@ -123,7 +129,9 @@ export function radialGradientToSvgDef(
   const r = gradient.radius / 100;
 
   const stops = gradient.stops
-    .map((stop) => `<stop offset="${stop.offset}%" stop-color="${stop.color}" />`)
+    .map(
+      (stop) => `<stop offset="${stop.offset}%" stop-color="${stop.color}" />`
+    )
     .join("\n    ");
 
   return `<defs>
@@ -136,7 +144,11 @@ export function radialGradientToSvgDef(
 /**
  * Convert gradient to SVG gradient definition
  */
-export function gradientToSvgDef(gradient: Gradient, id: string, size: number): string {
+export function gradientToSvgDef(
+  gradient: Gradient,
+  id: string,
+  size: number
+): string {
   if (gradient.type === "linear") {
     return linearGradientToSvgDef(gradient, id, size);
   }
@@ -186,7 +198,14 @@ export function createRadialCanvasGradient(
   const centerY = (gradient.centerY / 100) * height;
   const radius = (gradient.radius / 100) * Math.max(width, height);
 
-  const canvasGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+  const canvasGradient = ctx.createRadialGradient(
+    centerX,
+    centerY,
+    0,
+    centerX,
+    centerY,
+    radius
+  );
 
   gradient.stops.forEach((stop) => {
     canvasGradient.addColorStop(stop.offset / 100, stop.color);
@@ -222,7 +241,7 @@ export const GRADIENT_PRESETS: Record<string, Gradient> = {
       { color: "#0284c7", offset: 100 },
     ],
   },
-  "sunset": {
+  sunset: {
     type: "linear",
     angle: 135,
     stops: [
@@ -400,4 +419,3 @@ export function createDefaultRadialGradient(): RadialGradient {
     ],
   };
 }
-

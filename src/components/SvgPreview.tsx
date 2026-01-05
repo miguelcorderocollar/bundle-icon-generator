@@ -60,11 +60,15 @@ export function SvgPreview({ svgFiles, iconId, state }: SvgPreviewProps) {
           const maxSize = 300;
           const maxPadding = 6;
           const minPadding = -6; // Allow overflow
-          const padding = maxPadding - (state.svgIconSize - minSize) / (maxSize - minSize) * (maxPadding - minPadding);
+          const padding =
+            maxPadding -
+            ((state.svgIconSize - minSize) / (maxSize - minSize)) *
+              (maxPadding - minPadding);
 
           // Check if this is a Zendesk location SVG (top_bar, ticket_editor, nav_bar)
           // These require transparent backgrounds and no hardcoded fill colors
-          const isZendeskLocationSvg = ZENDESK_LOCATION_SVG_FILES.includes(filename);
+          const isZendeskLocationSvg =
+            ZENDESK_LOCATION_SVG_FILES.includes(filename);
 
           const svgString = renderSvg({
             icon,
@@ -99,7 +103,7 @@ export function SvgPreview({ svgFiles, iconId, state }: SvgPreviewProps) {
       cancelled = true;
       svgUrls.forEach((url) => URL.revokeObjectURL(url));
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- svgUrls is intentionally excluded to prevent infinite loops (it's an output, not an input)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- svgUrls is intentionally excluded to prevent infinite loops (it's an output, not an input)
   }, [iconId, state, svgFiles]);
 
   if (svgFiles.length === 0) {
@@ -117,8 +121,9 @@ export function SvgPreview({ svgFiles, iconId, state }: SvgPreviewProps) {
       <div className="space-y-4 pr-4">
         {svgFiles.map((filename) => {
           const svgUrl = svgUrls.get(filename);
-          const isZendeskLocationSvg = ZENDESK_LOCATION_SVG_FILES.includes(filename);
-          
+          const isZendeskLocationSvg =
+            ZENDESK_LOCATION_SVG_FILES.includes(filename);
+
           return (
             <div key={filename} className="space-y-2">
               <div className="flex items-center justify-between">
@@ -129,25 +134,33 @@ export function SvgPreview({ svgFiles, iconId, state }: SvgPreviewProps) {
               </div>
               {/* Use checkered background for Zendesk location SVGs to show transparency */}
               {/* Container matches SVG output size exactly (64×64) - no padding to avoid clipping */}
-              <div 
+              <div
                 className={`flex w-[64px] h-[64px] items-center justify-center rounded-lg border-2 border-dashed ${
-                  isZendeskLocationSvg 
-                    ? "bg-[repeating-conic-gradient(#e5e5e5_0%_25%,#ffffff_0%_50%)] bg-[length:8px_8px]" 
+                  isZendeskLocationSvg
+                    ? "bg-[repeating-conic-gradient(#e5e5e5_0%_25%,#ffffff_0%_50%)] bg-[length:8px_8px]"
                     : "bg-muted/20"
                 }`}
               >
                 {isLoading ? (
-                  <span className="text-xs text-muted-foreground text-center px-1">Loading...</span>
+                  <span className="text-xs text-muted-foreground text-center px-1">
+                    Loading...
+                  </span>
                 ) : svgUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={svgUrl} alt={filename} className="w-[64px] h-[64px]" />
+                  <img
+                    src={svgUrl}
+                    alt={filename}
+                    className="w-[64px] h-[64px]"
+                  />
                 ) : (
-                  <span className="text-xs text-muted-foreground text-center px-1">Preview</span>
+                  <span className="text-xs text-muted-foreground text-center px-1">
+                    Preview
+                  </span>
                 )}
               </div>
               <p className="text-xs text-muted-foreground">
-                {isZendeskLocationSvg 
-                  ? "Transparent background (Zendesk applies styling)" 
+                {isZendeskLocationSvg
+                  ? "Transparent background (Zendesk applies styling)"
                   : SVG_SPECS.DESCRIPTION}
               </p>
             </div>
@@ -157,4 +170,3 @@ export function SvgPreview({ svgFiles, iconId, state }: SvgPreviewProps) {
     </ScrollArea>
   );
 }
-

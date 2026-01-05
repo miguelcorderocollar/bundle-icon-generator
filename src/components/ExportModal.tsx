@@ -18,7 +18,11 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Download, AlertCircle, Loader2 } from "lucide-react";
 import type { IconGeneratorState } from "../hooks/use-icon-generator";
 import type { AppLocation } from "../types/app-location";
-import { generateExportZip, downloadZip, validateExport } from "../utils/export-controller";
+import {
+  generateExportZip,
+  downloadZip,
+  validateExport,
+} from "../utils/export-controller";
 import { getRequiredExportVariants } from "../types/export";
 import { isCustomImageIcon } from "../utils/locations";
 
@@ -37,9 +41,9 @@ export function ExportModal({
 }: ExportModalProps) {
   const [isExporting, setIsExporting] = React.useState(false);
   const [exportError, setExportError] = React.useState<string | null>(null);
-  const [validation, setValidation] = React.useState<ReturnType<typeof validateExport> | null>(
-    null
-  );
+  const [validation, setValidation] = React.useState<ReturnType<
+    typeof validateExport
+  > | null>(null);
 
   React.useEffect(() => {
     if (open) {
@@ -70,7 +74,9 @@ export function ExportModal({
       onOpenChange(false);
     } catch (error) {
       console.error("Export error:", error);
-      setExportError(error instanceof Error ? error.message : "Failed to generate export");
+      setExportError(
+        error instanceof Error ? error.message : "Failed to generate export"
+      );
     } finally {
       setIsExporting(false);
     }
@@ -82,7 +88,8 @@ export function ExportModal({
         <DialogHeader>
           <DialogTitle>Export Icon Assets</DialogTitle>
           <DialogDescription>
-            Review the export details and download your Zendesk-compliant icon bundle.
+            Review the export details and download your Zendesk-compliant icon
+            bundle.
           </DialogDescription>
         </DialogHeader>
 
@@ -93,8 +100,12 @@ export function ExportModal({
             <div className="rounded-md bg-muted p-3 text-sm">
               <div className="space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Files to export:</span>
-                  <span className="font-medium">{variants.length} file{variants.length !== 1 ? "s" : ""}</span>
+                  <span className="text-muted-foreground">
+                    Files to export:
+                  </span>
+                  <span className="font-medium">
+                    {variants.length} file{variants.length !== 1 ? "s" : ""}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">PNG files:</span>
@@ -118,10 +129,14 @@ export function ExportModal({
             <div className="max-h-[200px] overflow-y-auto rounded-md border p-3">
               <ul className="space-y-1 text-sm font-mono">
                 {variants.map((variant) => (
-                  <li key={variant.filename} className="flex items-center justify-between">
+                  <li
+                    key={variant.filename}
+                    className="flex items-center justify-between"
+                  >
                     <span>{variant.filename}</span>
                     <span className="text-xs text-muted-foreground">
-                      {variant.width}×{variant.height} {variant.format.toUpperCase()}
+                      {variant.width}×{variant.height}{" "}
+                      {variant.format.toUpperCase()}
                     </span>
                   </li>
                 ))}
@@ -170,10 +185,17 @@ export function ExportModal({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isExporting}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isExporting}
+          >
             Cancel
           </Button>
-          <Button onClick={handleExport} disabled={isExporting || !validation?.valid}>
+          <Button
+            onClick={handleExport}
+            disabled={isExporting || !validation?.valid}
+          >
             {isExporting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -191,5 +213,3 @@ export function ExportModal({
     </Dialog>
   );
 }
-
-

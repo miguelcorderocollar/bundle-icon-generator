@@ -35,4 +35,3 @@ export type { EmojiInputProps } from "./EmojiInput";
 
 export { CustomImageInput } from "./CustomImageInput";
 export type { CustomImageInputProps } from "./CustomImageInput";
-

@@ -31,6 +31,7 @@ Each icon pack has a dedicated adapter in `src/adapters/`:
 - `feather.ts` - Processes Feather icons (24px)
 
 Adapters are responsible for:
+
 - Reading SVG files from `node_modules`
 - Normalizing SVG content
 - Extracting metadata (name, keywords, size, variant)
@@ -45,6 +46,7 @@ bun run generate-icons
 ```
 
 This script:
+
 1. Ingests icons from all configured packs
 2. Normalizes metadata
 3. Generates a unified JSON catalog at `public/icon-catalog.json`
@@ -80,7 +82,11 @@ The generated catalog has the following structure:
 ### Loading the Catalog
 
 ```typescript
-import { loadIconCatalog, getAllIcons, searchIcons } from '@/utils/icon-catalog';
+import {
+  loadIconCatalog,
+  getAllIcons,
+  searchIcons,
+} from "@/utils/icon-catalog";
 
 // Load the entire catalog
 const catalog = await loadIconCatalog();
@@ -89,12 +95,13 @@ const catalog = await loadIconCatalog();
 const allIcons = await getAllIcons();
 
 // Search icons
-const results = await searchIcons('alert');
+const results = await searchIcons("alert");
 ```
 
 ### Icon Metadata
 
 Each icon includes:
+
 - `id` - Unique identifier
 - `name` - Human-readable name
 - `pack` - Source icon pack
@@ -116,6 +123,7 @@ To add a new icon pack:
 ## License Compliance
 
 All icon packs must have permissive licenses compatible with redistribution:
+
 - Apache-2.0
 - MIT
 - CC0 / CC BY (with attribution)
@@ -139,7 +147,7 @@ The catalog is generated at build time and served as a static asset. For develop
 The catalog is cached in memory after first load. To clear the cache (useful for development):
 
 ```typescript
-import { clearCatalogCache } from '@/utils/icon-catalog';
+import { clearCatalogCache } from "@/utils/icon-catalog";
 clearCatalogCache();
 ```
 
@@ -150,4 +158,3 @@ clearCatalogCache();
 - Incremental catalog updates
 - Icon preview generation
 - Metadata enrichment (tags, categories)
-

@@ -5,10 +5,19 @@
 import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getRecentColors, addColorToHistory, type ColorType } from "@/src/utils/color-history";
+import {
+  getRecentColors,
+  addColorToHistory,
+  type ColorType,
+} from "@/src/utils/color-history";
 import { useDebouncedValue } from "@/src/hooks/use-debounced-value";
 
 export interface ColorPickerProps {
@@ -64,7 +73,11 @@ export function ColorPicker({
 
   // Save color to history when debounced value changes (only if it's a valid hex color)
   React.useEffect(() => {
-    if (colorType && debouncedLocalValue && /^#[0-9A-Fa-f]{6}$/.test(debouncedLocalValue)) {
+    if (
+      colorType &&
+      debouncedLocalValue &&
+      /^#[0-9A-Fa-f]{6}$/.test(debouncedLocalValue)
+    ) {
       addColorToHistory(colorType, debouncedLocalValue);
       // Refresh recent colors to show the updated list
       setRecentColors(getRecentColors(colorType));
@@ -99,7 +112,23 @@ export function ColorPicker({
               </TooltipTrigger>
               <TooltipContent>
                 <p className="max-w-xs">
-                  Color customization replaces all <code className="text-xs bg-muted px-1 py-0.5 rounded">fill</code> and <code className="text-xs bg-muted px-1 py-0.5 rounded">stroke</code> colors in the SVG, except for <code className="text-xs bg-muted px-1 py-0.5 rounded">none</code>, <code className="text-xs bg-muted px-1 py-0.5 rounded">transparent</code>, and gradient/pattern references.
+                  Color customization replaces all{" "}
+                  <code className="text-xs bg-muted px-1 py-0.5 rounded">
+                    fill
+                  </code>{" "}
+                  and{" "}
+                  <code className="text-xs bg-muted px-1 py-0.5 rounded">
+                    stroke
+                  </code>{" "}
+                  colors in the SVG, except for{" "}
+                  <code className="text-xs bg-muted px-1 py-0.5 rounded">
+                    none
+                  </code>
+                  ,{" "}
+                  <code className="text-xs bg-muted px-1 py-0.5 rounded">
+                    transparent
+                  </code>
+                  , and gradient/pattern references.
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -136,7 +165,8 @@ export function ColorPicker({
                   "h-8 w-8 rounded-md border-2 transition-all",
                   "hover:scale-110 hover:ring-2 hover:ring-ring",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  localValue.toLowerCase() === color.toLowerCase() && "ring-2 ring-primary ring-offset-1"
+                  localValue.toLowerCase() === color.toLowerCase() &&
+                    "ring-2 ring-primary ring-offset-1"
                 )}
                 style={{ backgroundColor: color }}
                 aria-label={`Select color ${color}`}
@@ -149,4 +179,3 @@ export function ColorPicker({
     </div>
   );
 }
-

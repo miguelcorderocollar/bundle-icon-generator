@@ -50,11 +50,13 @@ export function CustomSvgInput({
 
     try {
       const text = await file.text();
-      
+
       // Basic SVG validation - check for SVG tag (allow whitespace/newlines)
       const trimmedText = text.trim();
       if (!trimmedText.match(/<svg[\s\S]*<\/svg>/i)) {
-        setError("Invalid SVG file. Please ensure it contains valid SVG markup.");
+        setError(
+          "Invalid SVG file. Please ensure it contains valid SVG markup."
+        );
         return;
       }
 
@@ -62,7 +64,7 @@ export function CustomSvgInput({
       setError(null);
       onChange?.(text);
       onSelect?.(text, allowColorOverride);
-      
+
       // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -102,7 +104,12 @@ export function CustomSvgInput({
   }, [localValue]);
 
   return (
-    <div className={cn("flex flex-col h-full min-h-0 space-y-4 overflow-y-auto", className)}>
+    <div
+      className={cn(
+        "flex flex-col h-full min-h-0 space-y-4 overflow-y-auto",
+        className
+      )}
+    >
       <div className="space-y-2 flex-shrink-0">
         <div className="flex items-center justify-between">
           <Label htmlFor="svg-code">SVG Code</Label>
@@ -144,7 +151,9 @@ export function CustomSvgInput({
               <Checkbox
                 id="allow-color-override"
                 checked={allowColorOverride}
-                onCheckedChange={(checked) => setAllowColorOverride(checked === true)}
+                onCheckedChange={(checked) =>
+                  setAllowColorOverride(checked === true)
+                }
               />
               <Label
                 htmlFor="allow-color-override"
@@ -191,4 +200,3 @@ export function CustomSvgInput({
     </div>
   );
 }
-

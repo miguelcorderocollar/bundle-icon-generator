@@ -51,9 +51,10 @@ export async function generateExportZip(
 
   if (isCustomImage) {
     // Custom image export - use renderPngFromImage directly
-    const imageDataUrl = typeof window !== "undefined" 
-      ? sessionStorage.getItem(state.selectedIconId) 
-      : null;
+    const imageDataUrl =
+      typeof window !== "undefined"
+        ? sessionStorage.getItem(state.selectedIconId)
+        : null;
 
     if (!imageDataUrl) {
       throw new Error("Custom image data not found");
@@ -143,7 +144,10 @@ export async function generateExportZip(
 /**
  * Download ZIP file
  */
-export function downloadZip(blob: Blob, filename: string = "zendesk-icons.zip"): void {
+export function downloadZip(
+  blob: Blob,
+  filename: string = "zendesk-icons.zip"
+): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -179,17 +183,23 @@ export function validateExport(
 
   // Check location selection
   if (selectedLocations.length === 0) {
-    warnings.push("No app locations selected - only default PNGs will be exported");
+    warnings.push(
+      "No app locations selected - only default PNGs will be exported"
+    );
   }
 
   // Check for custom image with SVG locations (should be prevented by UI, but double-check)
   if (isCustomImage && hasSvgRequirements(selectedLocations)) {
-    warnings.push("Custom images cannot be exported as SVG. SVG locations will be skipped.");
+    warnings.push(
+      "Custom images cannot be exported as SVG. SVG locations will be skipped."
+    );
   }
 
   // Check custom image info
   if (isCustomImage) {
-    warnings.push("Custom image will be exported as PNG only (logo.png and logo-small.png)");
+    warnings.push(
+      "Custom image will be exported as PNG only (logo.png and logo-small.png)"
+    );
   }
 
   // Check color contrast (basic validation) - skip for custom images
@@ -198,13 +208,15 @@ export function validateExport(
     const bgColor = isSolidColor(state.backgroundColor)
       ? state.backgroundColor
       : isGradient(state.backgroundColor)
-      ? state.backgroundColor.stops[0]?.color || "#000000"
-      : "#000000";
+        ? state.backgroundColor.stops[0]?.color || "#000000"
+        : "#000000";
     const bgLuminance = getLuminance(bgColor);
     const iconLuminance = getLuminance(state.iconColor);
     const contrast = Math.abs(bgLuminance - iconLuminance);
     if (contrast < 0.3) {
-      warnings.push("Low contrast between background and icon colors - may affect legibility");
+      warnings.push(
+        "Low contrast between background and icon colors - may affect legibility"
+      );
     }
   }
 
@@ -244,4 +256,3 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
       }
     : null;
 }
-

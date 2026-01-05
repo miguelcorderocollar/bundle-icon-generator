@@ -7,7 +7,10 @@ import type { AppLocation } from "@/src/types/app-location";
 import { ICON_PACKS, type IconPack } from "@/src/constants/app";
 import { loadIconCatalog } from "@/src/utils/icon-catalog";
 import { getUserEmojis } from "@/src/utils/emoji-catalog";
-import { loadGeneratorState, saveGeneratorState } from "@/src/utils/local-storage";
+import {
+  loadGeneratorState,
+  saveGeneratorState,
+} from "@/src/utils/local-storage";
 import type { BackgroundValue } from "@/src/utils/gradients";
 
 export interface IconGeneratorState {
@@ -70,21 +73,28 @@ export function useIconGenerator() {
               ? persistedState.backgroundColor
               : typeof persistedState.backgroundColor === "object" &&
                   persistedState.backgroundColor !== null
-              ? (persistedState.backgroundColor as BackgroundValue)
-              : DEFAULT_STATE.backgroundColor,
-          iconColor: typeof persistedState.iconColor === "string"
-            ? persistedState.iconColor
-            : DEFAULT_STATE.iconColor,
+                ? (persistedState.backgroundColor as BackgroundValue)
+                : DEFAULT_STATE.backgroundColor,
+          iconColor:
+            typeof persistedState.iconColor === "string"
+              ? persistedState.iconColor
+              : DEFAULT_STATE.iconColor,
           searchQuery: DEFAULT_STATE.searchQuery, // Don't persist search query
-          selectedPack: Object.values(ICON_PACKS).includes(persistedState.selectedPack as IconPack)
+          selectedPack: Object.values(ICON_PACKS).includes(
+            persistedState.selectedPack as IconPack
+          )
             ? (persistedState.selectedPack as IconPack)
             : DEFAULT_STATE.selectedPack,
-          iconSize: typeof persistedState.iconSize === "number" && persistedState.iconSize > 0
-            ? persistedState.iconSize
-            : DEFAULT_STATE.iconSize,
-          svgIconSize: typeof persistedState.svgIconSize === "number" && persistedState.svgIconSize > 0
-            ? persistedState.svgIconSize
-            : DEFAULT_STATE.svgIconSize,
+          iconSize:
+            typeof persistedState.iconSize === "number" &&
+            persistedState.iconSize > 0
+              ? persistedState.iconSize
+              : DEFAULT_STATE.iconSize,
+          svgIconSize:
+            typeof persistedState.svgIconSize === "number" &&
+            persistedState.svgIconSize > 0
+              ? persistedState.svgIconSize
+              : DEFAULT_STATE.svgIconSize,
         };
         hasPersistedIcon = !!restoredState.selectedIconId;
         setState(restoredState);
@@ -97,9 +107,11 @@ export function useIconGenerator() {
           const allIcons = Object.values(catalog.icons);
           const userEmojis = getUserEmojis();
           const combinedIcons = [...allIcons, ...userEmojis];
-          
+
           if (combinedIcons.length > 0) {
-            const randomIndex = Math.floor(Math.random() * combinedIcons.length);
+            const randomIndex = Math.floor(
+              Math.random() * combinedIcons.length
+            );
             const randomIcon = combinedIcons[randomIndex];
             setState((prev) => ({ ...prev, selectedIconId: randomIcon.id }));
           }
@@ -117,7 +129,8 @@ export function useIconGenerator() {
 
   // Save state to localStorage whenever it changes (but not during initial load)
   React.useEffect(() => {
-    if (!hasInitialized || isInitialLoad || typeof window === "undefined") return;
+    if (!hasInitialized || isInitialLoad || typeof window === "undefined")
+      return;
 
     saveGeneratorState({
       selectedLocations: state.selectedLocations,
@@ -154,8 +167,7 @@ export function useIconGenerator() {
         setState((prev) => ({ ...prev, searchQuery: query })),
       setSelectedPack: (pack) =>
         setState((prev) => ({ ...prev, selectedPack: pack })),
-      setIconSize: (size) =>
-        setState((prev) => ({ ...prev, iconSize: size })),
+      setIconSize: (size) => setState((prev) => ({ ...prev, iconSize: size })),
       setSvgIconSize: (size) =>
         setState((prev) => ({ ...prev, svgIconSize: size })),
     }),
@@ -164,4 +176,3 @@ export function useIconGenerator() {
 
   return { state, actions };
 }
-

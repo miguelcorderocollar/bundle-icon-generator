@@ -19,7 +19,6 @@ export interface PngPreviewProps {
 export function PngPreview({ iconId, state }: PngPreviewProps) {
   const [logoUrl, setLogoUrl] = React.useState<string | null>(null);
   const [logoSmallUrl, setLogoSmallUrl] = React.useState<string | null>(null);
-  const [isLoading, setIsLoading] = React.useState(false);
 
   React.useEffect(() => {
     if (!iconId || !state) {
@@ -29,7 +28,6 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
     }
 
     let cancelled = false;
-    setIsLoading(true);
 
     async function generatePreviews() {
       try {
@@ -40,9 +38,10 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
 
         if (isCustomImage) {
           // Get image data from sessionStorage
-          const imageDataUrl = typeof window !== "undefined"
-            ? sessionStorage.getItem(iconId)
-            : null;
+          const imageDataUrl =
+            typeof window !== "undefined"
+              ? sessionStorage.getItem(iconId)
+              : null;
 
           if (!imageDataUrl || cancelled) return;
 
@@ -107,9 +106,7 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
       } catch (error) {
         console.error("Error generating PNG previews:", error);
       } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
+        // No loading state needed
       }
     }
 
@@ -120,7 +117,7 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
       if (logoUrl) URL.revokeObjectURL(logoUrl);
       if (logoSmallUrl) URL.revokeObjectURL(logoSmallUrl);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- logoUrl and logoSmallUrl are intentionally excluded to prevent infinite loops (they are outputs, not inputs)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- logoUrl and logoSmallUrl are intentionally excluded to prevent infinite loops (they are outputs, not inputs)
   }, [iconId, state]);
 
   if (!iconId || !state) {
@@ -147,46 +144,45 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
       <div className="space-y-6 pr-4">
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium font-mono">{PNG_SPECS.LOGO.filename}</h3>
+            <h3 className="text-sm font-medium font-mono">
+              {PNG_SPECS.LOGO.filename}
+            </h3>
             <span className="text-xs text-muted-foreground">
               {PNG_SPECS.LOGO.width}×{PNG_SPECS.LOGO.height}
             </span>
           </div>
           <div className="flex aspect-square w-full max-w-[320px] items-center justify-center rounded-lg border-2 border-dashed bg-muted/20 p-2">
-            {isLoading ? (
-              <span className="text-xs text-muted-foreground">Generating preview...</span>
-            ) : logoUrl ? (
+            {logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={logoUrl} alt={PNG_SPECS.LOGO.filename} className="max-w-full max-h-full" />
-            ) : (
-              <span className="text-xs text-muted-foreground">Preview will appear here</span>
-            )}
+              <img
+                src={logoUrl}
+                alt={PNG_SPECS.LOGO.filename}
+                className="max-w-full max-h-full"
+              />
+            ) : null}
           </div>
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium font-mono">{PNG_SPECS.LOGO_SMALL.filename}</h3>
+            <h3 className="text-sm font-medium font-mono">
+              {PNG_SPECS.LOGO_SMALL.filename}
+            </h3>
             <span className="text-xs text-muted-foreground">
               {PNG_SPECS.LOGO_SMALL.width}×{PNG_SPECS.LOGO_SMALL.height}
             </span>
           </div>
           <div className="flex aspect-square w-full max-w-[128px] items-center justify-center rounded-lg border-2 border-dashed bg-muted/20 p-2">
-            {isLoading ? (
-              <span className="text-xs text-muted-foreground">Generating preview...</span>
-            ) : logoSmallUrl ? (
+            {logoSmallUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={logoSmallUrl}
                 alt={PNG_SPECS.LOGO_SMALL.filename}
                 className="max-w-full max-h-full"
               />
-            ) : (
-              <span className="text-xs text-muted-foreground">Preview will appear here</span>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
     </ScrollArea>
   );
 }
-

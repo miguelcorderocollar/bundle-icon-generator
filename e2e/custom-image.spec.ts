@@ -7,13 +7,17 @@ test.describe("Custom Image Upload", () => {
     await expect(page.locator("text=Icon Search")).toBeVisible();
   });
 
-  test("Custom Image option appears in icon pack selector", async ({ page }) => {
+  test("Custom Image option appears in icon pack selector", async ({
+    page,
+  }) => {
     // Open the icon pack selector
     const packSelector = page.locator("#icon-pack-select");
     await packSelector.click();
 
     // Check that Custom Image option exists
-    await expect(page.getByRole("option", { name: "Custom Image" })).toBeVisible();
+    await expect(
+      page.getByRole("option", { name: "Custom Image" })
+    ).toBeVisible();
   });
 
   test("selecting Custom Image shows upload interface", async ({ page }) => {
@@ -32,13 +36,15 @@ test.describe("Custom Image Upload", () => {
     page,
   }) => {
     // First select a location that requires SVG (top_bar)
-    const locationButton = page.getByRole("combobox").filter({ hasText: /Select app locations/ });
+    const locationButton = page
+      .getByRole("combobox")
+      .filter({ hasText: /Select app locations/ });
     await locationButton.click();
-    
+
     // Select Top bar (requires SVG)
-    const topBarCheckbox = page.locator('label').filter({ hasText: 'Top bar' });
+    const topBarCheckbox = page.locator("label").filter({ hasText: "Top bar" });
     await topBarCheckbox.click();
-    
+
     // Close the popover by clicking outside
     await page.keyboard.press("Escape");
 
@@ -47,7 +53,9 @@ test.describe("Custom Image Upload", () => {
     await packSelector.click();
 
     // Custom Image option should be disabled (data-disabled can be "" or "true" when disabled)
-    const customImageOption = page.getByRole("option", { name: "Custom Image" });
+    const customImageOption = page.getByRole("option", {
+      name: "Custom Image",
+    });
     await expect(customImageOption).toHaveAttribute("aria-disabled", "true");
   });
 
@@ -61,13 +69,13 @@ test.describe("Custom Image Upload", () => {
 
     // Create a test image file and upload it
     const fileInput = page.locator('input[type="file"]');
-    
+
     // Create a small test PNG (1x1 pixel transparent PNG)
     const testImageBuffer = Buffer.from(
       "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
       "base64"
     );
-    
+
     await fileInput.setInputFiles({
       name: "test.png",
       mimeType: "image/png",
@@ -78,7 +86,9 @@ test.describe("Custom Image Upload", () => {
     await page.waitForTimeout(500);
 
     // Open location selector
-    const locationButton = page.getByRole("combobox").filter({ hasText: /Select app locations/ });
+    const locationButton = page
+      .getByRole("combobox")
+      .filter({ hasText: /Select app locations/ });
     await locationButton.click();
 
     // Check that SVG-requiring locations show disabled reason (there are multiple)
@@ -97,4 +107,3 @@ test.describe("Custom Image Upload", () => {
     ).toBeVisible();
   });
 });
-

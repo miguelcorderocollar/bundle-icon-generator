@@ -9,7 +9,10 @@ import { PngPreview } from "@/src/components/PngPreview";
 import { SvgPreview } from "@/src/components/SvgPreview";
 import { EmptyState } from "@/src/components/EmptyState";
 import { PreviewHeader } from "@/src/components/PreviewHeader";
-import { calculateRequiredSvgFiles, hasSvgRequirements } from "@/src/utils/locations";
+import {
+  calculateRequiredSvgFiles,
+  hasSvgRequirements,
+} from "@/src/utils/locations";
 import { PREVIEW_TYPES } from "@/src/constants/app";
 import type { AppLocation } from "@/src/types/app-location";
 import type { IconGeneratorState } from "@/src/hooks/use-icon-generator";
@@ -56,7 +59,10 @@ export function PreviewPane({
             />
           ) : hasPngFiles && hasSvgFiles ? (
             // Show tabs if both PNG and SVG are available
-            <Tabs defaultValue={PREVIEW_TYPES.PNG} className="flex h-full flex-col">
+            <Tabs
+              defaultValue={PREVIEW_TYPES.PNG}
+              className="flex h-full flex-col"
+            >
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value={PREVIEW_TYPES.PNG}>PNG</TabsTrigger>
                 <TabsTrigger value={PREVIEW_TYPES.SVG}>SVG</TabsTrigger>
@@ -73,7 +79,11 @@ export function PreviewPane({
                 value={PREVIEW_TYPES.SVG}
                 className="mt-4 flex-1 overflow-hidden data-[state=active]:flex"
               >
-                <SvgPreview svgFiles={requiredSvgFiles} iconId={selectedIconId} state={state} />
+                <SvgPreview
+                  svgFiles={requiredSvgFiles}
+                  iconId={selectedIconId}
+                  state={state}
+                />
               </TabsContent>
             </Tabs>
           ) : hasPngFiles ? (
@@ -95,8 +105,8 @@ export function PreviewPane({
               {hasPngFiles && hasSvgFiles
                 ? `Will export ${2 + requiredSvgFiles.length} files`
                 : hasPngFiles
-                ? "Will export 2 PNG files"
-                : `Will export ${requiredSvgFiles.length} SVG files`}
+                  ? "Will export 2 PNG files"
+                  : `Will export ${requiredSvgFiles.length} SVG files`}
             </div>
           )}
           <Button

@@ -71,11 +71,11 @@ interface VisualBoundingBox {
 /**
  * Calculate the visual bounding box of SVG content using the browser's getBBox() API.
  * This accounts for the actual rendered content position, not just the viewBox.
- * 
+ *
  * Some icon libraries (e.g., Zendesk Garden) have icons where visual content is
  * intentionally not centered within the viewBox (for pixel-perfect rendering at small sizes).
  * This function detects such cases and returns the true visual bounds.
- * 
+ *
  * @param svgContent - The inner SVG content (paths, circles, etc.)
  * @param viewBoxWidth - The viewBox width
  * @param viewBoxHeight - The viewBox height
@@ -93,7 +93,7 @@ export function getVisualBoundingBox(
   }
 ): VisualBoundingBox | null {
   // Check if we're in a browser environment with DOM support
-  if (typeof document === 'undefined') {
+  if (typeof document === "undefined") {
     return null;
   }
 
@@ -107,10 +107,10 @@ export function getVisualBoundingBox(
     tempSvg.style.position = "absolute";
     tempSvg.style.visibility = "hidden";
     tempSvg.style.pointerEvents = "none";
-    
+
     // Create a group to hold the content and apply inherited attributes
     const group = document.createElementNS(svgNS, "g");
-    
+
     // Apply inherited attributes that affect bounding box
     if (inheritedAttrs?.fill) {
       group.setAttribute("fill", inheritedAttrs.fill);
@@ -121,26 +121,26 @@ export function getVisualBoundingBox(
     if (inheritedAttrs?.strokeWidth) {
       group.setAttribute("stroke-width", inheritedAttrs.strokeWidth);
     }
-    
+
     group.innerHTML = svgContent;
     tempSvg.appendChild(group);
-    
+
     // Append to document to enable getBBox()
     document.body.appendChild(tempSvg);
-    
+
     // Get the bounding box of the content group
     const bbox = group.getBBox();
-    
+
     // Clean up
     document.body.removeChild(tempSvg);
-    
+
     // Account for stroke width extending beyond path bounds
     // getBBox() returns geometric bounds, not visual bounds with strokes
-    const strokeWidth = inheritedAttrs?.strokeWidth 
-      ? parseFloat(inheritedAttrs.strokeWidth) 
+    const strokeWidth = inheritedAttrs?.strokeWidth
+      ? parseFloat(inheritedAttrs.strokeWidth)
       : 0;
     const strokePadding = strokeWidth / 2;
-    
+
     const visualBox: VisualBoundingBox = {
       x: bbox.x - strokePadding,
       y: bbox.y - strokePadding,
@@ -149,7 +149,7 @@ export function getVisualBoundingBox(
       centerX: bbox.x + bbox.width / 2,
       centerY: bbox.y + bbox.height / 2,
     };
-    
+
     return visualBox;
   } catch (error) {
     // If getBBox fails (e.g., empty content, invalid SVG), return null
@@ -178,7 +178,7 @@ function parseSvg(svgString: string): {
   }
 
   const svgTag = svgString.match(/<svg[^>]*>/i)?.[0] || "";
-  
+
   // Try to get viewBox first
   let viewBox = "0 0 24 24";
   const viewBoxMatch = svgTag.match(/viewBox=["']([^"']+)["']/i);
@@ -201,21 +201,27 @@ function parseSvg(svgString: string): {
   const strokeWidthMatch = svgTag.match(/stroke-width=["']([^"']*)["']/i);
   const strokeLinecapMatch = svgTag.match(/stroke-linecap=["']([^"']*)["']/i);
   const strokeLinejoinMatch = svgTag.match(/stroke-linejoin=["']([^"']*)["']/i);
-  
+
   const inheritedFill = fillMatch ? fillMatch[1] : undefined;
   const inheritedStroke = strokeMatch ? strokeMatch[1] : undefined;
-  const inheritedStrokeWidth = strokeWidthMatch ? strokeWidthMatch[1] : undefined;
-  const inheritedStrokeLinecap = strokeLinecapMatch ? strokeLinecapMatch[1] : undefined;
-  const inheritedStrokeLinejoin = strokeLinejoinMatch ? strokeLinejoinMatch[1] : undefined;
+  const inheritedStrokeWidth = strokeWidthMatch
+    ? strokeWidthMatch[1]
+    : undefined;
+  const inheritedStrokeLinecap = strokeLinecapMatch
+    ? strokeLinecapMatch[1]
+    : undefined;
+  const inheritedStrokeLinejoin = strokeLinejoinMatch
+    ? strokeLinejoinMatch[1]
+    : undefined;
 
   // Extract inner content (paths, circles, etc.)
   const content = svgMatch[1];
   const isRasterized = isRasterizedSvg(content);
 
-  return { 
-    viewBox, 
-    content, 
-    inheritedFill, 
+  return {
+    viewBox,
+    content,
+    inheritedFill,
     inheritedStroke,
     inheritedStrokeWidth,
     inheritedStrokeLinecap,
@@ -268,20 +274,26 @@ export function applySvgColor(svgContent: string, color: string): string {
   });
 
   // Replace fill in inline styles, preserving transparent directives
-  result = result.replace(/fill:\s*([^;]+)(;?)/gi, (match, fillValue, suffix) => {
-    if (shouldPreserveValue(fillValue)) {
-      return match; // Keep fill: none;
+  result = result.replace(
+    /fill:\s*([^;]+)(;?)/gi,
+    (match, fillValue, suffix) => {
+      if (shouldPreserveValue(fillValue)) {
+        return match; // Keep fill: none;
+      }
+      return `fill: ${color}${suffix}`;
     }
-    return `fill: ${color}${suffix}`;
-  });
+  );
 
   // Replace stroke in inline styles, preserving transparent directives
-  result = result.replace(/stroke:\s*([^;]+)(;?)/gi, (match, strokeValue, suffix) => {
-    if (shouldPreserveValue(strokeValue)) {
-      return match; // Keep stroke: none;
+  result = result.replace(
+    /stroke:\s*([^;]+)(;?)/gi,
+    (match, strokeValue, suffix) => {
+      if (shouldPreserveValue(strokeValue)) {
+        return match; // Keep stroke: none;
+      }
+      return `stroke: ${color}${suffix}`;
     }
-    return `stroke: ${color}${suffix}`;
-  });
+  );
 
   // Also handle remaining occurrences of currentColor
   result = result.replace(/\bcurrentColor\b/gi, color);
@@ -303,27 +315,29 @@ export function renderSvg(options: SvgRenderOptions): string {
     zendeskLocationMode = false,
   } = options;
 
-  const { 
-    viewBox, 
-    content, 
-    inheritedFill, 
+  const {
+    viewBox,
+    content,
+    inheritedFill,
     inheritedStroke,
     inheritedStrokeWidth,
     inheritedStrokeLinecap,
     inheritedStrokeLinejoin,
     isRasterized,
   } = parseSvg(icon.svg);
-  
+
   // Skip color transformation for:
   // - Rasterized icons (emojis)
   // - Icons with color override disabled
   // - Zendesk location mode (top_bar, ticket_editor, nav_bar) - preserves currentColor for Zendesk styling
-  const shouldSkipColorTransform = 
+  const shouldSkipColorTransform =
     zendeskLocationMode ||
-    isRasterized || 
-    icon.isRasterized || 
-    (icon.allowColorOverride === false);
-  const coloredContent = shouldSkipColorTransform ? content : applySvgColor(content, iconColor);
+    isRasterized ||
+    icon.isRasterized ||
+    icon.allowColorOverride === false;
+  const coloredContent = shouldSkipColorTransform
+    ? content
+    : applySvgColor(content, iconColor);
 
   // Calculate icon size within padded area
   // Allow negative padding for larger icons that overflow the artboard
@@ -357,26 +371,28 @@ export function renderSvg(options: SvgRenderOptions): string {
     if (imageMatch) {
       // Parse the image element to get its href and dimensions
       const imageTag = imageMatch[0];
-      const hrefMatch = imageTag.match(/href=["']([^"']+)["']/i) || imageTag.match(/xlink:href=["']([^"']+)["']/i);
+      const hrefMatch =
+        imageTag.match(/href=["']([^"']+)["']/i) ||
+        imageTag.match(/xlink:href=["']([^"']+)["']/i);
       const widthMatch = imageTag.match(/width=["']([^"']+)["']/i);
       const heightMatch = imageTag.match(/height=["']([^"']+)["']/i);
-      
-      const href = hrefMatch ? hrefMatch[1] : '';
+
+      const href = hrefMatch ? hrefMatch[1] : "";
       const imgWidth = widthMatch ? parseFloat(widthMatch[1]) : vbWidth;
       const imgHeight = heightMatch ? parseFloat(heightMatch[1]) : vbHeight;
-      
+
       // Scale image to fit in padded area
       const scale = iconSize / Math.max(imgWidth, imgHeight);
       const scaledWidth = imgWidth * scale;
       const scaledHeight = imgHeight * scale;
       const iconX = effectivePadding + (iconSize - scaledWidth) / 2;
       const iconY = effectivePadding + (iconSize - scaledHeight) / 2;
-      
+
       const finalSize = outputSize ?? size;
 
       // Build background elements string (empty in Zendesk location mode)
-      const rasterBgElements = backgroundElement 
-        ? `${gradientDef ? gradientDef + "\n" : ""}  ${backgroundElement}\n` 
+      const rasterBgElements = backgroundElement
+        ? `${gradientDef ? gradientDef + "\n" : ""}  ${backgroundElement}\n`
         : "";
 
       return `<svg width="${finalSize}" height="${finalSize}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -384,12 +400,12 @@ ${rasterBgElements}  <image href="${href}" width="${scaledWidth}" height="${scal
 </svg>`;
     }
   }
-  
+
   // Standard SVG rendering for vector icons
   // Calculate scale to fit icon in padded area
   const scale = iconSize / Math.max(vbWidth, vbHeight);
   const adjustedContent = coloredContent;
-  
+
   // Calculate the visual bounding box to detect off-center icon content
   // Some icon libraries (e.g., Zendesk Garden) have icons where visual content
   // is intentionally not centered within the viewBox for pixel-perfect rendering
@@ -398,23 +414,23 @@ ${rasterBgElements}  <image href="${href}" width="${scaledWidth}" height="${scal
     stroke: inheritedStroke,
     strokeWidth: inheritedStrokeWidth,
   });
-  
+
   // Calculate centering offset based on visual content position
   // If the visual content is off-center within the viewBox, we compensate
   let visualCenterOffsetX = 0;
   let visualCenterOffsetY = 0;
-  
+
   if (visualBBox) {
     // Calculate where the visual center is relative to the viewBox center
     const vbCenterX = vbWidth / 2;
     const vbCenterY = vbHeight / 2;
-    
+
     // The offset is how much the visual center deviates from the viewBox center
     // We apply the inverse to bring visual content to true center
     visualCenterOffsetX = vbCenterX - visualBBox.centerX;
     visualCenterOffsetY = vbCenterY - visualBBox.centerY;
   }
-  
+
   // Center the icon - calculate position to center the scaled icon in the padded area
   // Apply the visual center offset to correct for off-center icon designs
   const baseIconX = effectivePadding + (iconSize - vbWidth * scale) / 2;
@@ -427,13 +443,13 @@ ${rasterBgElements}  <image href="${href}" width="${scaledWidth}" height="${scal
   // This handles Feather icons that set fill="none" and stroke attributes on the root <svg> tag
   // Also handles RemixIcon that sets fill="currentColor" on the root <svg> tag
   const groupAttrs: string[] = [];
-  
+
   if (inheritedFill !== undefined) {
     const fillValue = inheritedFill.toLowerCase().trim();
     // If the root SVG had fill="none", apply it to preserve transparency
-    if (fillValue === 'none') {
+    if (fillValue === "none") {
       groupAttrs.push('fill="none"');
-    } else if (fillValue === 'currentcolor' || fillValue === 'current-color') {
+    } else if (fillValue === "currentcolor" || fillValue === "current-color") {
       // In Zendesk location mode, preserve currentColor for Zendesk's CSS styling
       // Otherwise, apply our icon color
       if (zendeskLocationMode) {
@@ -443,8 +459,11 @@ ${rasterBgElements}  <image href="${href}" width="${scaledWidth}" height="${scal
       }
     }
   }
-  
-  if (inheritedStroke !== undefined && inheritedStroke.toLowerCase().trim() === 'currentcolor') {
+
+  if (
+    inheritedStroke !== undefined &&
+    inheritedStroke.toLowerCase().trim() === "currentcolor"
+  ) {
     // In Zendesk location mode, preserve currentColor for Zendesk's CSS styling
     // Otherwise, apply our icon color
     if (zendeskLocationMode) {
@@ -453,37 +472,41 @@ ${rasterBgElements}  <image href="${href}" width="${scaledWidth}" height="${scal
       groupAttrs.push(`stroke="${iconColor}"`);
     }
   }
-  
+
   if (inheritedStrokeWidth !== undefined) {
     groupAttrs.push(`stroke-width="${inheritedStrokeWidth}"`);
   }
-  
+
   if (inheritedStrokeLinecap !== undefined) {
     // Preserve stroke-linecap (e.g., "round")
     groupAttrs.push(`stroke-linecap="${inheritedStrokeLinecap}"`);
   }
-  
+
   if (inheritedStrokeLinejoin !== undefined) {
     // Preserve stroke-linejoin (e.g., "round")
     groupAttrs.push(`stroke-linejoin="${inheritedStrokeLinejoin}"`);
   }
 
-  const groupAttrString = groupAttrs.length > 0 ? ' ' + groupAttrs.join(' ') : '';
+  const groupAttrString =
+    groupAttrs.length > 0 ? " " + groupAttrs.join(" ") : "";
 
   // Combine transforms for precise centering
   // Order: translate to center position, then scale, then offset viewBox origin if needed
   // SVG applies transforms right-to-left, so we write: translate(center) scale() translate(-viewBoxOffset)
-  const transformParts: string[] = [`translate(${iconX}, ${iconY})`, `scale(${scale})`];
+  const transformParts: string[] = [
+    `translate(${iconX}, ${iconY})`,
+    `scale(${scale})`,
+  ];
   if (needsViewBoxOffset) {
     transformParts.push(`translate(${-vbMinX}, ${-vbMinY})`);
   }
-  const combinedTransform = transformParts.join(' ');
+  const combinedTransform = transformParts.join(" ");
 
   const finalSize = outputSize ?? size;
 
   // Build background elements string (empty in Zendesk location mode)
-  const bgElements = backgroundElement 
-    ? `${gradientDef ? gradientDef + "\n" : ""}  ${backgroundElement}\n` 
+  const bgElements = backgroundElement
+    ? `${gradientDef ? gradientDef + "\n" : ""}  ${backgroundElement}\n`
     : "";
 
   return `<svg width="${finalSize}" height="${finalSize}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
@@ -497,14 +520,7 @@ ${bgElements}  <g transform="${combinedTransform}"${groupAttrString}>
  * Create a canvas and render PNG
  */
 export async function renderPng(options: PngRenderOptions): Promise<Blob> {
-  const {
-    icon,
-    backgroundColor,
-    iconColor,
-    size,
-    width,
-    height,
-  } = options;
+  const { icon, backgroundColor, iconColor, size, width, height } = options;
 
   // Create canvas
   const canvas = document.createElement("canvas");
@@ -553,7 +569,10 @@ export async function renderPng(options: PngRenderOptions): Promise<Blob> {
   // Map it to a percentage of canvas: 48px = 30%, 200px = 100% of canvas
   const minSize = 48;
   const maxSize = 200;
-  const sizePercent = Math.max(0.3, Math.min(1.0, (size - minSize) / (maxSize - minSize) * 0.7 + 0.3));
+  const sizePercent = Math.max(
+    0.3,
+    Math.min(1.0, ((size - minSize) / (maxSize - minSize)) * 0.7 + 0.3)
+  );
   const iconSize = canvasSize * sizePercent;
   const iconX = (width - iconSize) / 2;
   const iconY = (height - iconSize) / 2;
@@ -597,14 +616,10 @@ export interface ImageRenderOptions {
  * Render PNG from a custom uploaded image (PNG/JPG/WebP)
  * This is used for custom images that can't be converted to SVG
  */
-export async function renderPngFromImage(options: ImageRenderOptions): Promise<Blob> {
-  const {
-    imageDataUrl,
-    backgroundColor,
-    size,
-    width,
-    height,
-  } = options;
+export async function renderPngFromImage(
+  options: ImageRenderOptions
+): Promise<Blob> {
+  const { imageDataUrl, backgroundColor, size, width, height } = options;
 
   // Create canvas
   const canvas = document.createElement("canvas");
@@ -637,7 +652,10 @@ export async function renderPngFromImage(options: ImageRenderOptions): Promise<B
   const canvasSize = Math.min(width, height);
   const minSize = 48;
   const maxSize = 200;
-  const sizePercent = Math.max(0.3, Math.min(1.0, (size - minSize) / (maxSize - minSize) * 0.7 + 0.3));
+  const sizePercent = Math.max(
+    0.3,
+    Math.min(1.0, ((size - minSize) / (maxSize - minSize)) * 0.7 + 0.3)
+  );
   const targetSize = canvasSize * sizePercent;
 
   // Calculate scale to fit image within target size while preserving aspect ratio
@@ -694,7 +712,12 @@ const ZENDESK_LOCATION_SVG_FILES = [
 export async function generateExportAssets(
   icon: IconMetadata,
   state: IconGeneratorState,
-  variants: Array<{ filename: string; width: number; height: number; format: "png" | "svg" }>
+  variants: Array<{
+    filename: string;
+    width: number;
+    height: number;
+    format: "png" | "svg";
+  }>
 ): Promise<Map<string, Blob>> {
   const assets = new Map<string, Blob>();
 
@@ -702,10 +725,12 @@ export async function generateExportAssets(
     if (variant.format === "svg") {
       // SVG rendering
       const artboardSize = SVG_SPECS.PADDED_SIZE;
-      
+
       // Check if this is a Zendesk location SVG (top_bar, ticket_editor, nav_bar)
       // These require transparent backgrounds and no hardcoded fill colors
-      const isZendeskLocationSvg = ZENDESK_LOCATION_SVG_FILES.includes(variant.filename);
+      const isZendeskLocationSvg = ZENDESK_LOCATION_SVG_FILES.includes(
+        variant.filename
+      );
 
       // Use svgIconSize for SVG exports to control icon density within the artboard
       // Map svgIconSize (48-300px) to padding (6px to -6px range)
@@ -715,8 +740,10 @@ export async function generateExportAssets(
       const maxPadding = 6;
       const minPadding = -6; // Allow overflow
       const svgSize = state.svgIconSize ?? state.iconSize;
-      const padding = maxPadding - (svgSize - minSize) / (maxSize - minSize) * (maxPadding - minPadding);
-      
+      const padding =
+        maxPadding -
+        ((svgSize - minSize) / (maxSize - minSize)) * (maxPadding - minPadding);
+
       const requestedSize = Math.max(variant.width, variant.height);
       const displaySize = Math.min(requestedSize, artboardSize);
 
@@ -747,4 +774,3 @@ export async function generateExportAssets(
 
   return assets;
 }
-

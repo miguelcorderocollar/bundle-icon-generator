@@ -55,77 +55,88 @@ export default function Home() {
                   <span className="sr-only">About this app</span>
                 </Button>
               </DialogTrigger>
-            <DialogContent className="max-w-lg">
-              <DialogHeader>
-                <DialogTitle>About {APP_NAME}</DialogTitle>
-                <DialogDescription>
-                  {APP_DESCRIPTION}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <p className="text-sm text-muted-foreground">
-                  Zendesk App Icon Generator is a local-first tool for crafting compliant Zendesk app icon bundles. 
-                  It streamlines choosing icons from vetted packs, customizing colors and effects, and exporting 
-                  the required asset set with correct naming and sizing.
-                </p>
-                <div className="space-y-2">
-                  <h3 className="text-sm font-semibold">Key Features</h3>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                    <li>Centralized Apache-2.0 friendly icon packs (Zendesk Garden, Feather, and more)</li>
-                    <li>Intuitive search and selection experience tailored to Zendesk app locations</li>
-                    <li>Real-time previews with configurable styling presets</li>
-                    <li>One-click ZIP export with correct naming and sizing</li>
-                  </ul>
-                </div>
-                <div className="space-y-2">
-                  <h3 className="text-sm font-semibold">Open Source</h3>
+              <DialogContent className="max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>About {APP_NAME}</DialogTitle>
+                  <DialogDescription>{APP_DESCRIPTION}</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
                   <p className="text-sm text-muted-foreground">
-                    This project is open source and available on GitHub. Contributions and feedback are welcome!
+                    Zendesk App Icon Generator is a local-first tool for
+                    crafting compliant Zendesk app icon bundles. It streamlines
+                    choosing icons from vetted packs, customizing colors and
+                    effects, and exporting the required asset set with correct
+                    naming and sizing.
                   </p>
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      asChild
-                      className="text-sm"
-                    >
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-semibold">Key Features</h3>
+                    <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                      <li>
+                        Centralized Apache-2.0 friendly icon packs (Zendesk
+                        Garden, Feather, and more)
+                      </li>
+                      <li>
+                        Intuitive search and selection experience tailored to
+                        Zendesk app locations
+                      </li>
+                      <li>
+                        Real-time previews with configurable styling presets
+                      </li>
+                      <li>
+                        One-click ZIP export with correct naming and sizing
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-semibold">Open Source</h3>
+                    <p className="text-sm text-muted-foreground">
+                      This project is open source and available on GitHub.
+                      Contributions and feedback are welcome!
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        asChild
+                        className="text-sm"
+                      >
+                        <a
+                          href="https://github.com/miguelcorderocollar/zdk.icon-generator"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View on GitHub
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="border-t pt-4">
+                    <p className="text-sm text-muted-foreground">
+                      Made by{" "}
                       <a
-                        href="https://github.com/miguelcorderocollar/zdk.icon-generator"
+                        href="https://github.com/miguelcorderocollar"
                         target="_blank"
                         rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 font-medium text-foreground hover:underline"
                       >
-                        View on GitHub
+                        <Github className="h-3.5 w-3.5" />
+                        Miguel Cordero Collar
                       </a>
-                    </Button>
+                      {" · "}
+                      <a
+                        href="https://miguelcorderocollar.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 font-medium text-foreground hover:underline"
+                      >
+                        <Globe className="h-3.5 w-3.5" />
+                        miguelcorderocollar.com
+                      </a>
+                    </p>
                   </div>
                 </div>
-                <div className="border-t pt-4">
-                  <p className="text-sm text-muted-foreground">
-                    Made by{" "}
-                    <a
-                      href="https://github.com/miguelcorderocollar"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 font-medium text-foreground hover:underline"
-                    >
-                      <Github className="h-3.5 w-3.5" />
-                      Miguel Cordero Collar
-                    </a>
-                    {" · "}
-                    <a
-                      href="https://miguelcorderocollar.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 font-medium text-foreground hover:underline"
-                    >
-                      <Globe className="h-3.5 w-3.5" />
-                      miguelcorderocollar.com
-                    </a>
-                  </p>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </header>

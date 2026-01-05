@@ -176,7 +176,9 @@ describe("local-storage", () => {
     describe("saveGeneratorState", () => {
       it("saves state to localStorage", () => {
         saveGeneratorState(mockState);
-        const stored = localStorage.getItem("zdk-icon-generator:generator-state");
+        const stored = localStorage.getItem(
+          "zdk-icon-generator:generator-state"
+        );
         expect(stored).not.toBeNull();
         expect(JSON.parse(stored!)).toEqual(mockState);
       });
@@ -221,9 +223,10 @@ describe("local-storage", () => {
         };
         saveGeneratorState(stateWithGradient);
         const loaded = loadGeneratorState();
-        expect(loaded?.backgroundColor).toEqual(stateWithGradient.backgroundColor);
+        expect(loaded?.backgroundColor).toEqual(
+          stateWithGradient.backgroundColor
+        );
       });
     });
   });
 });
-

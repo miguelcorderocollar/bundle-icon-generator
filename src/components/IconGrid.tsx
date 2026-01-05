@@ -68,9 +68,12 @@ export function IconGrid({
             <div className="flex items-center justify-between px-2">
               <p className="text-xs text-muted-foreground">
                 {icons.length} result{icons.length !== 1 ? "s" : ""} found
-                {hasMore && ` (showing ${MAX_VISIBLE_ICONS} of ${icons.length})`}
+                {hasMore &&
+                  ` (showing ${MAX_VISIBLE_ICONS} of ${icons.length})`}
               </p>
-              <p className="text-xs text-muted-foreground">Click an icon to select it</p>
+              <p className="text-xs text-muted-foreground">
+                Click an icon to select it
+              </p>
             </div>
           )}
           <div
@@ -112,4 +115,3 @@ export function IconGrid({
     </div>
   );
 }
-

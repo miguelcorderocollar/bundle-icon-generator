@@ -32,7 +32,7 @@ export function IconGridItem({
   const isEmoji = icon.pack === "emoji";
   // Initialize as false to avoid hydration mismatch (localStorage only available client-side)
   const [isFavorited, setIsFavorited] = React.useState(false);
-  
+
   // Update favorite status after mount to avoid hydration mismatch
   React.useEffect(() => {
     setIsFavorited(isFavorite(icon.id));
@@ -196,4 +196,3 @@ export function IconGridItem({
     </button>
   );
 }
-

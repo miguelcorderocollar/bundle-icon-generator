@@ -11,7 +11,9 @@ import { isCustomImageIcon } from "../utils/locations";
  * Load icon metadata for a given icon ID
  */
 export function useIconMetadata(iconId?: string): IconMetadata | null {
-  const [iconMetadata, setIconMetadata] = React.useState<IconMetadata | null>(null);
+  const [iconMetadata, setIconMetadata] = React.useState<IconMetadata | null>(
+    null
+  );
 
   React.useEffect(() => {
     if (!iconId) {
@@ -21,10 +23,9 @@ export function useIconMetadata(iconId?: string): IconMetadata | null {
 
     // Handle custom images - create metadata from sessionStorage
     if (isCustomImageIcon(iconId)) {
-      const imageDataUrl = typeof window !== "undefined" 
-        ? sessionStorage.getItem(iconId) 
-        : null;
-      
+      const imageDataUrl =
+        typeof window !== "undefined" ? sessionStorage.getItem(iconId) : null;
+
       if (imageDataUrl) {
         setIconMetadata({
           id: iconId,
@@ -62,4 +63,3 @@ export function useIconMetadata(iconId?: string): IconMetadata | null {
 
   return iconMetadata;
 }
-

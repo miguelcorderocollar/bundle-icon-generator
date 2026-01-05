@@ -5,13 +5,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
 import { ColorPicker } from "@/src/components/ColorPicker";
 import { EffectSlider } from "@/src/components/EffectSlider";
 import { BackgroundControls } from "@/src/components/BackgroundControls";
 import { APP_LOCATION_OPTIONS } from "@/src/utils/app-location-options";
-import { getLocationCountText, getSvgRequiringLocations, isCustomImageIcon } from "@/src/utils/locations";
+import {
+  getLocationCountText,
+  getSvgRequiringLocations,
+  isCustomImageIcon,
+} from "@/src/utils/locations";
 import { DEFAULT_COLORS, ICON_GRID } from "@/src/constants/app";
 import { useDebouncedValue } from "@/src/hooks/use-debounced-value";
 import type { AppLocation } from "@/src/types/app-location";
@@ -49,26 +58,30 @@ export function CustomizationControlsPane({
 }: CustomizationControlsPaneProps) {
   // Check if SVG files are required for selected locations
   const hasSvgFiles = hasSvgRequirements(selectedLocations);
-  
+
   // Check if current icon is a custom image (disables SVG locations)
   const isCustomImage = isCustomImageIcon(selectedIconId);
-  
+
   // Get SVG-requiring locations to disable them when custom image is selected
   const svgRequiringLocations = getSvgRequiringLocations();
-  
+
   // Build location options with disabled state for custom images
   const locationOptions = React.useMemo(() => {
     if (!isCustomImage) {
       return APP_LOCATION_OPTIONS;
     }
-    
+
     return APP_LOCATION_OPTIONS.map((option) => {
       // Disable SVG-requiring locations and "all_locations" when custom image is selected
-      const isSvgLocation = svgRequiringLocations.includes(option.value as AppLocation) || option.value === "all_locations";
+      const isSvgLocation =
+        svgRequiringLocations.includes(option.value as AppLocation) ||
+        option.value === "all_locations";
       return {
         ...option,
         disabled: isSvgLocation,
-        disabledReason: isSvgLocation ? "Requires SVG (not available for custom images)" : undefined,
+        disabledReason: isSvgLocation
+          ? "Requires SVG (not available for custom images)"
+          : undefined,
       };
     });
   }, [isCustomImage, svgRequiringLocations]);
@@ -93,7 +106,10 @@ export function CustomizationControlsPane({
 
   // Update parent when debounced SVG size changes
   React.useEffect(() => {
-    if (onSvgIconSizeChange && debouncedSvgIconSize !== lastPropSvgSizeRef.current) {
+    if (
+      onSvgIconSizeChange &&
+      debouncedSvgIconSize !== lastPropSvgSizeRef.current
+    ) {
       lastPropSvgSizeRef.current = debouncedSvgIconSize;
       onSvgIconSizeChange(debouncedSvgIconSize);
     }
@@ -144,7 +160,8 @@ export function CustomizationControlsPane({
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="max-w-xs">
-                    Select where your app will appear in Zendesk. Some locations require SVG icons.
+                    Select where your app will appear in Zendesk. Some locations
+                    require SVG icons.
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -160,7 +177,8 @@ export function CustomizationControlsPane({
             <Alert className="mt-2">
               <ImageIcon className="size-4" />
               <AlertDescription className="text-xs">
-                Custom images can only be exported as PNG. Locations requiring SVG icons are disabled.
+                Custom images can only be exported as PNG. Locations requiring
+                SVG icons are disabled.
               </AlertDescription>
             </Alert>
           )}
@@ -188,9 +206,10 @@ export function CustomizationControlsPane({
               unit="px"
             />
             <p className="text-xs text-muted-foreground">
-              Controls the size of the icon within the PNG canvas. Exported files are 320×320 and 128×128.
+              Controls the size of the icon within the PNG canvas. Exported
+              files are 320×320 and 128×128.
             </p>
-            
+
             {/* SVG Icon Size - only shown when SVG locations are selected */}
             {hasSvgFiles && onSvgIconSizeChange && (
               <>
@@ -205,7 +224,8 @@ export function CustomizationControlsPane({
                   unit="px"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Controls the size of the icon within SVG files (top bar, ticket editor, nav bar).
+                  Controls the size of the icon within SVG files (top bar,
+                  ticket editor, nav bar).
                 </p>
               </>
             )}
@@ -217,16 +237,18 @@ export function CustomizationControlsPane({
         {/* Color Controls */}
         <div className="space-y-4">
           <h3 className="text-sm font-medium">Colors</h3>
-          {onIconColorChange && !selectedIconId?.startsWith("emoji-") && !isCustomImage && (
-            <ColorPicker
-              id="icon-color"
-              label="Icon Color"
-              value={iconColor}
-              onChange={onIconColorChange}
-              colorType="icon"
-              isCustomSvg={selectedIconId?.startsWith("custom-svg-")}
-            />
-          )}
+          {onIconColorChange &&
+            !selectedIconId?.startsWith("emoji-") &&
+            !isCustomImage && (
+              <ColorPicker
+                id="icon-color"
+                label="Icon Color"
+                value={iconColor}
+                onChange={onIconColorChange}
+                colorType="icon"
+                isCustomSvg={selectedIconId?.startsWith("custom-svg-")}
+              />
+            )}
           {onBackgroundColorChange && (
             <BackgroundControls
               value={backgroundColor}

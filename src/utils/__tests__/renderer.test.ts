@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { applySvgColor, renderSvg, getVisualBoundingBox, type SvgRenderOptions, type ImageRenderOptions } from "../renderer";
+import {
+  applySvgColor,
+  renderSvg,
+  getVisualBoundingBox,
+  type SvgRenderOptions,
+  type ImageRenderOptions,
+} from "../renderer";
 import type { IconMetadata } from "../../types/icon";
 
 describe("renderer", () => {
@@ -17,7 +23,8 @@ describe("renderer", () => {
     });
 
     it("replaces currentColor with new color", () => {
-      const input = '<path fill="currentColor" stroke="currentColor" d="M0 0"/>';
+      const input =
+        '<path fill="currentColor" stroke="currentColor" d="M0 0"/>';
       const result = applySvgColor(input, "#00ff00");
       expect(result).toBe('<path fill="#00ff00" stroke="#00ff00" d="M0 0"/>');
     });
@@ -90,7 +97,9 @@ describe("renderer", () => {
     });
 
     it("renders SVG with solid background", () => {
-      const icon = createMockIcon('<svg viewBox="0 0 24 24"><path d="M0 0"/></svg>');
+      const icon = createMockIcon(
+        '<svg viewBox="0 0 24 24"><path d="M0 0"/></svg>'
+      );
       const options: SvgRenderOptions = {
         icon,
         backgroundColor: "#ff0000",
@@ -109,7 +118,9 @@ describe("renderer", () => {
     });
 
     it("renders SVG with gradient background", () => {
-      const icon = createMockIcon('<svg viewBox="0 0 24 24"><path d="M0 0"/></svg>');
+      const icon = createMockIcon(
+        '<svg viewBox="0 0 24 24"><path d="M0 0"/></svg>'
+      );
       const options: SvgRenderOptions = {
         icon,
         backgroundColor: {
@@ -148,7 +159,9 @@ describe("renderer", () => {
     });
 
     it("respects padding option", () => {
-      const icon = createMockIcon('<svg viewBox="0 0 24 24"><path d="M0 0"/></svg>');
+      const icon = createMockIcon(
+        '<svg viewBox="0 0 24 24"><path d="M0 0"/></svg>'
+      );
       const withPadding: SvgRenderOptions = {
         icon,
         backgroundColor: "#000000",
@@ -164,7 +177,9 @@ describe("renderer", () => {
     });
 
     it("respects outputSize option", () => {
-      const icon = createMockIcon('<svg viewBox="0 0 24 24"><path d="M0 0"/></svg>');
+      const icon = createMockIcon(
+        '<svg viewBox="0 0 24 24"><path d="M0 0"/></svg>'
+      );
       const options: SvgRenderOptions = {
         icon,
         backgroundColor: "#000000",
@@ -277,7 +292,9 @@ describe("renderer", () => {
       const icon = createMockIcon(
         '<svg viewBox="0 0 24 24"><path fill="#ff5500" d="M0 0"/></svg>'
       );
-      (icon as IconMetadata & { allowColorOverride: boolean }).allowColorOverride = false;
+      (
+        icon as IconMetadata & { allowColorOverride: boolean }
+      ).allowColorOverride = false;
 
       const options: SvgRenderOptions = {
         icon,
@@ -371,8 +388,9 @@ describe("renderer", () => {
     });
 
     it("accepts stroke width parameter without throwing", () => {
-      const content = '<circle cx="12" cy="12" r="10" stroke="#000" stroke-width="2"/>';
-      
+      const content =
+        '<circle cx="12" cy="12" r="10" stroke="#000" stroke-width="2"/>';
+
       expect(() => {
         getVisualBoundingBox(content, 24, 24, {
           strokeWidth: "2",
@@ -452,4 +470,3 @@ describe("renderer", () => {
     });
   });
 });
-

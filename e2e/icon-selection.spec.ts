@@ -8,7 +8,9 @@ test.describe("Icon Selection Flow", () => {
   });
 
   test("loads the home page with icon generator title", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: /icon generator/i })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: /icon generator/i })
+    ).toBeVisible();
   });
 
   test("displays icon search pane", async ({ page }) => {
@@ -34,7 +36,7 @@ test.describe("Icon Selection Flow", () => {
 
     // Find and click an icon in the grid
     const iconButtons = page.locator('button[class*="group"]').first();
-    
+
     if (await iconButtons.isVisible()) {
       await iconButtons.click();
 
@@ -46,7 +48,7 @@ test.describe("Icon Selection Flow", () => {
   test("can filter icons by pack", async ({ page }) => {
     // Find the pack selector (usually a dropdown or select)
     const packSelector = page.getByRole("combobox").first();
-    
+
     if (await packSelector.isVisible()) {
       await packSelector.click();
 
@@ -77,13 +79,15 @@ test.describe("Icon Selection Flow", () => {
 
   test("search is case insensitive", async ({ page }) => {
     const searchInput = page.getByPlaceholder(/search/i);
-    
+
     // Search with lowercase
     await searchInput.fill("arrow");
     await page.waitForTimeout(500);
-    
+
     // Count results
-    const lowerCaseResults = await page.locator('button[class*="group"]').count();
+    const lowerCaseResults = await page
+      .locator('button[class*="group"]')
+      .count();
 
     // Clear and search with uppercase
     await searchInput.clear();
@@ -91,7 +95,9 @@ test.describe("Icon Selection Flow", () => {
     await page.waitForTimeout(500);
 
     // Should get same number of results
-    const upperCaseResults = await page.locator('button[class*="group"]').count();
+    const upperCaseResults = await page
+      .locator('button[class*="group"]')
+      .count();
 
     // Results should be equal (or both greater than 0)
     if (lowerCaseResults > 0 && upperCaseResults > 0) {
@@ -99,4 +105,3 @@ test.describe("Icon Selection Flow", () => {
     }
   });
 });
-

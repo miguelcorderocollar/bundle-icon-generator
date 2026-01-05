@@ -3,11 +3,31 @@
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Search, X, Shuffle, Library, Upload, Smile, Image as ImageIcon, Layers } from "lucide-react";
+import {
+  Search,
+  X,
+  Shuffle,
+  Library,
+  Upload,
+  Smile,
+  Image as ImageIcon,
+  Layers,
+} from "lucide-react";
 import { IconGrid } from "@/src/components/IconGrid";
 import { useKeyboardShortcuts } from "@/src/hooks/use-keyboard-shortcuts";
 import { useIconSearch, type SortOption } from "@/src/hooks/use-icon-search";
@@ -45,8 +65,12 @@ export function IconSearchPane({
   const [isMac, setIsMac] = React.useState<boolean>(false); // Default to false to avoid hydration mismatch
   const [sortBy, setSortBy] = React.useState<SortOption>("name");
   const [_favorites, setFavorites] = React.useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = React.useState<string | null>(null);
-  const [remixiconCategories, setRemixiconCategories] = React.useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = React.useState<string | null>(
+    null
+  );
+  const [remixiconCategories, setRemixiconCategories] = React.useState<
+    string[]
+  >([]);
 
   // Check if SVG-requiring locations are selected (disables Custom Image option)
   const hasSvgLocationsSelected = hasSvgRequirements(selectedLocations);
@@ -59,7 +83,9 @@ export function IconSearchPane({
   // Load RemixIcon categories when RemixIcon pack is selected
   React.useEffect(() => {
     if (selectedPack === ICON_PACKS.REMIXICON) {
-      getRemixIconCategories().then(setRemixiconCategories).catch(console.error);
+      getRemixIconCategories()
+        .then(setRemixiconCategories)
+        .catch(console.error);
     } else {
       // Reset category when switching away from RemixIcon
       setSelectedCategory(null);
@@ -75,11 +101,14 @@ export function IconSearchPane({
   });
 
   // Refresh favorites when they change (triggered by favorite toggle)
-  const handleFavoriteToggle = React.useCallback((_iconId: string, _isFavorite: boolean) => {
-    setFavorites(getFavorites());
-    // Dispatch custom event to trigger refresh in useIconSearch hook
-    window.dispatchEvent(new Event("icon-favorites-changed"));
-  }, []);
+  const handleFavoriteToggle = React.useCallback(
+    (_iconId: string, _isFavorite: boolean) => {
+      setFavorites(getFavorites());
+      // Dispatch custom event to trigger refresh in useIconSearch hook
+      window.dispatchEvent(new Event("icon-favorites-changed"));
+    },
+    []
+  );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onSearchChange?.(e.target.value);
@@ -183,10 +212,16 @@ export function IconSearchPane({
 
         {/* Sort Control */}
         <div className="flex items-center gap-2">
-          <label htmlFor="sort-select" className="text-sm text-muted-foreground whitespace-nowrap">
+          <label
+            htmlFor="sort-select"
+            className="text-sm text-muted-foreground whitespace-nowrap"
+          >
             Sort by:
           </label>
-          <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+          <Select
+            value={sortBy}
+            onValueChange={(value) => setSortBy(value as SortOption)}
+          >
             <SelectTrigger id="sort-select" className="w-full">
               <SelectValue />
             </SelectTrigger>
@@ -261,7 +296,8 @@ export function IconSearchPane({
                   {hasSvgLocationsSelected && (
                     <TooltipContent side="left">
                       <p className="max-w-xs">
-                        Custom images cannot be used with locations that require SVG icons (Nav Bar, Top Bar, Ticket Editor)
+                        Custom images cannot be used with locations that require
+                        SVG icons (Nav Bar, Top Bar, Ticket Editor)
                       </p>
                     </TooltipContent>
                   )}
@@ -272,27 +308,30 @@ export function IconSearchPane({
         </div>
 
         {/* Category Selector (only for RemixIcon) */}
-        {selectedPack === ICON_PACKS.REMIXICON && remixiconCategories.length > 0 && (
-          <div className="space-y-2">
-            <Label htmlFor="category-select">Category</Label>
-            <Select 
-              value={selectedCategory || "all"} 
-              onValueChange={(value) => setSelectedCategory(value === "all" ? null : value)}
-            >
-              <SelectTrigger id="category-select" className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                {remixiconCategories.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
+        {selectedPack === ICON_PACKS.REMIXICON &&
+          remixiconCategories.length > 0 && (
+            <div className="space-y-2">
+              <Label htmlFor="category-select">Category</Label>
+              <Select
+                value={selectedCategory || "all"}
+                onValueChange={(value) =>
+                  setSelectedCategory(value === "all" ? null : value)
+                }
+              >
+                <SelectTrigger id="category-select" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {remixiconCategories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
         {/* Content based on selected pack */}
         <div className="flex-1 min-h-0 overflow-hidden">
@@ -312,7 +351,10 @@ export function IconSearchPane({
                 // Store custom SVG and color override preference
                 if (typeof window !== "undefined") {
                   sessionStorage.setItem(customIconId, svg);
-                  sessionStorage.setItem(`${customIconId}-allowColorOverride`, String(allowColorOverride));
+                  sessionStorage.setItem(
+                    `${customIconId}-allowColorOverride`,
+                    String(allowColorOverride)
+                  );
                 }
                 handleIconSelect(customIconId);
               }}
@@ -324,7 +366,7 @@ export function IconSearchPane({
                   // Trigger refresh of icon search to show new emoji
                   // Use a small delay to ensure the refresh completes before selecting
                   window.dispatchEvent(new Event("icon-favorites-changed"));
-                  
+
                   // Auto-select the newly added emoji so it appears in preview
                   // Small delay ensures the icon list is refreshed first
                   if (emojiId) {
@@ -345,7 +387,9 @@ export function IconSearchPane({
                     selectedIconId={selectedIconId}
                     onIconSelect={handleIconSelect}
                     onFavoriteToggle={handleFavoriteToggle}
-                    onRemove={selectedPack === ICON_PACKS.EMOJI ? () => {} : undefined}
+                    onRemove={
+                      selectedPack === ICON_PACKS.EMOJI ? () => {} : undefined
+                    }
                     searchQuery={searchQuery}
                     isLoading={isLoading}
                   />
