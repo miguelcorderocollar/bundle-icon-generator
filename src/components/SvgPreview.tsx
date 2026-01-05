@@ -8,9 +8,6 @@ import { SVG_SPECS } from "@/src/constants/app";
 import type { IconGeneratorState } from "../hooks/use-icon-generator";
 import { renderSvg } from "../utils/renderer";
 import { getIconById } from "../utils/icon-catalog";
-import { useDebouncedValue } from "../hooks/use-debounced-value";
-import type { BackgroundValue } from "../utils/gradients";
-import { DEFAULT_COLORS } from "@/src/constants/app";
 
 /**
  * Zendesk location SVG filenames that require transparent backgrounds
@@ -31,47 +28,8 @@ export function SvgPreview({ svgFiles, iconId, state }: SvgPreviewProps) {
   const [svgUrls, setSvgUrls] = React.useState<Map<string, string>>(new Map());
   const [isLoading, setIsLoading] = React.useState(false);
 
-  // Debounce expensive state changes (colors, size) but keep iconId and svgFiles immediate
-  // For BackgroundValue, we need to use a custom debounce that works with objects
-  const [debouncedBackgroundColor, setDebouncedBackgroundColor] = React.useState<BackgroundValue>(
-    state?.backgroundColor ?? DEFAULT_COLORS.BACKGROUND
-  );
-  
   React.useEffect(() => {
-    if (!state?.backgroundColor) return;
-    const timer = setTimeout(() => {
-      setDebouncedBackgroundColor(state.backgroundColor);
-    }, 300);
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(state?.backgroundColor)]);
-  const debouncedIconColor = useDebouncedValue(state?.iconColor ?? "", 300);
-  const debouncedIconSize = useDebouncedValue(state?.iconSize ?? 64, 300);
-  const debouncedSvgIconSize = useDebouncedValue(state?.svgIconSize ?? 64, 300);
-
-  // Create a debounced state object for rendering
-  const debouncedState = React.useMemo(() => {
-    if (!state) return undefined;
-    return {
-      ...state,
-      backgroundColor: debouncedBackgroundColor,
-      iconColor: debouncedIconColor,
-      iconSize: debouncedIconSize,
-      svgIconSize: debouncedSvgIconSize,
-    };
-  }, [state, debouncedBackgroundColor, debouncedIconColor, debouncedIconSize, debouncedSvgIconSize]);
-
-  // Debounce svgFiles array changes (when locations change)
-  // Use join to create a stable string for comparison
-  const svgFilesKey = React.useMemo(() => svgFiles.join(","), [svgFiles]);
-  const debouncedSvgFilesKey = useDebouncedValue(svgFilesKey, 200);
-  const debouncedSvgFiles = React.useMemo(
-    () => debouncedSvgFilesKey ? debouncedSvgFilesKey.split(",").filter(Boolean) : [],
-    [debouncedSvgFilesKey]
-  );
-
-  React.useEffect(() => {
-    if (!iconId || !debouncedState || debouncedSvgFiles.length === 0) {
+    if (!iconId || !state || svgFiles.length === 0) {
       setSvgUrls(new Map());
       return;
     }
@@ -81,13 +39,13 @@ export function SvgPreview({ svgFiles, iconId, state }: SvgPreviewProps) {
 
     async function generatePreviews() {
       try {
-        if (!iconId || !debouncedState) return;
+        if (!iconId || !state) return;
         const icon = await getIconById(iconId);
         if (!icon || cancelled) return;
 
         const newUrls = new Map<string, string>();
 
-        for (const filename of debouncedSvgFiles) {
+        for (const filename of svgFiles) {
           if (cancelled) break;
 
           // Render SVG at constant 30×30 artboard size for consistent preview
@@ -102,7 +60,7 @@ export function SvgPreview({ svgFiles, iconId, state }: SvgPreviewProps) {
           const maxSize = 300;
           const maxPadding = 6;
           const minPadding = -6; // Allow overflow
-          const padding = maxPadding - (debouncedState.svgIconSize - minSize) / (maxSize - minSize) * (maxPadding - minPadding);
+          const padding = maxPadding - (state.svgIconSize - minSize) / (maxSize - minSize) * (maxPadding - minPadding);
 
           // Check if this is a Zendesk location SVG (top_bar, ticket_editor, nav_bar)
           // These require transparent backgrounds and no hardcoded fill colors
@@ -110,8 +68,8 @@ export function SvgPreview({ svgFiles, iconId, state }: SvgPreviewProps) {
 
           const svgString = renderSvg({
             icon,
-            backgroundColor: debouncedState.backgroundColor,
-            iconColor: debouncedState.iconColor,
+            backgroundColor: state.backgroundColor,
+            iconColor: state.iconColor,
             size: artboardSize,
             padding,
             outputSize: previewSize, // Use 64px output for preview
@@ -141,8 +99,8 @@ export function SvgPreview({ svgFiles, iconId, state }: SvgPreviewProps) {
       cancelled = true;
       svgUrls.forEach((url) => URL.revokeObjectURL(url));
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- svgUrls and debouncedSvgFiles are intentionally excluded to prevent infinite loops (they are outputs, not inputs)
-  }, [iconId, debouncedState, debouncedSvgFilesKey]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- svgUrls is intentionally excluded to prevent infinite loops (it's an output, not an input)
+  }, [iconId, state, svgFiles]);
 
   if (svgFiles.length === 0) {
     return (

@@ -31,9 +31,13 @@ export function ColorPicker({
   isCustomSvg = false,
 }: ColorPickerProps) {
   const [recentColors, setRecentColors] = React.useState<string[]>([]);
-  
-  // Debounce value changes to avoid saving incomplete colors while typing
-  const debouncedValue = useDebouncedValue(value, 500);
+
+  // Local state for immediate UI updates
+  const [localValue, setLocalValue] = React.useState(value);
+  const lastPropValueRef = React.useRef(value);
+
+  // Debounce value changes to avoid excessive re-renders while typing/adjusting
+  const debouncedLocalValue = useDebouncedValue(localValue, 300);
 
   // Load recent colors on mount and when colorType changes
   React.useEffect(() => {
@@ -42,29 +46,45 @@ export function ColorPicker({
     }
   }, [colorType]);
 
+  // Update parent when debounced value changes (but only if it's different from prop)
+  React.useEffect(() => {
+    if (debouncedLocalValue !== lastPropValueRef.current) {
+      lastPropValueRef.current = debouncedLocalValue;
+      onChange(debouncedLocalValue);
+    }
+  }, [debouncedLocalValue, onChange]);
+
+  // Sync local state when prop changes externally
+  React.useEffect(() => {
+    if (value !== lastPropValueRef.current) {
+      lastPropValueRef.current = value;
+      setLocalValue(value);
+    }
+  }, [value]);
+
   // Save color to history when debounced value changes (only if it's a valid hex color)
   React.useEffect(() => {
-    if (colorType && debouncedValue && /^#[0-9A-Fa-f]{6}$/.test(debouncedValue)) {
-      addColorToHistory(colorType, debouncedValue);
+    if (colorType && debouncedLocalValue && /^#[0-9A-Fa-f]{6}$/.test(debouncedLocalValue)) {
+      addColorToHistory(colorType, debouncedLocalValue);
       // Refresh recent colors to show the updated list
       setRecentColors(getRecentColors(colorType));
     }
-  }, [debouncedValue, colorType]);
+  }, [debouncedLocalValue, colorType]);
 
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.value);
+    setLocalValue(e.target.value);
   };
 
   const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const hex = e.target.value;
     // Basic validation - allow partial input
     if (hex === "" || /^#[0-9A-Fa-f]{0,6}$/.test(hex)) {
-      onChange(hex);
+      setLocalValue(hex);
     }
   };
 
   const handleRecentColorClick = (color: string) => {
-    onChange(color);
+    setLocalValue(color);
   };
 
   return (
@@ -90,13 +110,13 @@ export function ColorPicker({
         <input
           id={id}
           type="color"
-          value={value}
+          value={localValue}
           onChange={handleColorChange}
           className="h-10 w-20 cursor-pointer rounded-md border"
         />
         <Input
           id={`${id}-hex`}
-          value={value}
+          value={localValue}
           onChange={handleHexChange}
           className="flex-1 font-mono"
           placeholder="#ffffff"
@@ -116,7 +136,7 @@ export function ColorPicker({
                   "h-8 w-8 rounded-md border-2 transition-all",
                   "hover:scale-110 hover:ring-2 hover:ring-ring",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  value.toLowerCase() === color.toLowerCase() && "ring-2 ring-primary ring-offset-1"
+                  localValue.toLowerCase() === color.toLowerCase() && "ring-2 ring-primary ring-offset-1"
                 )}
                 style={{ backgroundColor: color }}
                 aria-label={`Select color ${color}`}

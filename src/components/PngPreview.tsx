@@ -9,9 +9,6 @@ import { PNG_SPECS } from "@/src/constants/app";
 import type { IconGeneratorState } from "../hooks/use-icon-generator";
 import { renderPng, renderPngFromImage } from "../utils/renderer";
 import { getIconById } from "../utils/icon-catalog";
-import { useDebouncedValue } from "../hooks/use-debounced-value";
-import type { BackgroundValue } from "../utils/gradients";
-import { DEFAULT_COLORS } from "@/src/constants/app";
 import { isCustomImageIcon } from "../utils/locations";
 
 export interface PngPreviewProps {
@@ -24,42 +21,8 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
   const [logoSmallUrl, setLogoSmallUrl] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  // Debounce expensive state changes (colors) but keep iconId immediate
-  // For BackgroundValue, we need to use a custom debounce that works with objects
-  const [debouncedBackgroundColor, setDebouncedBackgroundColor] = React.useState<BackgroundValue>(
-    state?.backgroundColor ?? DEFAULT_COLORS.BACKGROUND
-  );
-  
   React.useEffect(() => {
-    if (!state?.backgroundColor) return;
-    const timer = setTimeout(() => {
-      setDebouncedBackgroundColor(state.backgroundColor);
-    }, 300);
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(state?.backgroundColor)]);
-  const debouncedIconColor = useDebouncedValue(state?.iconColor ?? "", 300);
-  const debouncedIconSize = useDebouncedValue(state?.iconSize ?? 64, 300);
-
-  // Create a debounced state object for rendering
-  const debouncedState = React.useMemo(() => {
-    if (!state) return undefined;
-
-    return {
-      ...state,
-      backgroundColor: debouncedBackgroundColor,
-      iconColor: debouncedIconColor,
-      iconSize: debouncedIconSize,
-    };
-  }, [
-    state,
-    debouncedBackgroundColor,
-    debouncedIconColor,
-    debouncedIconSize,
-  ]);
-
-  React.useEffect(() => {
-    if (!iconId || !debouncedState) {
+    if (!iconId || !state) {
       setLogoUrl(null);
       setLogoSmallUrl(null);
       return;
@@ -70,24 +33,24 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
 
     async function generatePreviews() {
       try {
-        if (!iconId || !debouncedState) return;
+        if (!iconId || !state) return;
 
         // Check if this is a custom image
         const isCustomImage = isCustomImageIcon(iconId);
-        
+
         if (isCustomImage) {
           // Get image data from sessionStorage
-          const imageDataUrl = typeof window !== "undefined" 
-            ? sessionStorage.getItem(iconId) 
+          const imageDataUrl = typeof window !== "undefined"
+            ? sessionStorage.getItem(iconId)
             : null;
-          
+
           if (!imageDataUrl || cancelled) return;
 
           // Generate logo.png from custom image
           const logoBlob = await renderPngFromImage({
             imageDataUrl,
-            backgroundColor: debouncedState.backgroundColor,
-            size: debouncedState.iconSize,
+            backgroundColor: state.backgroundColor,
+            size: state.iconSize,
             width: PNG_SPECS.LOGO.width,
             height: PNG_SPECS.LOGO.height,
           });
@@ -99,8 +62,8 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
           // Generate logo-small.png from custom image
           const logoSmallBlob = await renderPngFromImage({
             imageDataUrl,
-            backgroundColor: debouncedState.backgroundColor,
-            size: debouncedState.iconSize,
+            backgroundColor: state.backgroundColor,
+            size: state.iconSize,
             width: PNG_SPECS.LOGO_SMALL.width,
             height: PNG_SPECS.LOGO_SMALL.height,
           });
@@ -116,9 +79,9 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
           // Generate logo.png
           const logoBlob = await renderPng({
             icon,
-            backgroundColor: debouncedState.backgroundColor,
-            iconColor: debouncedState.iconColor,
-            size: debouncedState.iconSize,
+            backgroundColor: state.backgroundColor,
+            iconColor: state.iconColor,
+            size: state.iconSize,
             width: PNG_SPECS.LOGO.width,
             height: PNG_SPECS.LOGO.height,
           });
@@ -130,9 +93,9 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
           // Generate logo-small.png
           const logoSmallBlob = await renderPng({
             icon,
-            backgroundColor: debouncedState.backgroundColor,
-            iconColor: debouncedState.iconColor,
-            size: debouncedState.iconSize,
+            backgroundColor: state.backgroundColor,
+            iconColor: state.iconColor,
+            size: state.iconSize,
             width: PNG_SPECS.LOGO_SMALL.width,
             height: PNG_SPECS.LOGO_SMALL.height,
           });
@@ -158,7 +121,7 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
       if (logoSmallUrl) URL.revokeObjectURL(logoSmallUrl);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps -- logoUrl and logoSmallUrl are intentionally excluded to prevent infinite loops (they are outputs, not inputs)
-  }, [iconId, debouncedState]);
+  }, [iconId, state]);
 
   if (!iconId || !state) {
     return (
