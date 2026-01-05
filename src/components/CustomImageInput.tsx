@@ -146,7 +146,7 @@ export function CustomImageInput({
                 alt="Uploaded preview"
                 className="max-h-32 max-w-full rounded-md object-contain"
               />
-              <p className="text-sm text-muted-foreground truncate max-w-full">
+              <p className="text-sm text-muted-foreground break-words max-w-full text-center">
                 {imageName}
               </p>
               <p className="text-xs text-muted-foreground">
