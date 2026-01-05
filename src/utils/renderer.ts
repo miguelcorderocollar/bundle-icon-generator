@@ -8,7 +8,6 @@ import { SVG_SPECS } from "../constants/app";
 import type { BackgroundValue } from "./gradients";
 import {
   isGradient,
-  isSolidColor,
   gradientToSvgDef,
   createCanvasGradient,
 } from "./gradients";

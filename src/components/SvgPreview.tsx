@@ -4,7 +4,6 @@
 
 import * as React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PreviewPlaceholder } from "./PreviewPlaceholder";
 import { SVG_SPECS } from "@/src/constants/app";
 import type { IconGeneratorState } from "../hooks/use-icon-generator";
 import { renderSvg } from "../utils/renderer";
@@ -94,7 +93,6 @@ export function SvgPreview({ svgFiles, iconId, state }: SvgPreviewProps) {
           // Render SVG at constant 30×30 artboard size for consistent preview
           // Use iconSize to control the icon density within the fixed artboard
           const artboardSize = SVG_SPECS.PADDED_SIZE;
-          const displaySize = SVG_SPECS.DISPLAY_SIZE;
           const previewSize = 64; // Half size for preview visibility
 
           // Map svgIconSize (48-300px) to padding (6px to -6px range)
@@ -143,7 +141,8 @@ export function SvgPreview({ svgFiles, iconId, state }: SvgPreviewProps) {
       cancelled = true;
       svgUrls.forEach((url) => URL.revokeObjectURL(url));
     };
-  }, [iconId, debouncedState, debouncedSvgFiles.join(",")]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- svgUrls and debouncedSvgFiles are intentionally excluded to prevent infinite loops (they are outputs, not inputs)
+  }, [iconId, debouncedState, debouncedSvgFilesKey]);
 
   if (svgFiles.length === 0) {
     return (
@@ -182,6 +181,7 @@ export function SvgPreview({ svgFiles, iconId, state }: SvgPreviewProps) {
                 {isLoading ? (
                   <span className="text-xs text-muted-foreground text-center px-1">Loading...</span>
                 ) : svgUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img src={svgUrl} alt={filename} className="w-[64px] h-[64px]" />
                 ) : (
                   <span className="text-xs text-muted-foreground text-center px-1">Preview</span>

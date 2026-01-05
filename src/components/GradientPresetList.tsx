@@ -3,7 +3,6 @@
  */
 
 import * as React from "react";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import type { Gradient } from "@/src/utils/gradients";

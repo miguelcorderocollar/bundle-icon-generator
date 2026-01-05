@@ -157,6 +157,7 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
       if (logoUrl) URL.revokeObjectURL(logoUrl);
       if (logoSmallUrl) URL.revokeObjectURL(logoSmallUrl);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- logoUrl and logoSmallUrl are intentionally excluded to prevent infinite loops (they are outputs, not inputs)
   }, [iconId, debouncedState]);
 
   if (!iconId || !state) {
@@ -192,6 +193,7 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
             {isLoading ? (
               <span className="text-xs text-muted-foreground">Generating preview...</span>
             ) : logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img src={logoUrl} alt={PNG_SPECS.LOGO.filename} className="max-w-full max-h-full" />
             ) : (
               <span className="text-xs text-muted-foreground">Preview will appear here</span>
@@ -209,6 +211,7 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
             {isLoading ? (
               <span className="text-xs text-muted-foreground">Generating preview...</span>
             ) : logoSmallUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={logoSmallUrl}
                 alt={PNG_SPECS.LOGO_SMALL.filename}

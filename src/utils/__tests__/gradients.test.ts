@@ -300,7 +300,7 @@ describe("gradients", () => {
 
     describe("GRADIENT_PRESETS", () => {
       it("contains valid gradient definitions", () => {
-        Object.entries(GRADIENT_PRESETS).forEach(([name, gradient]) => {
+        Object.entries(GRADIENT_PRESETS).forEach(([_name, gradient]) => {
           expect(isGradient(gradient)).toBe(true);
           expect(gradient.stops.length).toBeGreaterThanOrEqual(2);
           gradient.stops.forEach((stop) => {

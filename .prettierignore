@@ -1,0 +1,27 @@
+# Dependencies
+node_modules
+
+# Build outputs
+.next
+out
+build
+dist
+
+# Coverage
+coverage
+.nyc_output
+
+# Environment files
+.env
+.env.*
+
+# Logs
+*.log
+
+# Lock files
+package-lock.json
+yarn.lock
+bun.lockb
+
+# Generated files
+next-env.d.ts

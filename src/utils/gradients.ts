@@ -87,7 +87,7 @@ export function gradientToCss(gradient: Gradient): string {
 export function linearGradientToSvgDef(
   gradient: LinearGradient,
   id: string,
-  size: number
+  _size: number
 ): string {
   // Calculate gradient coordinates based on angle
   const angleRad = (gradient.angle * Math.PI) / 180;
@@ -115,7 +115,7 @@ export function linearGradientToSvgDef(
 export function radialGradientToSvgDef(
   gradient: RadialGradient,
   id: string,
-  size: number
+  _size: number
 ): string {
   // Convert percentage to 0-1 range for SVG
   const cx = gradient.centerX / 100;

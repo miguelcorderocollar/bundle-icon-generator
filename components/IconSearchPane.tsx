@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Search, X, Shuffle, Library, Upload, Smile, Image, Layers } from "lucide-react";
+import { Search, X, Shuffle, Library, Upload, Smile, Image as ImageIcon, Layers } from "lucide-react";
 import { IconGrid } from "@/src/components/IconGrid";
 import { useKeyboardShortcuts } from "@/src/hooks/use-keyboard-shortcuts";
 import { useIconSearch, type SortOption } from "@/src/hooks/use-icon-search";
@@ -44,7 +44,7 @@ export function IconSearchPane({
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const [isMac, setIsMac] = React.useState<boolean>(false); // Default to false to avoid hydration mismatch
   const [sortBy, setSortBy] = React.useState<SortOption>("name");
-  const [favorites, setFavorites] = React.useState<string[]>([]);
+  const [_favorites, setFavorites] = React.useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(null);
   const [remixiconCategories, setRemixiconCategories] = React.useState<string[]>([]);
 
@@ -75,7 +75,7 @@ export function IconSearchPane({
   });
 
   // Refresh favorites when they change (triggered by favorite toggle)
-  const handleFavoriteToggle = React.useCallback((iconId: string, isFavorite: boolean) => {
+  const handleFavoriteToggle = React.useCallback((_iconId: string, _isFavorite: boolean) => {
     setFavorites(getFavorites());
     // Dispatch custom event to trigger refresh in useIconSearch hook
     window.dispatchEvent(new Event("icon-favorites-changed"));
@@ -247,12 +247,12 @@ export function IconSearchPane({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className="w-full">
-                      <SelectItem 
-                        value={ICON_PACKS.CUSTOM_IMAGE} 
+                      <SelectItem
+                        value={ICON_PACKS.CUSTOM_IMAGE}
                         disabled={hasSvgLocationsSelected}
                       >
                         <span className="flex items-center gap-2">
-                          <Image className="size-4" />
+                          <ImageIcon className="size-4" />
                           Custom Image
                         </span>
                       </SelectItem>

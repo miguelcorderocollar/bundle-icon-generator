@@ -3,10 +3,9 @@
  */
 
 import JSZip from "jszip";
-import type { IconMetadata } from "../types/icon";
 import type { IconGeneratorState } from "../hooks/use-icon-generator";
 import type { AppLocation } from "../types/app-location";
-import type { ExportMetadata, ExportVariant } from "../types/export";
+import type { ExportMetadata } from "../types/export";
 import { getRequiredExportVariants } from "../types/export";
 import { generateExportAssets, renderPngFromImage } from "./renderer";
 import { getIconById } from "./icon-catalog";

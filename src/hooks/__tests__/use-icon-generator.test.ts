@@ -1,8 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { useIconGenerator } from "../use-icon-generator";
-import * as localStorageUtils from "../../utils/local-storage";
-import * as iconCatalogUtils from "../../utils/icon-catalog";
 
 // Mock the icon catalog to avoid fetching
 vi.mock("../../utils/icon-catalog", () => ({

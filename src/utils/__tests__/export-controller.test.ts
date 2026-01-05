@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { validateExport, type ExportValidation } from "../export-controller";
+import { validateExport } from "../export-controller";
 import type { IconGeneratorState } from "../../hooks/use-icon-generator";
 import type { AppLocation } from "../../types/app-location";
 
