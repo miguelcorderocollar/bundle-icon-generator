@@ -45,7 +45,9 @@ test.describe("Icon Selection Flow", () => {
       await iconButtons.click();
 
       // Preview pane should update (use heading role to avoid tab button)
-      await expect(page.getByRole("heading", { name: "Preview" })).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: "Preview" })
+      ).toBeVisible();
     }
   });
 

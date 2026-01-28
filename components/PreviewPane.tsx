@@ -27,6 +27,8 @@ import { usePresets } from "@/src/hooks/use-presets";
 import { ExportModal } from "@/src/components/ExportModal";
 import { useIconMetadata } from "@/src/hooks/use-icon-metadata";
 import { isCustomImageIcon } from "@/src/utils/locations";
+import { useRestriction } from "@/src/contexts/RestrictionContext";
+import type { ColorPaletteEntry } from "@/src/types/preset";
 
 export interface PreviewPaneProps {
   selectedLocations?: AppLocation[];
@@ -54,7 +56,79 @@ export function PreviewPane({
   const iconMetadata = useIconMetadata(selectedIconId);
 
   // Presets hook
-  const { selectedExportPreset, selectedStylePreset } = usePresets();
+  const { exportPresets, selectedExportPresetId, selectedStylePreset } =
+    usePresets();
+
+  // Restriction mode
+  const { isRestricted, allowedStyles, allowedExportPresets } =
+    useRestriction();
+
+  // Determine the effective export presets list and selected preset
+  const effectiveExportPresets = allowedExportPresets ?? exportPresets;
+  const actualSelectedExportPreset = React.useMemo(() => {
+    return effectiveExportPresets.find((p) => p.id === selectedExportPresetId);
+  }, [effectiveExportPresets, selectedExportPresetId]);
+
+  // Find the currently active restricted style based on background color
+  const activeRestrictedStyle = React.useMemo(() => {
+    if (!isRestricted || allowedStyles.length === 0 || !state) {
+      return null;
+    }
+
+    // Match by background color
+    const currentBg = state.backgroundColor;
+    const matchedStyle = allowedStyles.find((style) => {
+      if (
+        typeof currentBg === "string" &&
+        typeof style.backgroundColor === "string"
+      ) {
+        return currentBg.toLowerCase() === style.backgroundColor.toLowerCase();
+      }
+      if (
+        typeof currentBg === "object" &&
+        typeof style.backgroundColor === "object"
+      ) {
+        return (
+          JSON.stringify(currentBg) === JSON.stringify(style.backgroundColor)
+        );
+      }
+      return false;
+    });
+
+    return matchedStyle || allowedStyles[0];
+  }, [isRestricted, allowedStyles, state]);
+
+  // Compute color palette for canvas layers in restricted mode
+  // Uses ONLY the currently active style's icon color + accent colors
+  const restrictedColorPalette = React.useMemo(():
+    | ColorPaletteEntry[]
+    | null => {
+    if (!isRestricted || !activeRestrictedStyle) {
+      return null;
+    }
+
+    const palette: ColorPaletteEntry[] = [];
+
+    // Add the main icon color
+    palette.push({
+      id: "active-style-icon",
+      name: "Primary",
+      color: activeRestrictedStyle.iconColor,
+    });
+
+    // Add accent colors from this style's color palette
+    if (activeRestrictedStyle.colorPalette) {
+      activeRestrictedStyle.colorPalette.forEach((accentColor, colorIndex) => {
+        palette.push({
+          id: `active-style-accent-${colorIndex}`,
+          name: accentColor.name,
+          color: accentColor.color,
+        });
+      });
+    }
+
+    return palette;
+  }, [isRestricted, activeRestrictedStyle]);
 
   // Canvas editor state - use external if provided, otherwise create internal
   const internalCanvas = useCanvasEditor();
@@ -149,12 +223,12 @@ export function PreviewPane({
 
   // Calculate export info from selected preset
   const exportInfo = React.useMemo(() => {
-    if (!selectedExportPreset) {
+    if (!actualSelectedExportPreset) {
       return { total: 0, skipped: 0, exportable: 0 };
     }
 
     let skipped = 0;
-    for (const v of selectedExportPreset.variants) {
+    for (const v of actualSelectedExportPreset.variants) {
       if (isCanvasMode && (v.format === "svg" || v.format === "ico")) {
         skipped++;
       } else if (isCustomImage && (v.format === "svg" || v.format === "ico")) {
@@ -163,11 +237,11 @@ export function PreviewPane({
     }
 
     return {
-      total: selectedExportPreset.variants.length,
+      total: actualSelectedExportPreset.variants.length,
       skipped,
-      exportable: selectedExportPreset.variants.length - skipped,
+      exportable: actualSelectedExportPreset.variants.length - skipped,
     };
-  }, [selectedExportPreset, isCanvasMode, isCustomImage]);
+  }, [actualSelectedExportPreset, isCanvasMode, isCustomImage]);
 
   const canExport = isCanvasMode
     ? canvasState.layers.length > 0 && exportInfo.exportable > 0
@@ -233,7 +307,11 @@ export function PreviewPane({
                   <LayerProperties
                     layer={selectedLayer}
                     actions={canvasActions}
-                    paletteColors={selectedStylePreset?.colorPalette}
+                    paletteColors={
+                      restrictedColorPalette ??
+                      selectedStylePreset?.colorPalette
+                    }
+                    restrictedColorMode={isRestricted}
                   />
                 </div>
               </div>
@@ -335,9 +413,9 @@ export function PreviewPane({
                 title="No icon selected"
                 description="Select an icon from the search pane to see a preview here."
               />
-            ) : selectedExportPreset ? (
+            ) : actualSelectedExportPreset ? (
               <PresetPreview
-                preset={selectedExportPreset}
+                preset={actualSelectedExportPreset}
                 iconId={selectedIconId}
                 state={state}
                 isCanvasMode={false}

@@ -29,6 +29,7 @@ import { getRequiredExportVariants } from "../types/export";
 import { isCustomImageIcon } from "../utils/locations";
 import { ICON_PACKS } from "../constants/app";
 import { usePresets } from "../hooks/use-presets";
+import { useRestriction } from "../contexts/RestrictionContext";
 
 export interface ExportModalProps {
   open: boolean;
@@ -52,7 +53,14 @@ export function ExportModal({
     typeof validateExport
   > | null>(null);
 
-  const { selectedExportPreset } = usePresets();
+  const { exportPresets, selectedExportPresetId } = usePresets();
+  const { allowedExportPresets } = useRestriction();
+
+  // Get the effective presets list and find the selected preset
+  const effectiveExportPresets = allowedExportPresets ?? exportPresets;
+  const selectedExportPreset = React.useMemo(() => {
+    return effectiveExportPresets.find((p) => p.id === selectedExportPresetId);
+  }, [effectiveExportPresets, selectedExportPresetId]);
 
   const isCanvasMode = state.selectedPack === ICON_PACKS.CANVAS;
 

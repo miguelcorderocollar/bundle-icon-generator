@@ -40,6 +40,7 @@ import { CustomSvgInput } from "@/src/components/CustomSvgInput";
 import { CustomImageInput } from "@/src/components/CustomImageInput";
 import { getRemixIconCategories } from "@/src/utils/icon-catalog";
 import type { AppLocation } from "@/src/types/app-location";
+import { useRestriction } from "@/src/contexts/RestrictionContext";
 
 export interface IconSearchPaneProps {
   searchQuery?: string;
@@ -65,6 +66,7 @@ export function IconSearchPane({
 }: IconSearchPaneProps) {
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const [isMac, setIsMac] = React.useState<boolean>(false); // Default to false to avoid hydration mismatch
+  const { isRestricted, isIconPackAllowed, isLoading: isRestrictionLoading } = useRestriction();
   const [sortBy, setSortBy] = React.useState<SortOption>("name");
   const [_favorites, setFavorites] = React.useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(
@@ -157,54 +159,70 @@ export function IconSearchPane({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ICON_PACKS.ALL}>
-                <span className="flex items-center gap-2">
-                  <Layers className="size-4" />
-                  All Icons
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.GARDEN}>
-                <span className="flex items-center gap-2">
-                  <Library className="size-4" />
-                  Garden
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.FEATHER}>
-                <span className="flex items-center gap-2">
-                  <Library className="size-4" />
-                  Feather
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.REMIXICON}>
-                <span className="flex items-center gap-2">
-                  <Library className="size-4" />
-                  RemixIcon
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.EMOJI}>
-                <span className="flex items-center gap-2">
-                  <Smile className="size-4" />
-                  Emoji
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.CUSTOM_SVG}>
-                <span className="flex items-center gap-2">
-                  <Upload className="size-4" />
-                  Custom SVG
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.CUSTOM_IMAGE}>
-                <span className="flex items-center gap-2">
-                  <ImageIcon className="size-4" />
-                  Custom Image
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.CANVAS}>
-                <span className="flex items-center gap-2">
-                  <PenTool className="size-4" />
-                  Canvas Editor
-                </span>
-              </SelectItem>
+              {isIconPackAllowed(ICON_PACKS.ALL) && (
+                <SelectItem value={ICON_PACKS.ALL}>
+                  <span className="flex items-center gap-2">
+                    <Layers className="size-4" />
+                    All Icons
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.GARDEN) && (
+                <SelectItem value={ICON_PACKS.GARDEN}>
+                  <span className="flex items-center gap-2">
+                    <Library className="size-4" />
+                    Garden
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.FEATHER) && (
+                <SelectItem value={ICON_PACKS.FEATHER}>
+                  <span className="flex items-center gap-2">
+                    <Library className="size-4" />
+                    Feather
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.REMIXICON) && (
+                <SelectItem value={ICON_PACKS.REMIXICON}>
+                  <span className="flex items-center gap-2">
+                    <Library className="size-4" />
+                    RemixIcon
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.EMOJI) && (
+                <SelectItem value={ICON_PACKS.EMOJI}>
+                  <span className="flex items-center gap-2">
+                    <Smile className="size-4" />
+                    Emoji
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.CUSTOM_SVG) && (
+                <SelectItem value={ICON_PACKS.CUSTOM_SVG}>
+                  <span className="flex items-center gap-2">
+                    <Upload className="size-4" />
+                    Custom SVG
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.CUSTOM_IMAGE) && (
+                <SelectItem value={ICON_PACKS.CUSTOM_IMAGE}>
+                  <span className="flex items-center gap-2">
+                    <ImageIcon className="size-4" />
+                    Custom Image
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.CANVAS) && (
+                <SelectItem value={ICON_PACKS.CANVAS}>
+                  <span className="flex items-center gap-2">
+                    <PenTool className="size-4" />
+                    Canvas Editor
+                  </span>
+                </SelectItem>
+              )}
             </SelectContent>
           </Select>
           <p className="text-xs text-muted-foreground">
@@ -316,56 +334,77 @@ export function IconSearchPane({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ICON_PACKS.ALL}>
-                <span className="flex items-center gap-2">
-                  <Layers className="size-4" />
-                  All
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.GARDEN}>
-                <span className="flex items-center gap-2">
-                  <Library className="size-4" />
-                  Garden
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.FEATHER}>
-                <span className="flex items-center gap-2">
-                  <Library className="size-4" />
-                  Feather
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.REMIXICON}>
-                <span className="flex items-center gap-2">
-                  <Library className="size-4" />
-                  RemixIcon
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.EMOJI}>
-                <span className="flex items-center gap-2">
-                  <Smile className="size-4" />
-                  Emoji
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.CUSTOM_SVG}>
-                <span className="flex items-center gap-2">
-                  <Upload className="size-4" />
-                  Custom SVG
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.CUSTOM_IMAGE}>
-                <span className="flex items-center gap-2">
-                  <ImageIcon className="size-4" />
-                  Custom Image
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.CANVAS}>
-                <span className="flex items-center gap-2">
-                  <PenTool className="size-4" />
-                  Canvas Editor
-                </span>
-              </SelectItem>
+              {isIconPackAllowed(ICON_PACKS.ALL) && (
+                <SelectItem value={ICON_PACKS.ALL}>
+                  <span className="flex items-center gap-2">
+                    <Layers className="size-4" />
+                    All
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.GARDEN) && (
+                <SelectItem value={ICON_PACKS.GARDEN}>
+                  <span className="flex items-center gap-2">
+                    <Library className="size-4" />
+                    Garden
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.FEATHER) && (
+                <SelectItem value={ICON_PACKS.FEATHER}>
+                  <span className="flex items-center gap-2">
+                    <Library className="size-4" />
+                    Feather
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.REMIXICON) && (
+                <SelectItem value={ICON_PACKS.REMIXICON}>
+                  <span className="flex items-center gap-2">
+                    <Library className="size-4" />
+                    RemixIcon
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.EMOJI) && (
+                <SelectItem value={ICON_PACKS.EMOJI}>
+                  <span className="flex items-center gap-2">
+                    <Smile className="size-4" />
+                    Emoji
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.CUSTOM_SVG) && (
+                <SelectItem value={ICON_PACKS.CUSTOM_SVG}>
+                  <span className="flex items-center gap-2">
+                    <Upload className="size-4" />
+                    Custom SVG
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.CUSTOM_IMAGE) && (
+                <SelectItem value={ICON_PACKS.CUSTOM_IMAGE}>
+                  <span className="flex items-center gap-2">
+                    <ImageIcon className="size-4" />
+                    Custom Image
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.CANVAS) && (
+                <SelectItem value={ICON_PACKS.CANVAS}>
+                  <span className="flex items-center gap-2">
+                    <PenTool className="size-4" />
+                    Canvas Editor
+                  </span>
+                </SelectItem>
+              )}
             </SelectContent>
           </Select>
+          {!isRestrictionLoading && isRestricted ? (
+            <p className="text-xs text-muted-foreground">
+              Icon pack options are restricted in this session.
+            </p>
+          ) : null}
         </div>
 
         {/* Category Selector (only for RemixIcon) */}

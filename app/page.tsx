@@ -16,17 +16,24 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Info, Github, Globe, Moon, Sun } from "lucide-react";
+import { Info, Github, Globe, Moon, Sun, Lock } from "lucide-react";
 import { useTheme } from "@/src/components/ThemeProvider";
 import { WelcomeModal } from "@/src/components/WelcomeModal";
 import { hasSeenWelcome } from "@/src/utils/local-storage";
 import { CanvasControlsPane } from "@/src/components/CanvasControlsPane";
+import { useRestriction } from "@/src/contexts/RestrictionContext";
 
 export default function Home() {
   const { state, actions } = useIconGenerator();
   const [isInfoOpen, setIsInfoOpen] = React.useState(false);
   const [isWelcomeOpen, setIsWelcomeOpen] = React.useState(false);
   const { theme, mounted, toggleTheme } = useTheme();
+  const {
+    isRestricted,
+    isLoading: isRestrictionLoading,
+    defaultIconPack,
+    isIconPackAllowed,
+  } = useRestriction();
 
   // Canvas editor state - lifted to page level for sharing between components
   const { state: canvasState, actions: canvasActions } = useCanvasEditor();
@@ -40,6 +47,37 @@ export default function Home() {
       setIsWelcomeOpen(true);
     }
   }, []);
+
+  // Track if we've already set the initial pack in restricted mode
+  const hasSetRestrictedPackRef = React.useRef(false);
+
+  // Auto-select the default icon pack in restricted mode
+  // This ensures users start with the configured default, not whatever was persisted
+  React.useEffect(() => {
+    if (isRestrictionLoading) return;
+
+    // Check if current pack is allowed
+    if (!isIconPackAllowed(state.selectedPack)) {
+      // Current pack not allowed - switch to default
+      if (defaultIconPack) {
+        actions.setSelectedPack(defaultIconPack);
+        hasSetRestrictedPackRef.current = true;
+      }
+    } else if (isRestricted && !hasSetRestrictedPackRef.current) {
+      // In restricted mode, use the configured default pack on initial load
+      if (defaultIconPack && state.selectedPack !== defaultIconPack) {
+        actions.setSelectedPack(defaultIconPack);
+      }
+      hasSetRestrictedPackRef.current = true;
+    }
+  }, [
+    isRestrictionLoading,
+    isRestricted,
+    state.selectedPack,
+    defaultIconPack,
+    isIconPackAllowed,
+    actions,
+  ]);
 
   // Handler to apply icon color to all colorable layers in canvas
   const handleApplyIconColorToLayers = React.useCallback(
@@ -59,7 +97,15 @@ export default function Home() {
       <header className="border-b bg-background px-6 py-4">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-semibold">{APP_NAME}</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-semibold">{APP_NAME}</h1>
+              {!isRestrictionLoading && isRestricted ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+                  <Lock className="h-3 w-3" />
+                  Restricted Mode
+                </span>
+              ) : null}
+            </div>
             <p className="text-sm text-muted-foreground">{APP_DESCRIPTION}</p>
           </div>
           <div className="flex items-center gap-2">

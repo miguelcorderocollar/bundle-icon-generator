@@ -66,25 +66,27 @@ export function ExportPresetSelector({
           </SelectTrigger>
           <SelectContent>
             {/* Built-in presets */}
-            <SelectGroup>
-              <SelectLabel>Built-in Presets</SelectLabel>
-              {builtInPresets.map((preset) => (
-                <SelectItem key={preset.id} value={preset.id}>
-                  <div className="flex flex-col">
-                    <span>{preset.name}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {preset.variants.length} variant
-                      {preset.variants.length !== 1 ? "s" : ""}
-                    </span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectGroup>
+            {builtInPresets.length > 0 && (
+              <SelectGroup>
+                <SelectLabel>Built-in Presets</SelectLabel>
+                {builtInPresets.map((preset) => (
+                  <SelectItem key={preset.id} value={preset.id}>
+                    <div className="flex flex-col">
+                      <span>{preset.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {preset.variants.length} variant
+                        {preset.variants.length !== 1 ? "s" : ""}
+                      </span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            )}
 
             {/* Custom presets */}
             {customPresets.length > 0 && (
               <>
-                <SelectSeparator />
+                {builtInPresets.length > 0 && <SelectSeparator />}
                 <SelectGroup>
                   <SelectLabel>Custom Presets</SelectLabel>
                   {customPresets.map((preset) => (

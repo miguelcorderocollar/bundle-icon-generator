@@ -81,7 +81,9 @@ test.describe("Customization Flow", () => {
       await hexInputs.fill("#123456");
 
       // Preview should still be visible (heading, not tab)
-      await expect(page.getByRole("heading", { name: "Preview" })).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: "Preview" })
+      ).toBeVisible();
     }
   });
 

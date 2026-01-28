@@ -20,6 +20,9 @@ import { usePresets } from "@/src/hooks/use-presets";
 import type { BackgroundValue } from "@/src/utils/gradients";
 import type { ExportPreset, StylePreset } from "@/src/types/preset";
 import { isCustomImageIcon } from "@/src/utils/locations";
+import { useRestriction } from "@/src/contexts/RestrictionContext";
+import { RestrictedStyleSelector } from "@/src/components/RestrictedStyleSelector";
+import type { RestrictedStyle } from "@/src/types/restriction";
 
 export interface CustomizationControlsPaneProps {
   backgroundColor?: BackgroundValue;
@@ -44,11 +47,14 @@ export function CustomizationControlsPane({
   onSvgIconSizeChange,
   selectedIconId,
 }: CustomizationControlsPaneProps) {
+  // Restriction mode
+  const { isRestricted, allowedStyles, allowedExportPresets, isLoading: isRestrictionLoading } =
+    useRestriction();
+
   // Presets hook
   const {
     exportPresets,
     selectedExportPresetId,
-    selectedExportPreset,
     selectExportPreset,
     createExportPreset,
     updateExportPreset,
@@ -81,11 +87,38 @@ export function CustomizationControlsPane({
   // Check if current icon is a custom image
   const isCustomImage = isCustomImageIcon(selectedIconId);
 
+  // Determine the effective presets list (restricted or all)
+  const effectiveExportPresets = allowedExportPresets ?? exportPresets;
+
+  // Determine the actual selected preset from the effective list
+  const actualSelectedExportPreset = React.useMemo(() => {
+    return effectiveExportPresets.find((p) => p.id === selectedExportPresetId);
+  }, [effectiveExportPresets, selectedExportPresetId]);
+
+  // Auto-select first allowed export preset if current is not allowed
+  React.useEffect(() => {
+    if (!isRestricted || !allowedExportPresets) return;
+
+    // Check if current preset is in the allowed list
+    const isCurrentAllowed = allowedExportPresets.some(
+      (p) => p.id === selectedExportPresetId
+    );
+
+    if (!isCurrentAllowed && allowedExportPresets.length > 0) {
+      selectExportPreset(allowedExportPresets[0].id);
+    }
+  }, [
+    isRestricted,
+    allowedExportPresets,
+    selectedExportPresetId,
+    selectExportPreset,
+  ]);
+
   // Check if selected export preset has SVG variants
   const hasSvgVariants = React.useMemo(() => {
-    if (!selectedExportPreset) return false;
-    return selectedExportPreset.variants.some((v) => v.format === "svg");
-  }, [selectedExportPreset]);
+    if (!actualSelectedExportPreset) return false;
+    return actualSelectedExportPreset.variants.some((v) => v.format === "svg");
+  }, [actualSelectedExportPreset]);
 
   // Get the selected style preset (for accessing color palette)
   const selectedStylePreset = React.useMemo(() => {
@@ -101,6 +134,19 @@ export function CustomizationControlsPane({
       }
       if (onIconColorChange) {
         onIconColorChange(preset.iconColor);
+      }
+    },
+    [onBackgroundColorChange, onIconColorChange]
+  );
+
+  // Handle applying a restricted style
+  const handleApplyRestrictedStyle = React.useCallback(
+    (style: RestrictedStyle) => {
+      if (onBackgroundColorChange) {
+        onBackgroundColorChange(style.backgroundColor);
+      }
+      if (onIconColorChange) {
+        onIconColorChange(style.iconColor);
       }
     },
     [onBackgroundColorChange, onIconColorChange]
@@ -206,35 +252,37 @@ export function CustomizationControlsPane({
     <Card className="flex h-full flex-col">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <CardTitle>Customization</CardTitle>
-        <PresetSettingsModal
-          exportPresets={exportPresets}
-          stylePresets={stylePresets}
-          onCreateExportPreset={createExportPreset}
-          onUpdateExportPreset={updateExportPreset}
-          onDeleteExportPreset={deleteExportPreset}
-          onCreateStylePreset={createStylePreset}
-          onUpdateStylePreset={updateStylePreset}
-          onDeleteStylePreset={deleteStylePreset}
-          onExportPresets={exportAllPresets}
-          onImportPresets={importPresets}
-          onClearPresets={clearCustomPresets}
-          hasCustomPresets={hasCustomExportPresets || hasCustomStylePresets}
-          trigger={
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <Settings className="h-4 w-4" />
-            </Button>
-          }
-        />
+        {!isRestrictionLoading && !isRestricted ? (
+          <PresetSettingsModal
+            exportPresets={exportPresets}
+            stylePresets={stylePresets}
+            onCreateExportPreset={createExportPreset}
+            onUpdateExportPreset={updateExportPreset}
+            onDeleteExportPreset={deleteExportPreset}
+            onCreateStylePreset={createStylePreset}
+            onUpdateStylePreset={updateStylePreset}
+            onDeleteStylePreset={deleteStylePreset}
+            onExportPresets={exportAllPresets}
+            onImportPresets={importPresets}
+            onClearPresets={clearCustomPresets}
+            hasCustomPresets={hasCustomExportPresets || hasCustomStylePresets}
+            trigger={
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Settings className="h-4 w-4" />
+              </Button>
+            }
+          />
+        ) : null}
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-6 overflow-y-auto">
         {/* Export Preset Selection */}
         <ExportPresetSelector
-          presets={exportPresets}
+          presets={effectiveExportPresets}
           selectedPresetId={selectedExportPresetId}
           onSelectPreset={selectExportPreset}
-          onCreatePreset={handleCreateExportPreset}
-          onEditPreset={handleEditExportPreset}
-          onDeletePreset={deleteExportPreset}
+          onCreatePreset={!isRestrictionLoading && !isRestricted ? handleCreateExportPreset : undefined}
+          onEditPreset={!isRestrictionLoading && !isRestricted ? handleEditExportPreset : undefined}
+          onDeletePreset={!isRestrictionLoading && !isRestricted ? deleteExportPreset : undefined}
         />
 
         {/* SVG Warning for Custom Images */}
@@ -253,8 +301,8 @@ export function CustomizationControlsPane({
 
         <Separator />
 
-        {/* Style Preset Selection */}
-        {(onBackgroundColorChange || onIconColorChange) && (
+        {/* Style Preset Selection - hidden in restricted mode */}
+        {!isRestrictionLoading && !isRestricted && (onBackgroundColorChange || onIconColorChange) ? (
           <>
             <StylePresetSelector
               presets={stylePresets}
@@ -268,7 +316,7 @@ export function CustomizationControlsPane({
 
             <Separator />
           </>
-        )}
+        ) : null}
 
         {/* Icon Size */}
         {onIconSizeChange && (
@@ -314,24 +362,37 @@ export function CustomizationControlsPane({
         {/* Color Controls */}
         <div className="space-y-4">
           <h3 className="text-sm font-medium">Colors</h3>
-          {onIconColorChange &&
-            !selectedIconId?.startsWith("emoji-") &&
-            !isCustomImage && (
-              <ColorPicker
-                id="icon-color"
-                label="Icon Color"
-                value={iconColor}
-                onChange={onIconColorChange}
-                colorType="icon"
-                isCustomSvg={selectedIconId?.startsWith("custom-svg-")}
-                paletteColors={selectedStylePreset?.colorPalette}
-              />
-            )}
-          {onBackgroundColorChange && (
-            <BackgroundControls
-              value={backgroundColor}
-              onChange={onBackgroundColorChange}
+          {!isRestrictionLoading && isRestricted ? (
+            /* Restricted mode - show simplified style selector */
+            <RestrictedStyleSelector
+              styles={allowedStyles}
+              currentBackground={backgroundColor}
+              currentIconColor={iconColor}
+              onStyleSelect={handleApplyRestrictedStyle}
             />
+          ) : (
+            /* Normal mode - show full color controls */
+            <>
+              {onIconColorChange &&
+                !selectedIconId?.startsWith("emoji-") &&
+                !isCustomImage && (
+                  <ColorPicker
+                    id="icon-color"
+                    label="Icon Color"
+                    value={iconColor}
+                    onChange={onIconColorChange}
+                    colorType="icon"
+                    isCustomSvg={selectedIconId?.startsWith("custom-svg-")}
+                    paletteColors={selectedStylePreset?.colorPalette}
+                  />
+                )}
+              {onBackgroundColorChange && (
+                <BackgroundControls
+                  value={backgroundColor}
+                  onChange={onBackgroundColorChange}
+                />
+              )}
+            </>
           )}
         </div>
       </CardContent>

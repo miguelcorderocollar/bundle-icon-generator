@@ -22,6 +22,7 @@ vi.mock("../../hooks/use-icon-metadata", () => ({
 // Mock the usePresets hook
 vi.mock("../../hooks/use-presets", () => ({
   usePresets: vi.fn().mockReturnValue({
+    selectedExportPresetId: "zendesk-png",
     selectedExportPreset: {
       id: "zendesk-png",
       name: "Zendesk PNG",
@@ -32,10 +33,36 @@ vi.mock("../../hooks/use-presets", () => ({
       ],
       isBuiltIn: true,
     },
-    exportPresets: [],
+    exportPresets: [
+      {
+        id: "zendesk-png",
+        name: "Zendesk PNG",
+        description: "PNG files for Zendesk apps",
+        variants: [
+          { filename: "logo.png", width: 320, height: 320, format: "png" },
+          { filename: "logo-small.png", width: 128, height: 128, format: "png" },
+        ],
+        isBuiltIn: true,
+      },
+    ],
     stylePresets: [],
     selectExportPreset: vi.fn(),
     selectStylePreset: vi.fn(),
+  }),
+}));
+
+// Mock the useRestriction hook
+vi.mock("../../contexts/RestrictionContext", () => ({
+  useRestriction: vi.fn().mockReturnValue({
+    isRestricted: false,
+    allowedStyles: [],
+    allowedExportPresets: null,
+    allowedIconPacks: ["all", "garden", "feather", "remixicon", "emoji", "custom-svg", "custom-image", "canvas"],
+    isIconPackAllowed: () => true,
+    isExportPresetAllowed: () => true,
+    getShareableUrl: () => null,
+    isLoading: false,
+    config: null,
   }),
 }));
 

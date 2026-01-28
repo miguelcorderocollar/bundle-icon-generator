@@ -43,7 +43,7 @@ test.describe("Custom Image Upload", () => {
     const locationButton = page
       .getByRole("combobox")
       .filter({ hasText: /Select app locations/ });
-    
+
     // Check if element exists with a short timeout - if not, skip this test
     try {
       await locationButton.waitFor({ state: "visible", timeout: 2000 });
@@ -51,7 +51,7 @@ test.describe("Custom Image Upload", () => {
       // Location selector UI has been removed - skip this test
       return;
     }
-    
+
     // First select a location that requires SVG (top_bar)
     await locationButton.click();
 
@@ -103,7 +103,7 @@ test.describe("Custom Image Upload", () => {
     const locationButton = page
       .getByRole("combobox")
       .filter({ hasText: /Select app locations/ });
-    
+
     // Check if element exists with a short timeout - if not, skip this test
     try {
       await locationButton.waitFor({ state: "visible", timeout: 2000 });
@@ -111,7 +111,7 @@ test.describe("Custom Image Upload", () => {
       // Location selector UI has been removed - skip this test
       return;
     }
-    
+
     await locationButton.click();
 
     // Check that SVG-requiring locations show disabled reason (there are multiple)

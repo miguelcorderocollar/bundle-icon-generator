@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 
-export const alt = "Zendesk App Icon Generator";
+export const alt = "App Icon Generator";
 export const size = {
   width: 1200,
   height: 630,
@@ -175,7 +175,7 @@ export default async function Image() {
             lineHeight: "1.2",
           }}
         >
-          Zendesk App Icon Generator
+          App Icon Generator
         </div>
 
         {/* Description */}
@@ -188,7 +188,7 @@ export default async function Image() {
             lineHeight: "1.4",
           }}
         >
-          Generate compliant Zendesk app icon bundles with customizable colors,
+          Generate icon bundles for any platform with customizable colors,
           gradients, and one-click export
         </div>
 

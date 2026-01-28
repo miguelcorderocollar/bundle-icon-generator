@@ -23,7 +23,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import type {
   ExportPreset,
@@ -149,8 +148,8 @@ export function ExportPresetEditor({
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 min-h-0 -mx-6 px-6">
-          <div className="space-y-4 py-4 pr-4">
+        <div className="flex-1 min-h-0 overflow-y-auto -mx-6 px-6">
+          <div className="space-y-4 py-4">
             {/* Name and Description */}
             <div className="space-y-4">
               <div className="space-y-2">
@@ -204,9 +203,9 @@ export function ExportPresetEditor({
               </div>
             </div>
           </div>
-        </ScrollArea>
+        </div>
 
-        <DialogFooter className="flex-shrink-0">
+        <DialogFooter className="flex-shrink-0 border-t pt-4">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>

@@ -162,6 +162,10 @@ export function deleteExportPreset(id: string): boolean {
 
 /**
  * Get the currently selected export preset ID
+ *
+ * Note: This does NOT validate that the preset exists. The ID might reference
+ * a preset from a restriction config that isn't in localStorage or built-ins.
+ * Validation should happen at the UI layer where effectiveExportPresets is available.
  */
 export function getSelectedExportPresetId(): string {
   if (typeof window === "undefined") return DEFAULT_EXPORT_PRESET_ID;
@@ -170,9 +174,7 @@ export function getSelectedExportPresetId(): string {
     const stored = localStorage.getItem(STORAGE_KEYS.SELECTED_EXPORT_PRESET);
     if (!stored) return DEFAULT_EXPORT_PRESET_ID;
 
-    // Verify the preset exists
-    const preset = getExportPreset(stored);
-    return preset ? stored : DEFAULT_EXPORT_PRESET_ID;
+    return stored;
   } catch {
     return DEFAULT_EXPORT_PRESET_ID;
   }

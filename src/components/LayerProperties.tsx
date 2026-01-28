@@ -35,12 +35,18 @@ interface LayerPropertiesProps {
   actions: CanvasEditorActions;
   /** Optional color palette from the active style preset */
   paletteColors?: ColorPaletteEntry[];
+  /**
+   * When true, only palette colors can be used (no color picker).
+   * Used in restricted mode to limit color choices.
+   */
+  restrictedColorMode?: boolean;
 }
 
 export function LayerProperties({
   layer,
   actions,
   paletteColors,
+  restrictedColorMode = false,
 }: LayerPropertiesProps) {
   if (!layer) {
     return (
@@ -71,6 +77,7 @@ export function LayerProperties({
             layer={layer}
             actions={actions}
             paletteColors={paletteColors}
+            restrictedColorMode={restrictedColorMode}
           />
         )}
         {isImageLayer(layer) && (
@@ -84,6 +91,7 @@ export function LayerProperties({
             layer={layer}
             actions={actions}
             paletteColors={paletteColors}
+            restrictedColorMode={restrictedColorMode}
           />
         )}
       </div>
@@ -279,10 +287,12 @@ function IconProperties({
   layer,
   actions,
   paletteColors,
+  restrictedColorMode,
 }: {
   layer: IconLayer;
   actions: CanvasEditorActions;
   paletteColors?: ColorPaletteEntry[];
+  restrictedColorMode?: boolean;
 }) {
   const handleColorChange = React.useCallback(
     (color: string) => {
@@ -299,6 +309,7 @@ function IconProperties({
         value={layer.color}
         onChange={handleColorChange}
         paletteColors={paletteColors}
+        restrictedMode={restrictedColorMode}
       />
     </div>
   );
@@ -311,10 +322,12 @@ function TextProperties({
   layer,
   actions,
   paletteColors,
+  restrictedColorMode,
 }: {
   layer: TextLayer;
   actions: CanvasEditorActions;
   paletteColors?: ColorPaletteEntry[];
+  restrictedColorMode?: boolean;
 }) {
   const [fontSize, setFontSize] = React.useState(layer.fontSize);
   const debounceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -448,6 +461,7 @@ function TextProperties({
         value={layer.color}
         onChange={handleColorChange}
         paletteColors={paletteColors}
+        restrictedMode={restrictedColorMode}
       />
     </div>
   );
