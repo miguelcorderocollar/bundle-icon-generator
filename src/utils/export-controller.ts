@@ -5,12 +5,15 @@
 import JSZip from "jszip";
 import type { IconGeneratorState } from "../hooks/use-icon-generator";
 import type { AppLocation } from "../types/app-location";
+import type { CanvasEditorState } from "../types/canvas";
 import type { ExportMetadata } from "../types/export";
 import { getRequiredExportVariants } from "../types/export";
 import { generateExportAssets, renderPngFromImage } from "./renderer";
+import { generateCanvasExportAssets } from "./canvas-export";
 import { getIconById } from "./icon-catalog";
 import { isSolidColor, isGradient } from "./gradients";
 import { isCustomImageIcon, hasSvgRequirements } from "./locations";
+import { ICON_PACKS } from "../constants/app";
 
 /**
  * Export result
@@ -29,8 +32,16 @@ export interface ExportResult {
  */
 export async function generateExportZip(
   state: IconGeneratorState,
-  selectedLocations: AppLocation[]
+  selectedLocations: AppLocation[],
+  canvasState?: CanvasEditorState
 ): Promise<ExportResult> {
+  const isCanvasMode = state.selectedPack === ICON_PACKS.CANVAS;
+
+  // Canvas mode export
+  if (isCanvasMode && canvasState) {
+    return generateCanvasExportZip(state, canvasState);
+  }
+
   if (!state.selectedIconId) {
     throw new Error("No icon selected");
   }
@@ -129,6 +140,68 @@ export async function generateExportZip(
   };
 
   // Add metadata as JSON (optional, for debugging)
+  zip.file("export-metadata.json", JSON.stringify(metadata, null, 2));
+
+  // Generate ZIP blob
+  const zipBlob = await zip.generateAsync({ type: "blob" });
+
+  return {
+    zipBlob,
+    metadata,
+    filenames,
+  };
+}
+
+/**
+ * Generate export ZIP for canvas mode
+ */
+async function generateCanvasExportZip(
+  state: IconGeneratorState,
+  canvasState: CanvasEditorState
+): Promise<ExportResult> {
+  if (canvasState.layers.length === 0) {
+    throw new Error("No layers in canvas");
+  }
+
+  // Canvas mode only exports PNG files (logo.png and logo-small.png)
+  const variants = [
+    { filename: "logo.png", width: 1024, height: 1024, format: "png" as const },
+    {
+      filename: "logo-small.png",
+      width: 512,
+      height: 512,
+      format: "png" as const,
+    },
+  ];
+
+  // Create ZIP
+  const zip = new JSZip();
+  const filenames: string[] = [];
+
+  // Generate canvas assets
+  const assets = await generateCanvasExportAssets(canvasState, variants);
+
+  // Add all assets to ZIP
+  for (const [filename, blob] of assets.entries()) {
+    zip.file(filename, blob);
+    filenames.push(filename);
+  }
+
+  // Create metadata
+  const metadata: ExportMetadata = {
+    exportedAt: new Date().toISOString(),
+    iconId: "canvas",
+    iconName: "Canvas Composition",
+    customization: {
+      backgroundColor: state.backgroundColor,
+      iconColor: state.iconColor,
+      iconSize: state.iconSize,
+    },
+    locations: [],
+    variants: filenames,
+  };
+
+  // Add metadata as JSON
   zip.file("export-metadata.json", JSON.stringify(metadata, null, 2));
 
   // Generate ZIP blob

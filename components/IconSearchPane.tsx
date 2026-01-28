@@ -27,6 +27,7 @@ import {
   Smile,
   Image as ImageIcon,
   Layers,
+  PenTool,
 } from "lucide-react";
 import { IconGrid } from "@/src/components/IconGrid";
 import { useKeyboardShortcuts } from "@/src/hooks/use-keyboard-shortcuts";
@@ -50,6 +51,8 @@ export interface IconSearchPaneProps {
   onIconSelect?: (iconId: string) => void;
   /** Selected app locations - used to disable Custom Image when SVG locations are selected */
   selectedLocations?: AppLocation[];
+  /** When true, shows minimal UI (just pack selector) for canvas mode */
+  isCanvasMode?: boolean;
 }
 
 export function IconSearchPane({
@@ -60,6 +63,7 @@ export function IconSearchPane({
   selectedIconId,
   onIconSelect,
   selectedLocations = [],
+  isCanvasMode = false,
 }: IconSearchPaneProps) {
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const [isMac, setIsMac] = React.useState<boolean>(false); // Default to false to avoid hydration mismatch
@@ -144,6 +148,83 @@ export function IconSearchPane({
     onSearchFocus: handleFocusSearch,
     onEscape: handleClearSearch,
   });
+
+  // Minimal mode for canvas - just show pack selector
+  if (isCanvasMode) {
+    return (
+      <Card className="flex h-full flex-col">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base">Source</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3">
+          <Select value={selectedPack} onValueChange={handlePackChange}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ICON_PACKS.ALL}>
+                <span className="flex items-center gap-2">
+                  <Layers className="size-4" />
+                  All Icons
+                </span>
+              </SelectItem>
+              <SelectItem value={ICON_PACKS.GARDEN}>
+                <span className="flex items-center gap-2">
+                  <Library className="size-4" />
+                  Garden
+                </span>
+              </SelectItem>
+              <SelectItem value={ICON_PACKS.FEATHER}>
+                <span className="flex items-center gap-2">
+                  <Library className="size-4" />
+                  Feather
+                </span>
+              </SelectItem>
+              <SelectItem value={ICON_PACKS.REMIXICON}>
+                <span className="flex items-center gap-2">
+                  <Library className="size-4" />
+                  RemixIcon
+                </span>
+              </SelectItem>
+              <SelectItem value={ICON_PACKS.EMOJI}>
+                <span className="flex items-center gap-2">
+                  <Smile className="size-4" />
+                  Emoji
+                </span>
+              </SelectItem>
+              <SelectItem value={ICON_PACKS.CUSTOM_SVG}>
+                <span className="flex items-center gap-2">
+                  <Upload className="size-4" />
+                  Custom SVG
+                </span>
+              </SelectItem>
+              <SelectItem
+                value={ICON_PACKS.CUSTOM_IMAGE}
+                disabled={hasSvgLocationsSelected}
+              >
+                <span className="flex items-center gap-2">
+                  <ImageIcon className="size-4" />
+                  Custom Image
+                </span>
+              </SelectItem>
+              <SelectItem
+                value={ICON_PACKS.CANVAS}
+                disabled={hasSvgLocationsSelected}
+              >
+                <span className="flex items-center gap-2">
+                  <PenTool className="size-4" />
+                  Canvas Editor
+                </span>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            Select a different source to exit canvas mode.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="flex h-full flex-col">
@@ -307,6 +388,31 @@ export function IconSearchPane({
                   )}
                 </Tooltip>
               </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="w-full">
+                      <SelectItem
+                        value={ICON_PACKS.CANVAS}
+                        disabled={hasSvgLocationsSelected}
+                      >
+                        <span className="flex items-center gap-2">
+                          <PenTool className="size-4" />
+                          Canvas Editor
+                        </span>
+                      </SelectItem>
+                    </span>
+                  </TooltipTrigger>
+                  {hasSvgLocationsSelected && (
+                    <TooltipContent side="left">
+                      <p className="max-w-xs">
+                        Canvas Editor cannot be used with locations that require
+                        SVG icons (Nav Bar, Top Bar, Ticket Editor)
+                      </p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             </SelectContent>
           </Select>
         </div>
@@ -339,7 +445,16 @@ export function IconSearchPane({
 
         {/* Content based on selected pack */}
         <div className="flex-1 min-h-0 overflow-hidden">
-          {selectedPack === ICON_PACKS.CUSTOM_IMAGE ? (
+          {selectedPack === ICON_PACKS.CANVAS ? (
+            <div className="flex flex-col items-center justify-center h-full text-center p-4">
+              <PenTool className="size-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">Canvas Editor</h3>
+              <p className="text-sm text-muted-foreground max-w-xs">
+                Create custom icon compositions with multiple layers. Use the
+                Canvas tab in the Preview pane to add icons, images, and text.
+              </p>
+            </div>
+          ) : selectedPack === ICON_PACKS.CUSTOM_IMAGE ? (
             <CustomImageInput
               onSelect={(imageId) => {
                 handleIconSelect(imageId);

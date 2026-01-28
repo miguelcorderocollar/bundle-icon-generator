@@ -35,3 +35,11 @@ export type { EmojiInputProps } from "./EmojiInput";
 
 export { CustomImageInput } from "./CustomImageInput";
 export type { CustomImageInputProps } from "./CustomImageInput";
+
+// Canvas editor components
+export { CanvasEditor } from "./CanvasEditor";
+export { LayersPanel } from "./LayersPanel";
+export { LayerProperties } from "./LayerProperties";
+export { AddLayerModal } from "./AddLayerModal";
+export { CanvasPngPreview } from "./CanvasPngPreview";
+export { CanvasControlsPane } from "./CanvasControlsPane";

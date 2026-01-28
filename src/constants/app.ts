@@ -16,6 +16,7 @@ export const ICON_PACKS = {
   EMOJI: "emoji",
   CUSTOM_SVG: "custom-svg",
   CUSTOM_IMAGE: "custom-image",
+  CANVAS: "canvas",
 } as const;
 
 export type IconPack = (typeof ICON_PACKS)[keyof typeof ICON_PACKS];

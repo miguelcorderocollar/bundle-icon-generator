@@ -5,7 +5,7 @@ import { IconSearchPane } from "@/components/IconSearchPane";
 import { CustomizationControlsPane } from "@/components/CustomizationControlsPane";
 import { PreviewPane } from "@/components/PreviewPane";
 import { useIconGenerator } from "@/src/hooks/use-icon-generator";
-import { APP_NAME, APP_DESCRIPTION } from "@/src/constants/app";
+import { APP_NAME, APP_DESCRIPTION, ICON_PACKS } from "@/src/constants/app";
 import {
   Dialog,
   DialogContent,
@@ -19,12 +19,16 @@ import { Info, Github, Globe, Moon, Sun } from "lucide-react";
 import { useTheme } from "@/src/components/ThemeProvider";
 import { WelcomeModal } from "@/src/components/WelcomeModal";
 import { hasSeenWelcome } from "@/src/utils/local-storage";
+import { CanvasControlsPane } from "@/src/components/CanvasControlsPane";
 
 export default function Home() {
   const { state, actions } = useIconGenerator();
   const [isInfoOpen, setIsInfoOpen] = React.useState(false);
   const [isWelcomeOpen, setIsWelcomeOpen] = React.useState(false);
   const { theme, mounted, toggleTheme } = useTheme();
+
+  // Check if canvas mode is active
+  const isCanvasMode = state.selectedPack === ICON_PACKS.CANVAS;
 
   // Show welcome modal on first visit
   React.useEffect(() => {
@@ -169,48 +173,71 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main three-pane layout */}
+      {/* Main layout - different for canvas mode */}
       <main className="flex flex-1 overflow-hidden">
-        {/* Desktop: side-by-side, Mobile/Tablet: stacked */}
         <div className="flex h-full w-full flex-col gap-4 overflow-y-auto p-4 md:flex-row md:overflow-hidden">
-          {/* Icon Search Pane */}
-          <div className="flex min-h-[400px] flex-shrink-0 flex-col overflow-hidden md:h-full md:min-h-0 md:flex-1">
-            <IconSearchPane
-              searchQuery={state.searchQuery}
-              onSearchChange={actions.setSearchQuery}
-              selectedPack={state.selectedPack}
-              onPackChange={actions.setSelectedPack}
-              selectedIconId={state.selectedIconId}
-              onIconSelect={actions.setSelectedIconId}
-              selectedLocations={state.selectedLocations}
-            />
-          </div>
+          {isCanvasMode ? (
+            <>
+              {/* Canvas mode: 1/3 controls + 2/3 canvas editor */}
+              {/* Left: Source selector + Background controls */}
+              <div className="flex flex-shrink-0 flex-col overflow-hidden md:h-full md:w-80">
+                <CanvasControlsPane
+                  selectedPack={state.selectedPack}
+                  onPackChange={actions.setSelectedPack}
+                  backgroundColor={state.backgroundColor}
+                  onBackgroundColorChange={actions.setBackgroundColor}
+                />
+              </div>
 
-          {/* Customization Controls Pane */}
-          <div className="flex min-h-[400px] flex-shrink-0 flex-col overflow-hidden md:h-full md:min-h-0 md:flex-1">
-            <CustomizationControlsPane
-              selectedLocations={state.selectedLocations}
-              onLocationsChange={actions.setSelectedLocations}
-              backgroundColor={state.backgroundColor}
-              onBackgroundColorChange={actions.setBackgroundColor}
-              iconColor={state.iconColor}
-              onIconColorChange={actions.setIconColor}
-              iconSize={state.iconSize}
-              onIconSizeChange={actions.setIconSize}
-              svgIconSize={state.svgIconSize}
-              onSvgIconSizeChange={actions.setSvgIconSize}
-              selectedIconId={state.selectedIconId}
-            />
-          </div>
+              {/* Right: Preview Pane (canvas editor) */}
+              <div className="flex min-h-[400px] flex-1 flex-col overflow-hidden md:h-full md:min-h-0">
+                <PreviewPane
+                  selectedLocations={state.selectedLocations}
+                  selectedIconId={state.selectedIconId}
+                  state={state}
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Standard mode: three equal panes */}
+              <div className="flex min-h-[400px] flex-shrink-0 flex-col overflow-hidden md:h-full md:min-h-0 md:flex-1">
+                <IconSearchPane
+                  searchQuery={state.searchQuery}
+                  onSearchChange={actions.setSearchQuery}
+                  selectedPack={state.selectedPack}
+                  onPackChange={actions.setSelectedPack}
+                  selectedIconId={state.selectedIconId}
+                  onIconSelect={actions.setSelectedIconId}
+                  selectedLocations={state.selectedLocations}
+                />
+              </div>
 
-          {/* Preview Pane */}
-          <div className="flex min-h-[400px] flex-shrink-0 flex-col overflow-hidden md:h-full md:min-h-0 md:flex-1">
-            <PreviewPane
-              selectedLocations={state.selectedLocations}
-              selectedIconId={state.selectedIconId}
-              state={state}
-            />
-          </div>
+              <div className="flex min-h-[400px] flex-shrink-0 flex-col overflow-hidden md:h-full md:min-h-0 md:flex-1">
+                <CustomizationControlsPane
+                  selectedLocations={state.selectedLocations}
+                  onLocationsChange={actions.setSelectedLocations}
+                  backgroundColor={state.backgroundColor}
+                  onBackgroundColorChange={actions.setBackgroundColor}
+                  iconColor={state.iconColor}
+                  onIconColorChange={actions.setIconColor}
+                  iconSize={state.iconSize}
+                  onIconSizeChange={actions.setIconSize}
+                  svgIconSize={state.svgIconSize}
+                  onSvgIconSizeChange={actions.setSvgIconSize}
+                  selectedIconId={state.selectedIconId}
+                />
+              </div>
+
+              <div className="flex min-h-[400px] flex-shrink-0 flex-col overflow-hidden md:h-full md:min-h-0 md:flex-1">
+                <PreviewPane
+                  selectedLocations={state.selectedLocations}
+                  selectedIconId={state.selectedIconId}
+                  state={state}
+                />
+              </div>
+            </>
+          )}
         </div>
       </main>
     </div>

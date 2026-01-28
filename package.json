@@ -42,6 +42,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "emoji-picker-react": "^4.17.1",
+    "fabric": "^7.1.0",
     "feather-icons": "^4.29.2",
     "jszip": "^3.10.1",
     "lucide-react": "^0.553.0",

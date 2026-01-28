@@ -18,6 +18,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Download, AlertCircle, Loader2 } from "lucide-react";
 import type { IconGeneratorState } from "../hooks/use-icon-generator";
 import type { AppLocation } from "../types/app-location";
+import type { CanvasEditorState } from "../types/canvas";
 import {
   generateExportZip,
   downloadZip,
@@ -25,12 +26,15 @@ import {
 } from "../utils/export-controller";
 import { getRequiredExportVariants } from "../types/export";
 import { isCustomImageIcon } from "../utils/locations";
+import { ICON_PACKS } from "../constants/app";
 
 export interface ExportModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   state: IconGeneratorState;
   selectedLocations: AppLocation[];
+  /** Canvas state for canvas mode exports */
+  canvasState?: CanvasEditorState;
 }
 
 export function ExportModal({
@@ -38,6 +42,7 @@ export function ExportModal({
   onOpenChange,
   state,
   selectedLocations,
+  canvasState,
 }: ExportModalProps) {
   const [isExporting, setIsExporting] = React.useState(false);
   const [exportError, setExportError] = React.useState<string | null>(null);
@@ -45,31 +50,50 @@ export function ExportModal({
     typeof validateExport
   > | null>(null);
 
+  const isCanvasMode = state.selectedPack === ICON_PACKS.CANVAS;
+
   React.useEffect(() => {
     if (open) {
-      const validationResult = validateExport(state, selectedLocations);
-      setValidation(validationResult);
+      // For canvas mode, validate differently
+      if (isCanvasMode && canvasState) {
+        if (canvasState.layers.length === 0) {
+          setValidation({
+            valid: false,
+            errors: ["No layers in canvas. Add at least one layer to export."],
+            warnings: [],
+          });
+        } else {
+          setValidation({ valid: true, errors: [], warnings: [] });
+        }
+      } else {
+        const validationResult = validateExport(state, selectedLocations);
+        setValidation(validationResult);
+      }
       setExportError(null);
     }
-  }, [open, state, selectedLocations]);
+  }, [open, state, selectedLocations, isCanvasMode, canvasState]);
 
   const isCustomImage = isCustomImageIcon(state.selectedIconId);
 
-  // For custom images, filter out SVG variants
+  // For custom images or canvas mode, filter out SVG variants
   const variants = React.useMemo(() => {
     const allVariants = getRequiredExportVariants(selectedLocations);
-    if (isCustomImage) {
+    if (isCustomImage || isCanvasMode) {
       return allVariants.filter((v) => v.format === "png");
     }
     return allVariants;
-  }, [selectedLocations, isCustomImage]);
+  }, [selectedLocations, isCustomImage, isCanvasMode]);
 
   const handleExport = async () => {
     setIsExporting(true);
     setExportError(null);
 
     try {
-      const result = await generateExportZip(state, selectedLocations);
+      const result = await generateExportZip(
+        state,
+        selectedLocations,
+        canvasState
+      );
       downloadZip(result.zipBlob, "zendesk-icons.zip");
       onOpenChange(false);
     } catch (error) {

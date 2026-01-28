@@ -4,7 +4,7 @@ test.describe("Theme Toggle", () => {
   test.beforeEach(async ({ page }) => {
     // Set localStorage to skip welcome modal before navigating
     await page.addInitScript(() => {
-      localStorage.setItem('zdk-icon-generator:welcome-seen', 'true');
+      localStorage.setItem("zdk-icon-generator:welcome-seen", "true");
     });
     await page.goto("/");
     await page.waitForLoadState("networkidle");

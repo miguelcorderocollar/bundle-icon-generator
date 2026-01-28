@@ -21,3 +21,6 @@ export type {
 export { useDebouncedValue } from "./use-debounced-value";
 
 export { useIconMetadata } from "./use-icon-metadata";
+
+export { useCanvasEditor } from "./use-canvas-editor";
+export type { CanvasEditorActions } from "./use-canvas-editor";
