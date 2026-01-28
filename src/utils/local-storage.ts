@@ -263,3 +263,58 @@ export function resetWelcome(): void {
     console.error("Error resetting welcome state:", error);
   }
 }
+
+/**
+ * Admin restriction config persistence
+ */
+const ADMIN_CONFIG_KEY = `${STORAGE_PREFIX}:admin-config`;
+
+/**
+ * Save admin restriction config to localStorage
+ */
+export function saveAdminConfig(config: unknown): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    localStorage.setItem(ADMIN_CONFIG_KEY, JSON.stringify(config));
+  } catch (error) {
+    console.error("Error saving admin config to localStorage:", error);
+  }
+}
+
+/**
+ * Load admin restriction config from localStorage
+ */
+export function loadAdminConfig(): unknown | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const stored = localStorage.getItem(ADMIN_CONFIG_KEY);
+    if (!stored) {
+      return null;
+    }
+    return JSON.parse(stored);
+  } catch (error) {
+    console.error("Error loading admin config from localStorage:", error);
+    return null;
+  }
+}
+
+/**
+ * Clear admin restriction config from localStorage
+ */
+export function clearAdminConfig(): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    localStorage.removeItem(ADMIN_CONFIG_KEY);
+  } catch (error) {
+    console.error("Error clearing admin config from localStorage:", error);
+  }
+}

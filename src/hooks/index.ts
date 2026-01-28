@@ -24,3 +24,9 @@ export { useIconMetadata } from "./use-icon-metadata";
 
 export { useCanvasEditor } from "./use-canvas-editor";
 export type { CanvasEditorActions } from "./use-canvas-editor";
+
+export { usePresets } from "./use-presets";
+export type { UsePresetsReturn } from "./use-presets";
+
+export { useRestrictedMode } from "./use-restricted-mode";
+export type { UseRestrictedModeReturn } from "./use-restricted-mode";

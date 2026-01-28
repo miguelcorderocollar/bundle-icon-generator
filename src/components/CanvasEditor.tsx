@@ -22,6 +22,42 @@ import type { BackgroundValue } from "@/src/utils/gradients";
 import { isLinearGradient, isRadialGradient } from "@/src/utils/gradients";
 import type { CanvasEditorActions } from "@/src/hooks/use-canvas-editor";
 
+/**
+ * Serialize a layer to capture all render-affecting properties
+ */
+function serializeLayerForHash(layer: CanvasLayer): object {
+  const base = {
+    id: layer.id,
+    type: layer.type,
+    left: layer.left,
+    top: layer.top,
+    scaleX: layer.scaleX,
+    scaleY: layer.scaleY,
+    angle: layer.angle,
+    opacity: layer.opacity,
+    visible: layer.visible,
+  };
+
+  if (isIconLayer(layer)) {
+    return { ...base, iconId: layer.iconId, color: layer.color };
+  }
+  if (isImageLayer(layer)) {
+    return { ...base, imageDataUrl: layer.imageDataUrl };
+  }
+  if (isTextLayer(layer)) {
+    return {
+      ...base,
+      text: layer.text,
+      fontFamily: layer.fontFamily,
+      fontSize: layer.fontSize,
+      color: layer.color,
+      bold: layer.bold,
+      italic: layer.italic,
+    };
+  }
+  return base;
+}
+
 // Canvas sizes
 const CANVAS_SIZE = 400; // Display size
 const INTERNAL_SIZE = 1024; // Internal coordinate system
@@ -175,6 +211,15 @@ export function CanvasEditor({
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = React.useRef<fabric.StaticCanvas | null>(null);
 
+  // Create a stable hash of all render-affecting state for proper change detection
+  const stateHash = React.useMemo(() => {
+    return JSON.stringify({
+      layers: state.layers.map(serializeLayerForHash),
+      selectedLayerId: state.selectedLayerId,
+      backgroundColor: state.backgroundColor,
+    });
+  }, [state.layers, state.selectedLayerId, state.backgroundColor]);
+
   // Initialize static canvas (no interaction, preview only)
   React.useEffect(() => {
     if (!canvasRef.current || fabricCanvasRef.current) return;
@@ -227,7 +272,7 @@ export function CanvasEditor({
     };
 
     renderCanvas();
-  }, [state.layers, state.selectedLayerId, state.backgroundColor]);
+  }, [stateHash, state.layers, state.selectedLayerId, state.backgroundColor]);
 
   return (
     <div className="flex flex-col gap-3">

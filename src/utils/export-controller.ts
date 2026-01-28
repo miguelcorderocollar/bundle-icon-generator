@@ -7,13 +7,19 @@ import type { IconGeneratorState } from "../hooks/use-icon-generator";
 import type { AppLocation } from "../types/app-location";
 import type { CanvasEditorState } from "../types/canvas";
 import type { ExportMetadata } from "../types/export";
+import type { ExportPreset, ExportVariantConfig } from "../types/preset";
 import { getRequiredExportVariants } from "../types/export";
-import { generateExportAssets, renderPngFromImage } from "./renderer";
+import {
+  generateExportAssets,
+  renderRasterFromImage,
+  type ExportVariantSpec,
+} from "./renderer";
 import { generateCanvasExportAssets } from "./canvas-export";
 import { getIconById } from "./icon-catalog";
 import { isSolidColor, isGradient } from "./gradients";
 import { isCustomImageIcon, hasSvgRequirements } from "./locations";
 import { ICON_PACKS } from "../constants/app";
+import { getSelectedExportPreset } from "./preset-storage";
 
 /**
  * Export result
@@ -28,18 +34,43 @@ export interface ExportResult {
 }
 
 /**
+ * Export options
+ */
+export interface ExportOptions {
+  /** Custom export preset (uses selected preset if not provided) */
+  preset?: ExportPreset;
+  /** Use legacy Zendesk location-based variants */
+  useLegacyVariants?: boolean;
+}
+
+/**
+ * Convert ExportVariantConfig to ExportVariantSpec
+ */
+function toVariantSpec(config: ExportVariantConfig): ExportVariantSpec {
+  return {
+    filename: config.filename,
+    width: config.width,
+    height: config.height,
+    format: config.format,
+    quality: config.quality,
+    description: config.description,
+  };
+}
+
+/**
  * Generate export ZIP from current state
  */
 export async function generateExportZip(
   state: IconGeneratorState,
   selectedLocations: AppLocation[],
-  canvasState?: CanvasEditorState
+  canvasState?: CanvasEditorState,
+  options?: ExportOptions
 ): Promise<ExportResult> {
   const isCanvasMode = state.selectedPack === ICON_PACKS.CANVAS;
 
   // Canvas mode export
   if (isCanvasMode && canvasState) {
-    return generateCanvasExportZip(state, canvasState);
+    return generateCanvasExportZip(state, canvasState, options);
   }
 
   if (!state.selectedIconId) {
@@ -48,12 +79,28 @@ export async function generateExportZip(
 
   const isCustomImage = isCustomImageIcon(state.selectedIconId);
 
-  // Get required export variants
-  let variants = getRequiredExportVariants(selectedLocations);
+  // Determine which variants to use
+  let variants: ExportVariantSpec[];
 
-  // For custom images, filter out SVG variants (they can only export PNG)
+  if (options?.useLegacyVariants || !options?.preset) {
+    // Use legacy Zendesk location-based variants
+    const legacyVariants = getRequiredExportVariants(selectedLocations);
+    variants = legacyVariants.map((v) => ({
+      filename: v.filename,
+      width: v.width,
+      height: v.height,
+      format: v.format,
+    }));
+  } else {
+    // Use preset variants
+    variants = options.preset.variants.map(toVariantSpec);
+  }
+
+  // For custom images, filter out SVG variants (they can only export raster)
   if (isCustomImage) {
-    variants = variants.filter((v) => v.format === "png");
+    variants = variants.filter(
+      (v) => v.format === "png" || v.format === "jpeg" || v.format === "webp"
+    );
   }
 
   // Create ZIP
@@ -61,7 +108,7 @@ export async function generateExportZip(
   const filenames: string[] = [];
 
   if (isCustomImage) {
-    // Custom image export - use renderPngFromImage directly
+    // Custom image export - use renderRasterFromImage
     const imageDataUrl =
       typeof window !== "undefined"
         ? sessionStorage.getItem(state.selectedIconId)
@@ -72,12 +119,20 @@ export async function generateExportZip(
     }
 
     for (const variant of variants) {
-      const blob = await renderPngFromImage({
+      // Determine the raster format (ico and svg are not supported for custom images)
+      const rasterFormat: "png" | "jpeg" | "webp" =
+        variant.format === "jpeg" || variant.format === "webp"
+          ? variant.format
+          : "png";
+
+      const blob = await renderRasterFromImage({
         imageDataUrl,
         backgroundColor: state.backgroundColor,
         size: state.iconSize,
         width: variant.width,
         height: variant.height,
+        format: rasterFormat,
+        quality: variant.quality ? variant.quality / 100 : undefined,
       });
       zip.file(variant.filename, blob);
       filenames.push(variant.filename);
@@ -153,26 +208,67 @@ export async function generateExportZip(
 }
 
 /**
+ * Generate export ZIP using selected preset
+ */
+export async function generateExportZipWithPreset(
+  state: IconGeneratorState,
+  canvasState?: CanvasEditorState
+): Promise<ExportResult> {
+  const preset = getSelectedExportPreset();
+  return generateExportZip(state, [], canvasState, { preset });
+}
+
+/**
  * Generate export ZIP for canvas mode
  */
 async function generateCanvasExportZip(
   state: IconGeneratorState,
-  canvasState: CanvasEditorState
+  canvasState: CanvasEditorState,
+  options?: ExportOptions
 ): Promise<ExportResult> {
   if (canvasState.layers.length === 0) {
     throw new Error("No layers in canvas");
   }
 
-  // Canvas mode only exports PNG files (logo.png and logo-small.png)
-  const variants = [
-    { filename: "logo.png", width: 1024, height: 1024, format: "png" as const },
-    {
-      filename: "logo-small.png",
-      width: 512,
-      height: 512,
-      format: "png" as const,
-    },
-  ];
+  // Determine which variants to use
+  let variants: Array<{
+    filename: string;
+    width: number;
+    height: number;
+    format: "png" | "jpeg" | "webp";
+    quality?: number;
+  }>;
+
+  if (options?.preset) {
+    // Use preset variants, but filter to raster formats only (canvas doesn't support SVG)
+    variants = options.preset.variants
+      .filter(
+        (v) => v.format === "png" || v.format === "jpeg" || v.format === "webp"
+      )
+      .map((v) => ({
+        filename: v.filename,
+        width: v.width,
+        height: v.height,
+        format: v.format as "png" | "jpeg" | "webp",
+        quality: v.quality,
+      }));
+  } else {
+    // Default canvas export (Zendesk sizes)
+    variants = [
+      {
+        filename: "logo.png",
+        width: 1024,
+        height: 1024,
+        format: "png" as const,
+      },
+      {
+        filename: "logo-small.png",
+        width: 512,
+        height: 512,
+        format: "png" as const,
+      },
+    ];
+  }
 
   // Create ZIP
   const zip = new JSZip();

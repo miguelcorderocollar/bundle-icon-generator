@@ -28,13 +28,26 @@ import {
   AVAILABLE_FONTS,
 } from "@/src/types/canvas";
 import type { CanvasEditorActions } from "@/src/hooks/use-canvas-editor";
+import type { ColorPaletteEntry } from "@/src/types/preset";
 
 interface LayerPropertiesProps {
   layer: CanvasLayer | undefined;
   actions: CanvasEditorActions;
+  /** Optional color palette from the active style preset */
+  paletteColors?: ColorPaletteEntry[];
+  /**
+   * When true, only palette colors can be used (no color picker).
+   * Used in restricted mode to limit color choices.
+   */
+  restrictedColorMode?: boolean;
 }
 
-export function LayerProperties({ layer, actions }: LayerPropertiesProps) {
+export function LayerProperties({
+  layer,
+  actions,
+  paletteColors,
+  restrictedColorMode = false,
+}: LayerPropertiesProps) {
   if (!layer) {
     return (
       <div className="p-3 border rounded-lg bg-background">
@@ -63,6 +76,8 @@ export function LayerProperties({ layer, actions }: LayerPropertiesProps) {
             key={`icon-${layer.id}`}
             layer={layer}
             actions={actions}
+            paletteColors={paletteColors}
+            restrictedColorMode={restrictedColorMode}
           />
         )}
         {isImageLayer(layer) && (
@@ -75,6 +90,8 @@ export function LayerProperties({ layer, actions }: LayerPropertiesProps) {
             key={`text-${layer.id}`}
             layer={layer}
             actions={actions}
+            paletteColors={paletteColors}
+            restrictedColorMode={restrictedColorMode}
           />
         )}
       </div>
@@ -269,9 +286,13 @@ function TransformControls({
 function IconProperties({
   layer,
   actions,
+  paletteColors,
+  restrictedColorMode,
 }: {
   layer: IconLayer;
   actions: CanvasEditorActions;
+  paletteColors?: ColorPaletteEntry[];
+  restrictedColorMode?: boolean;
 }) {
   const handleColorChange = React.useCallback(
     (color: string) => {
@@ -287,6 +308,8 @@ function IconProperties({
         label="Icon Color"
         value={layer.color}
         onChange={handleColorChange}
+        paletteColors={paletteColors}
+        restrictedMode={restrictedColorMode}
       />
     </div>
   );
@@ -298,9 +321,13 @@ function IconProperties({
 function TextProperties({
   layer,
   actions,
+  paletteColors,
+  restrictedColorMode,
 }: {
   layer: TextLayer;
   actions: CanvasEditorActions;
+  paletteColors?: ColorPaletteEntry[];
+  restrictedColorMode?: boolean;
 }) {
   const [fontSize, setFontSize] = React.useState(layer.fontSize);
   const debounceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -433,6 +460,8 @@ function TextProperties({
         label="Text Color"
         value={layer.color}
         onChange={handleColorChange}
+        paletteColors={paletteColors}
+        restrictedMode={restrictedColorMode}
       />
     </div>
   );

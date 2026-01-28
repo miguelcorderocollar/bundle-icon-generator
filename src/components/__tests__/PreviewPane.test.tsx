@@ -4,15 +4,9 @@ import { PreviewPane } from "../../../components/PreviewPane";
 import type { IconGeneratorState } from "../../hooks/use-icon-generator";
 
 // Mock the child components
-vi.mock("../PngPreview", () => ({
-  PngPreview: ({ iconId }: { iconId?: string }) => (
-    <div data-testid="png-preview">PNG Preview: {iconId}</div>
-  ),
-}));
-
-vi.mock("../SvgPreview", () => ({
-  SvgPreview: ({ svgFiles }: { svgFiles: string[] }) => (
-    <div data-testid="svg-preview">SVG Preview: {svgFiles.join(", ")}</div>
+vi.mock("../PresetPreview", () => ({
+  PresetPreview: ({ preset }: { preset: { name: string } }) => (
+    <div data-testid="preset-preview">Preset Preview: {preset?.name}</div>
   ),
 }));
 
@@ -23,6 +17,53 @@ vi.mock("../ExportModal", () => ({
 
 vi.mock("../../hooks/use-icon-metadata", () => ({
   useIconMetadata: vi.fn().mockReturnValue(null),
+}));
+
+// Mock the usePresets hook
+vi.mock("../../hooks/use-presets", () => ({
+  usePresets: vi.fn().mockReturnValue({
+    selectedExportPresetId: "zendesk-png",
+    selectedExportPreset: {
+      id: "zendesk-png",
+      name: "Zendesk PNG",
+      description: "PNG files for Zendesk apps",
+      variants: [
+        { filename: "logo.png", width: 320, height: 320, format: "png" },
+        { filename: "logo-small.png", width: 128, height: 128, format: "png" },
+      ],
+      isBuiltIn: true,
+    },
+    exportPresets: [
+      {
+        id: "zendesk-png",
+        name: "Zendesk PNG",
+        description: "PNG files for Zendesk apps",
+        variants: [
+          { filename: "logo.png", width: 320, height: 320, format: "png" },
+          { filename: "logo-small.png", width: 128, height: 128, format: "png" },
+        ],
+        isBuiltIn: true,
+      },
+    ],
+    stylePresets: [],
+    selectExportPreset: vi.fn(),
+    selectStylePreset: vi.fn(),
+  }),
+}));
+
+// Mock the useRestriction hook
+vi.mock("../../contexts/RestrictionContext", () => ({
+  useRestriction: vi.fn().mockReturnValue({
+    isRestricted: false,
+    allowedStyles: [],
+    allowedExportPresets: null,
+    allowedIconPacks: ["all", "garden", "feather", "remixicon", "emoji", "custom-svg", "custom-image", "canvas"],
+    isIconPackAllowed: () => true,
+    isExportPresetAllowed: () => true,
+    getShareableUrl: () => null,
+    isLoading: false,
+    config: null,
+  }),
 }));
 
 describe("PreviewPane", () => {
@@ -42,7 +83,10 @@ describe("PreviewPane", () => {
 
   it("renders Preview title", () => {
     render(<PreviewPane />);
-    expect(screen.getByText("Preview")).toBeInTheDocument();
+    // Check for the CardTitle which is a heading
+    expect(
+      screen.getByRole("heading", { name: /preview/i })
+    ).toBeInTheDocument();
   });
 
   it("shows empty state when no icon selected", () => {
@@ -68,7 +112,7 @@ describe("PreviewPane", () => {
     expect(screen.getByRole("button", { name: /export zip/i })).toBeEnabled();
   });
 
-  it("shows PNG preview when icon is selected", () => {
+  it("shows Edit and Preview tabs when icon is selected", () => {
     const state = createMockState({ selectedIconId: "test-icon" });
     render(
       <PreviewPane
@@ -77,21 +121,8 @@ describe("PreviewPane", () => {
         state={state}
       />
     );
-    expect(screen.getByTestId("png-preview")).toBeInTheDocument();
-  });
-
-  it("shows tabs when locations require SVG files", () => {
-    const state = createMockState({ selectedIconId: "test-icon" });
-    render(
-      <PreviewPane
-        selectedIconId="test-icon"
-        selectedLocations={["top_bar"]}
-        state={state}
-      />
-    );
-    // Should have PNG and SVG tabs
-    expect(screen.getByRole("tab", { name: /png/i })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: /svg/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /edit/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /preview/i })).toBeInTheDocument();
   });
 
   it("shows file count in export section", () => {
@@ -99,7 +130,7 @@ describe("PreviewPane", () => {
     render(
       <PreviewPane
         selectedIconId="test-icon"
-        selectedLocations={["top_bar"]}
+        selectedLocations={[]}
         state={state}
       />
     );

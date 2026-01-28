@@ -70,8 +70,8 @@ test.describe("Customization Flow", () => {
   });
 
   test("preview updates when colors change", async ({ page }) => {
-    // Get the preview pane by its exact card title
-    const previewTitle = page.getByText("Preview", { exact: true });
+    // Get the preview pane by its exact card title (heading, not tab)
+    const previewTitle = page.getByRole("heading", { name: "Preview" });
     await expect(previewTitle).toBeVisible();
 
     // Change a color and verify preview is still visible
@@ -80,8 +80,10 @@ test.describe("Customization Flow", () => {
       await hexInputs.clear();
       await hexInputs.fill("#123456");
 
-      // Preview should still be visible
-      await expect(previewTitle).toBeVisible();
+      // Preview should still be visible (heading, not tab)
+      await expect(
+        page.getByRole("heading", { name: "Preview" })
+      ).toBeVisible();
     }
   });
 

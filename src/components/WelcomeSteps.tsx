@@ -13,7 +13,6 @@ import {
   Grid3x3,
   Smile,
   Upload,
-  MapPin,
   Layers,
   Pipette,
   Maximize,
@@ -21,8 +20,9 @@ import {
   FileImage,
   FileType,
   FolderArchive,
-  ShieldCheck,
-  FolderCheck,
+  PenTool,
+  Sliders,
+  FolderInput,
   type LucideIcon,
 } from "lucide-react";
 import { KALE_COLORS } from "@/src/utils/gradients";
@@ -86,12 +86,12 @@ function StepContent({
 export const WELCOME_STEPS = [
   {
     icon: Sparkles,
-    title: "Welcome to Zendesk App Icon Generator",
+    title: "Welcome to App Icon Generator",
     description:
-      "Generate compliant Zendesk app icon bundles quickly and easily, all in your browser.",
+      "Generate icon bundles for any platform, quickly and easily, all in your browser.",
     features: [
       {
-        text: "Create compliant icon sets for Zendesk apps in minutes",
+        text: "Create icon sets for Zendesk, Raycast, macOS, PWA, and more",
         icon: Zap,
       },
       {
@@ -100,7 +100,7 @@ export const WELCOME_STEPS = [
       },
       { text: "Save time with automated sizing and naming", icon: Clock },
       {
-        text: "Ensure compliance with Zendesk's icon requirements",
+        text: "Flexible export presets for different platforms",
         icon: CheckCircle,
       },
     ],
@@ -125,20 +125,24 @@ export const WELCOME_STEPS = [
         text: "Custom SVG/Image - Upload and use your own designs",
         icon: Upload,
       },
+      {
+        text: "Canvas Editor - Create multi-layer icon compositions",
+        icon: PenTool,
+      },
     ],
   },
   {
     icon: Settings,
-    title: "Customize for Your Zendesk App",
+    title: "Customize with Presets",
     description:
-      "Fine-tune your icons with real-time previews and flexible options.",
+      "Use export presets for different platforms and style presets for quick theming.",
     features: [
       {
-        text: "Select app locations: Support, Chat, Talk, Nav Bar, Top Bar, Ticket Editor",
-        icon: MapPin,
+        text: "Export Presets: Choose from Zendesk, Raycast, macOS, PWA, Favicon, and more",
+        icon: Sliders,
       },
       {
-        text: "Choose background styles: Solid colors, linear gradients, radial gradients",
+        text: "Style Presets: Save and apply color schemes with one click",
         icon: Layers,
       },
       {
@@ -149,21 +153,25 @@ export const WELCOME_STEPS = [
         text: "Control icon sizing for both PNG and SVG exports",
         icon: Maximize,
       },
-      { text: "Preview all variants in real-time before exporting", icon: Eye },
+      { text: "Preview all export variants in real-time", icon: Eye },
+      {
+        text: "Import/Export your custom presets for backup or sharing",
+        icon: FolderInput,
+      },
     ],
   },
   {
     icon: Download,
-    title: "Export Compliant Icon Bundles",
+    title: "Export Your Icon Bundle",
     description:
-      "Download a ZIP file with all required assets, properly sized and named.",
+      "Download a ZIP file with all required assets, sized and named for your target platform.",
     features: [
       {
-        text: "PNG assets: logo.png (320×320) and logo-small.png (128×128)",
+        text: "Multiple formats: PNG, JPEG, WebP, SVG, and ICO",
         icon: FileImage,
       },
       {
-        text: "SVG assets: Location-specific icons with transparent backgrounds",
+        text: "Custom sizes and quality settings per export preset",
         icon: FileType,
       },
       {
@@ -171,12 +179,8 @@ export const WELCOME_STEPS = [
         icon: FolderArchive,
       },
       {
-        text: "Built-in validation for colors, locations, and compliance",
-        icon: ShieldCheck,
-      },
-      {
-        text: "Ready to add directly to your Zendesk app project",
-        icon: FolderCheck,
+        text: "Create custom export presets for your specific needs",
+        icon: Sliders,
       },
     ],
   },

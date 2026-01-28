@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/src/components/ThemeProvider";
+import { RestrictionProvider } from "@/src/contexts/RestrictionContext";
 import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
@@ -16,16 +17,14 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Zendesk App Icon Generator",
-    template: "%s | Zendesk App Icon Generator",
+    default: "App Icon Generator",
+    template: "%s | App Icon Generator",
   },
   description:
-    "Generate compliant Zendesk app icon bundles. A local-first tool for crafting Zendesk app icons with customizable colors, effects, and one-click export.",
+    "Generate icon bundles for any platform. A local-first tool for crafting app icons with customizable colors, effects, and one-click export.",
   keywords: [
-    "Zendesk",
     "app icon",
     "icon generator",
-    "Zendesk app",
     "icon bundle",
     "Zendesk Garden",
     "Feather icons",
@@ -59,25 +58,25 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
-    title: "Zendesk App Icon Generator",
+    title: "App Icon Generator",
     description:
-      "Generate compliant Zendesk app icon bundles. A local-first tool for crafting Zendesk app icons with customizable colors, effects, and one-click export.",
-    siteName: "Zendesk App Icon Generator",
+      "Generate icon bundles for any platform. A local-first tool for crafting app icons with customizable colors, effects, and one-click export.",
+    siteName: "App Icon Generator",
     images: [
       {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "Zendesk App Icon Generator",
+        alt: "App Icon Generator",
         type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Zendesk App Icon Generator",
+    title: "App Icon Generator",
     description:
-      "Generate compliant Zendesk app icon bundles. A local-first tool for crafting Zendesk app icons.",
+      "Generate icon bundles for any platform. A local-first tool for crafting app icons.",
     creator: "@miguelcorderocollar",
     images: ["/opengraph-image"],
   },
@@ -145,9 +144,9 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    name: "Zendesk App Icon Generator",
+    name: "App Icon Generator",
     description:
-      "Generate compliant Zendesk app icon bundles. A local-first tool for crafting Zendesk app icons with customizable colors, effects, and one-click export.",
+      "Generate icon bundles for any platform. A local-first tool for crafting app icons with customizable colors, effects, and one-click export.",
     url: baseUrl,
     applicationCategory: "DeveloperApplication",
     operatingSystem: "Web Browser",
@@ -168,7 +167,7 @@ export default function RootLayout({
     inLanguage: "en-US",
     browserRequirements: "Requires JavaScript. Modern web browser required.",
     featureList: [
-      "Zendesk app icon generation",
+      "App icon generation for multiple platforms",
       "Multiple icon packs (Garden, Feather, RemixIcon, Emoji)",
       "Custom SVG and image upload",
       "Color customization with gradients",
@@ -202,7 +201,9 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <RestrictionProvider>{children}</RestrictionProvider>
+        </ThemeProvider>
         <Analytics />
       </body>
     </html>

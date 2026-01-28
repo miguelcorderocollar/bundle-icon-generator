@@ -597,6 +597,225 @@ export async function renderPng(options: PngRenderOptions): Promise<Blob> {
 }
 
 /**
+ * Render options with format and quality support
+ */
+export interface RasterRenderOptions extends PngRenderOptions {
+  /** Output format (defaults to png) */
+  format?: "png" | "jpeg" | "webp";
+  /** Quality for JPEG/WebP (0-1, defaults to 0.92) */
+  quality?: number;
+}
+
+/**
+ * Render icon to raster format (PNG, JPEG, or WebP)
+ */
+export async function renderRaster(
+  options: RasterRenderOptions
+): Promise<Blob> {
+  const {
+    icon,
+    backgroundColor,
+    iconColor,
+    size,
+    width,
+    height,
+    format = "png",
+    quality = 0.92,
+  } = options;
+
+  // Create canvas
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    throw new Error("Failed to get canvas context");
+  }
+
+  // For JPEG, fill with background first since JPEG doesn't support transparency
+  // For PNG/WebP with transparent background, clear to transparent
+  if (format === "jpeg" || backgroundColor !== "transparent") {
+    if (isGradient(backgroundColor)) {
+      const gradient = createCanvasGradient(
+        ctx,
+        backgroundColor,
+        width,
+        height
+      );
+      ctx.fillStyle = gradient;
+    } else {
+      ctx.fillStyle = backgroundColor;
+    }
+    ctx.fillRect(0, 0, width, height);
+  }
+
+  // Render icon as SVG first, then draw to canvas
+  const canvasSize = Math.min(width, height);
+  const svgString = renderSvg({
+    icon,
+    backgroundColor: "transparent",
+    iconColor,
+    size: canvasSize,
+  });
+
+  // Convert SVG to image
+  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    const blob = new Blob([svgString], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+    image.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(image);
+    };
+    image.onerror = reject;
+    image.src = url;
+  });
+
+  // Use the size option to control the actual icon size on canvas
+  const minSize = 48;
+  const maxSize = 200;
+  const sizePercent = Math.max(
+    0.3,
+    Math.min(1.0, ((size - minSize) / (maxSize - minSize)) * 0.7 + 0.3)
+  );
+  const iconSize = canvasSize * sizePercent;
+  const iconX = (width - iconSize) / 2;
+  const iconY = (height - iconSize) / 2;
+
+  // Draw icon
+  ctx.drawImage(img, iconX, iconY, iconSize, iconSize);
+
+  // Get MIME type
+  const mimeType =
+    format === "jpeg"
+      ? "image/jpeg"
+      : format === "webp"
+        ? "image/webp"
+        : "image/png";
+
+  // Convert to blob
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error(`Failed to convert canvas to ${format}`));
+        }
+      },
+      mimeType,
+      format === "png" ? undefined : quality
+    );
+  });
+}
+
+/**
+ * Render options for raster from custom image with format support
+ */
+export interface ImageRasterRenderOptions extends ImageRenderOptions {
+  /** Output format (defaults to png) */
+  format?: "png" | "jpeg" | "webp";
+  /** Quality for JPEG/WebP (0-1, defaults to 0.92) */
+  quality?: number;
+}
+
+/**
+ * Render custom image to raster format (PNG, JPEG, or WebP)
+ */
+export async function renderRasterFromImage(
+  options: ImageRasterRenderOptions
+): Promise<Blob> {
+  const {
+    imageDataUrl,
+    backgroundColor,
+    size,
+    width,
+    height,
+    format = "png",
+    quality = 0.92,
+  } = options;
+
+  // Create canvas
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    throw new Error("Failed to get canvas context");
+  }
+
+  // Fill background (solid color or gradient)
+  if (isGradient(backgroundColor)) {
+    const gradient = createCanvasGradient(ctx, backgroundColor, width, height);
+    ctx.fillStyle = gradient;
+  } else {
+    ctx.fillStyle = backgroundColor;
+  }
+  ctx.fillRect(0, 0, width, height);
+
+  // Load the image from data URL
+  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("Failed to load custom image"));
+    image.src = imageDataUrl;
+  });
+
+  // Calculate target size based on slider
+  const canvasSize = Math.min(width, height);
+  const minSize = 48;
+  const maxSize = 200;
+  const sizePercent = Math.max(
+    0.3,
+    Math.min(1.0, ((size - minSize) / (maxSize - minSize)) * 0.7 + 0.3)
+  );
+  const targetSize = canvasSize * sizePercent;
+
+  // Calculate scale to fit image within target size while preserving aspect ratio
+  const imgAspect = img.width / img.height;
+  let drawWidth: number;
+  let drawHeight: number;
+
+  if (imgAspect >= 1) {
+    drawWidth = targetSize;
+    drawHeight = targetSize / imgAspect;
+  } else {
+    drawHeight = targetSize;
+    drawWidth = targetSize * imgAspect;
+  }
+
+  // Center the image on the canvas
+  const drawX = (width - drawWidth) / 2;
+  const drawY = (height - drawHeight) / 2;
+
+  // Draw the image
+  ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+
+  // Get MIME type
+  const mimeType =
+    format === "jpeg"
+      ? "image/jpeg"
+      : format === "webp"
+        ? "image/webp"
+        : "image/png";
+
+  // Convert to blob
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error(`Failed to convert canvas to ${format}`));
+        }
+      },
+      mimeType,
+      format === "png" ? undefined : quality
+    );
+  });
+}
+
+/**
  * Render options for PNG from custom image
  */
 export interface ImageRenderOptions {
@@ -707,19 +926,34 @@ const ZENDESK_LOCATION_SVG_FILES = [
 ];
 
 /**
- * Generate all export assets from state
+ * Supported export format type
+ */
+export type ExportFormatType = "png" | "jpeg" | "webp" | "svg" | "ico";
+
+/**
+ * Export variant with extended format support
+ */
+export interface ExportVariantSpec {
+  filename: string;
+  width: number;
+  height: number;
+  format: ExportFormatType;
+  quality?: number;
+  description?: string;
+}
+
+/**
+ * Generate all export assets from state with extended format support
  */
 export async function generateExportAssets(
   icon: IconMetadata,
   state: IconGeneratorState,
-  variants: Array<{
-    filename: string;
-    width: number;
-    height: number;
-    format: "png" | "svg";
-  }>
+  variants: ExportVariantSpec[]
 ): Promise<Map<string, Blob>> {
   const assets = new Map<string, Blob>();
+
+  // Collect PNG blobs for ICO generation (16x16 and 32x32)
+  const icoPngBlobs: { variant: ExportVariantSpec; blob: Blob }[] = [];
 
   for (const variant of variants) {
     if (variant.format === "svg") {
@@ -758,19 +992,124 @@ export async function generateExportAssets(
       });
       const blob = new Blob([svgString], { type: "image/svg+xml" });
       assets.set(variant.filename, blob);
+    } else if (variant.format === "ico") {
+      // ICO rendering - collect PNG blobs first, generate ICO at the end
+      // For ICO, we need 16x16 and 32x32 PNGs
+      const sizes = [16, 32];
+      for (const size of sizes) {
+        const blob = await renderRaster({
+          icon,
+          backgroundColor: state.backgroundColor,
+          iconColor: state.iconColor,
+          size: state.iconSize,
+          width: size,
+          height: size,
+          format: "png",
+        });
+        icoPngBlobs.push({ variant, blob });
+      }
     } else {
-      // PNG rendering
-      const blob = await renderPng({
+      // Raster rendering (PNG, JPEG, WebP)
+      const blob = await renderRaster({
         icon,
         backgroundColor: state.backgroundColor,
         iconColor: state.iconColor,
         size: state.iconSize,
         width: variant.width,
         height: variant.height,
+        format: variant.format,
+        quality: variant.quality ? variant.quality / 100 : undefined,
       });
       assets.set(variant.filename, blob);
     }
   }
 
+  // Generate ICO files from collected PNGs
+  if (icoPngBlobs.length > 0) {
+    // Group by variant filename
+    const icoVariants = new Map<string, Blob[]>();
+    for (const { variant, blob } of icoPngBlobs) {
+      const existing = icoVariants.get(variant.filename) || [];
+      existing.push(blob);
+      icoVariants.set(variant.filename, existing);
+    }
+
+    // Generate ICO for each variant
+    for (const [filename, pngBlobs] of icoVariants.entries()) {
+      const icoBlob = await generateIcoFromPngs(pngBlobs);
+      assets.set(filename, icoBlob);
+    }
+  }
+
   return assets;
+}
+
+/**
+ * Generate ICO file from PNG blobs
+ * ICO format: Header (6 bytes) + Image entries (16 bytes each) + Image data
+ */
+async function generateIcoFromPngs(pngBlobs: Blob[]): Promise<Blob> {
+  const images: { width: number; height: number; data: ArrayBuffer }[] = [];
+
+  for (const blob of pngBlobs) {
+    const arrayBuffer = await blob.arrayBuffer();
+
+    // Parse PNG header to get dimensions
+    const view = new DataView(arrayBuffer);
+    // PNG width is at offset 16-19, height at 20-23 (big-endian)
+    const width = view.getUint32(16, false);
+    const height = view.getUint32(20, false);
+
+    images.push({
+      width: width > 255 ? 0 : width, // 0 means 256 in ICO format
+      height: height > 255 ? 0 : height,
+      data: arrayBuffer,
+    });
+  }
+
+  // Sort by size (smallest first)
+  images.sort((a, b) => (a.width || 256) - (b.width || 256));
+
+  // Build ICO file
+  const headerSize = 6;
+  const entrySize = 16;
+  const dataOffset = headerSize + entrySize * images.length;
+
+  // Calculate total size
+  let totalSize = dataOffset;
+  for (const img of images) {
+    totalSize += img.data.byteLength;
+  }
+
+  const buffer = new ArrayBuffer(totalSize);
+  const view = new DataView(buffer);
+
+  // ICO Header
+  view.setUint16(0, 0, true); // Reserved
+  view.setUint16(2, 1, true); // Type: 1 = ICO
+  view.setUint16(4, images.length, true); // Image count
+
+  // Image entries and data
+  let currentOffset = dataOffset;
+  for (let i = 0; i < images.length; i++) {
+    const img = images[i];
+    const entryOffset = headerSize + i * entrySize;
+
+    // Image entry
+    view.setUint8(entryOffset, img.width); // Width
+    view.setUint8(entryOffset + 1, img.height); // Height
+    view.setUint8(entryOffset + 2, 0); // Color palette
+    view.setUint8(entryOffset + 3, 0); // Reserved
+    view.setUint16(entryOffset + 4, 1, true); // Color planes
+    view.setUint16(entryOffset + 6, 32, true); // Bits per pixel
+    view.setUint32(entryOffset + 8, img.data.byteLength, true); // Size
+    view.setUint32(entryOffset + 12, currentOffset, true); // Offset
+
+    // Copy image data
+    const dest = new Uint8Array(buffer, currentOffset, img.data.byteLength);
+    dest.set(new Uint8Array(img.data));
+    currentOffset += img.data.byteLength;
+  }
+
+  return new Blob([buffer], { type: "image/x-icon" });
 }

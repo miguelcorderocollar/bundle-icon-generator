@@ -39,8 +39,8 @@ import { EmojiInput } from "@/src/components/EmojiInput";
 import { CustomSvgInput } from "@/src/components/CustomSvgInput";
 import { CustomImageInput } from "@/src/components/CustomImageInput";
 import { getRemixIconCategories } from "@/src/utils/icon-catalog";
-import { hasSvgRequirements } from "@/src/utils/locations";
 import type { AppLocation } from "@/src/types/app-location";
+import { useRestriction } from "@/src/contexts/RestrictionContext";
 
 export interface IconSearchPaneProps {
   searchQuery?: string;
@@ -49,7 +49,7 @@ export interface IconSearchPaneProps {
   onPackChange?: (pack: IconPack) => void;
   selectedIconId?: string;
   onIconSelect?: (iconId: string) => void;
-  /** Selected app locations - used to disable Custom Image when SVG locations are selected */
+  /** Selected app locations - kept for backwards compatibility */
   selectedLocations?: AppLocation[];
   /** When true, shows minimal UI (just pack selector) for canvas mode */
   isCanvasMode?: boolean;
@@ -62,11 +62,11 @@ export function IconSearchPane({
   onPackChange,
   selectedIconId,
   onIconSelect,
-  selectedLocations = [],
   isCanvasMode = false,
 }: IconSearchPaneProps) {
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const [isMac, setIsMac] = React.useState<boolean>(false); // Default to false to avoid hydration mismatch
+  const { isRestricted, isIconPackAllowed, isLoading: isRestrictionLoading } = useRestriction();
   const [sortBy, setSortBy] = React.useState<SortOption>("name");
   const [_favorites, setFavorites] = React.useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(
@@ -75,9 +75,6 @@ export function IconSearchPane({
   const [remixiconCategories, setRemixiconCategories] = React.useState<
     string[]
   >([]);
-
-  // Check if SVG-requiring locations are selected (disables Custom Image option)
-  const hasSvgLocationsSelected = hasSvgRequirements(selectedLocations);
 
   React.useEffect(() => {
     setIsMac(navigator.platform.toUpperCase().indexOf("MAC") >= 0);
@@ -162,60 +159,70 @@ export function IconSearchPane({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ICON_PACKS.ALL}>
-                <span className="flex items-center gap-2">
-                  <Layers className="size-4" />
-                  All Icons
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.GARDEN}>
-                <span className="flex items-center gap-2">
-                  <Library className="size-4" />
-                  Garden
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.FEATHER}>
-                <span className="flex items-center gap-2">
-                  <Library className="size-4" />
-                  Feather
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.REMIXICON}>
-                <span className="flex items-center gap-2">
-                  <Library className="size-4" />
-                  RemixIcon
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.EMOJI}>
-                <span className="flex items-center gap-2">
-                  <Smile className="size-4" />
-                  Emoji
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.CUSTOM_SVG}>
-                <span className="flex items-center gap-2">
-                  <Upload className="size-4" />
-                  Custom SVG
-                </span>
-              </SelectItem>
-              <SelectItem
-                value={ICON_PACKS.CUSTOM_IMAGE}
-                disabled={hasSvgLocationsSelected}
-              >
-                <span className="flex items-center gap-2">
-                  <ImageIcon className="size-4" />
-                  Custom Image
-                </span>
-              </SelectItem>
-              <SelectItem
-                value={ICON_PACKS.CANVAS}
-                disabled={hasSvgLocationsSelected}
-              >
-                <span className="flex items-center gap-2">
-                  <PenTool className="size-4" />
-                  Canvas Editor
-                </span>
-              </SelectItem>
+              {isIconPackAllowed(ICON_PACKS.ALL) && (
+                <SelectItem value={ICON_PACKS.ALL}>
+                  <span className="flex items-center gap-2">
+                    <Layers className="size-4" />
+                    All Icons
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.GARDEN) && (
+                <SelectItem value={ICON_PACKS.GARDEN}>
+                  <span className="flex items-center gap-2">
+                    <Library className="size-4" />
+                    Garden
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.FEATHER) && (
+                <SelectItem value={ICON_PACKS.FEATHER}>
+                  <span className="flex items-center gap-2">
+                    <Library className="size-4" />
+                    Feather
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.REMIXICON) && (
+                <SelectItem value={ICON_PACKS.REMIXICON}>
+                  <span className="flex items-center gap-2">
+                    <Library className="size-4" />
+                    RemixIcon
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.EMOJI) && (
+                <SelectItem value={ICON_PACKS.EMOJI}>
+                  <span className="flex items-center gap-2">
+                    <Smile className="size-4" />
+                    Emoji
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.CUSTOM_SVG) && (
+                <SelectItem value={ICON_PACKS.CUSTOM_SVG}>
+                  <span className="flex items-center gap-2">
+                    <Upload className="size-4" />
+                    Custom SVG
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.CUSTOM_IMAGE) && (
+                <SelectItem value={ICON_PACKS.CUSTOM_IMAGE}>
+                  <span className="flex items-center gap-2">
+                    <ImageIcon className="size-4" />
+                    Custom Image
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.CANVAS) && (
+                <SelectItem value={ICON_PACKS.CANVAS}>
+                  <span className="flex items-center gap-2">
+                    <PenTool className="size-4" />
+                    Canvas Editor
+                  </span>
+                </SelectItem>
+              )}
             </SelectContent>
           </Select>
           <p className="text-xs text-muted-foreground">
@@ -327,94 +334,77 @@ export function IconSearchPane({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ICON_PACKS.ALL}>
-                <span className="flex items-center gap-2">
-                  <Layers className="size-4" />
-                  All
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.GARDEN}>
-                <span className="flex items-center gap-2">
-                  <Library className="size-4" />
-                  Garden
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.FEATHER}>
-                <span className="flex items-center gap-2">
-                  <Library className="size-4" />
-                  Feather
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.REMIXICON}>
-                <span className="flex items-center gap-2">
-                  <Library className="size-4" />
-                  RemixIcon
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.EMOJI}>
-                <span className="flex items-center gap-2">
-                  <Smile className="size-4" />
-                  Emoji
-                </span>
-              </SelectItem>
-              <SelectItem value={ICON_PACKS.CUSTOM_SVG}>
-                <span className="flex items-center gap-2">
-                  <Upload className="size-4" />
-                  Custom SVG
-                </span>
-              </SelectItem>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="w-full">
-                      <SelectItem
-                        value={ICON_PACKS.CUSTOM_IMAGE}
-                        disabled={hasSvgLocationsSelected}
-                      >
-                        <span className="flex items-center gap-2">
-                          <ImageIcon className="size-4" />
-                          Custom Image
-                        </span>
-                      </SelectItem>
-                    </span>
-                  </TooltipTrigger>
-                  {hasSvgLocationsSelected && (
-                    <TooltipContent side="left">
-                      <p className="max-w-xs">
-                        Custom images cannot be used with locations that require
-                        SVG icons (Nav Bar, Top Bar, Ticket Editor)
-                      </p>
-                    </TooltipContent>
-                  )}
-                </Tooltip>
-              </TooltipProvider>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="w-full">
-                      <SelectItem
-                        value={ICON_PACKS.CANVAS}
-                        disabled={hasSvgLocationsSelected}
-                      >
-                        <span className="flex items-center gap-2">
-                          <PenTool className="size-4" />
-                          Canvas Editor
-                        </span>
-                      </SelectItem>
-                    </span>
-                  </TooltipTrigger>
-                  {hasSvgLocationsSelected && (
-                    <TooltipContent side="left">
-                      <p className="max-w-xs">
-                        Canvas Editor cannot be used with locations that require
-                        SVG icons (Nav Bar, Top Bar, Ticket Editor)
-                      </p>
-                    </TooltipContent>
-                  )}
-                </Tooltip>
-              </TooltipProvider>
+              {isIconPackAllowed(ICON_PACKS.ALL) && (
+                <SelectItem value={ICON_PACKS.ALL}>
+                  <span className="flex items-center gap-2">
+                    <Layers className="size-4" />
+                    All
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.GARDEN) && (
+                <SelectItem value={ICON_PACKS.GARDEN}>
+                  <span className="flex items-center gap-2">
+                    <Library className="size-4" />
+                    Garden
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.FEATHER) && (
+                <SelectItem value={ICON_PACKS.FEATHER}>
+                  <span className="flex items-center gap-2">
+                    <Library className="size-4" />
+                    Feather
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.REMIXICON) && (
+                <SelectItem value={ICON_PACKS.REMIXICON}>
+                  <span className="flex items-center gap-2">
+                    <Library className="size-4" />
+                    RemixIcon
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.EMOJI) && (
+                <SelectItem value={ICON_PACKS.EMOJI}>
+                  <span className="flex items-center gap-2">
+                    <Smile className="size-4" />
+                    Emoji
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.CUSTOM_SVG) && (
+                <SelectItem value={ICON_PACKS.CUSTOM_SVG}>
+                  <span className="flex items-center gap-2">
+                    <Upload className="size-4" />
+                    Custom SVG
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.CUSTOM_IMAGE) && (
+                <SelectItem value={ICON_PACKS.CUSTOM_IMAGE}>
+                  <span className="flex items-center gap-2">
+                    <ImageIcon className="size-4" />
+                    Custom Image
+                  </span>
+                </SelectItem>
+              )}
+              {isIconPackAllowed(ICON_PACKS.CANVAS) && (
+                <SelectItem value={ICON_PACKS.CANVAS}>
+                  <span className="flex items-center gap-2">
+                    <PenTool className="size-4" />
+                    Canvas Editor
+                  </span>
+                </SelectItem>
+              )}
             </SelectContent>
           </Select>
+          {!isRestrictionLoading && isRestricted ? (
+            <p className="text-xs text-muted-foreground">
+              Icon pack options are restricted in this session.
+            </p>
+          ) : null}
         </div>
 
         {/* Category Selector (only for RemixIcon) */}
@@ -459,8 +449,6 @@ export function IconSearchPane({
               onSelect={(imageId) => {
                 handleIconSelect(imageId);
               }}
-              disabled={hasSvgLocationsSelected}
-              disabledMessage="Custom images cannot be used with locations that require SVG icons (Nav Bar, Top Bar, Ticket Editor). Please deselect these locations first."
             />
           ) : selectedPack === ICON_PACKS.CUSTOM_SVG ? (
             <CustomSvgInput

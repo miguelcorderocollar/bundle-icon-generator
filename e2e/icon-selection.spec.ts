@@ -44,8 +44,10 @@ test.describe("Icon Selection Flow", () => {
     if (await iconButtons.isVisible()) {
       await iconButtons.click();
 
-      // Preview pane should update (use exact match to avoid "Generating preview..." text)
-      await expect(page.getByText("Preview", { exact: true })).toBeVisible();
+      // Preview pane should update (use heading role to avoid tab button)
+      await expect(
+        page.getByRole("heading", { name: "Preview" })
+      ).toBeVisible();
     }
   });
 
@@ -77,8 +79,8 @@ test.describe("Icon Selection Flow", () => {
   test("shows empty state message when no icon selected", async ({ page }) => {
     // Clear any selection by searching for something that doesn't exist
     // and then clicking away - this is a regression test scenario
-    // For now, just verify the preview pane exists (use exact match)
-    await expect(page.getByText("Preview", { exact: true })).toBeVisible();
+    // For now, just verify the preview pane exists (use heading role to avoid tab button)
+    await expect(page.getByRole("heading", { name: "Preview" })).toBeVisible();
   });
 
   test("search is case insensitive", async ({ page }) => {

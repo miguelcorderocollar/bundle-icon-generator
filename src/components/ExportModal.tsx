@@ -19,6 +19,7 @@ import { Download, AlertCircle, Loader2 } from "lucide-react";
 import type { IconGeneratorState } from "../hooks/use-icon-generator";
 import type { AppLocation } from "../types/app-location";
 import type { CanvasEditorState } from "../types/canvas";
+import type { ExportVariantConfig } from "../types/preset";
 import {
   generateExportZip,
   downloadZip,
@@ -27,6 +28,8 @@ import {
 import { getRequiredExportVariants } from "../types/export";
 import { isCustomImageIcon } from "../utils/locations";
 import { ICON_PACKS } from "../constants/app";
+import { usePresets } from "../hooks/use-presets";
+import { useRestriction } from "../contexts/RestrictionContext";
 
 export interface ExportModalProps {
   open: boolean;
@@ -49,6 +52,15 @@ export function ExportModal({
   const [validation, setValidation] = React.useState<ReturnType<
     typeof validateExport
   > | null>(null);
+
+  const { exportPresets, selectedExportPresetId } = usePresets();
+  const { allowedExportPresets } = useRestriction();
+
+  // Get the effective presets list and find the selected preset
+  const effectiveExportPresets = allowedExportPresets ?? exportPresets;
+  const selectedExportPreset = React.useMemo(() => {
+    return effectiveExportPresets.find((p) => p.id === selectedExportPresetId);
+  }, [effectiveExportPresets, selectedExportPresetId]);
 
   const isCanvasMode = state.selectedPack === ICON_PACKS.CANVAS;
 
@@ -75,14 +87,32 @@ export function ExportModal({
 
   const isCustomImage = isCustomImageIcon(state.selectedIconId);
 
-  // For custom images or canvas mode, filter out SVG variants
-  const variants = React.useMemo(() => {
+  // Get variants from selected preset
+  const variants = React.useMemo((): ExportVariantConfig[] => {
+    if (selectedExportPreset) {
+      let presetVariants = selectedExportPreset.variants;
+      // For custom images or canvas mode, filter out non-raster variants
+      if (isCustomImage || isCanvasMode) {
+        presetVariants = presetVariants.filter(
+          (v) =>
+            v.format === "png" || v.format === "jpeg" || v.format === "webp"
+        );
+      }
+      return presetVariants;
+    }
+
+    // Fallback to legacy Zendesk variants
     const allVariants = getRequiredExportVariants(selectedLocations);
     if (isCustomImage || isCanvasMode) {
-      return allVariants.filter((v) => v.format === "png");
+      return allVariants
+        .filter((v) => v.format === "png")
+        .map((v) => ({
+          ...v,
+          description: v.description,
+        }));
     }
-    return allVariants;
-  }, [selectedLocations, isCustomImage, isCanvasMode]);
+    return allVariants.map((v) => ({ ...v, description: v.description }));
+  }, [selectedExportPreset, selectedLocations, isCustomImage, isCanvasMode]);
 
   const handleExport = async () => {
     setIsExporting(true);
@@ -92,9 +122,16 @@ export function ExportModal({
       const result = await generateExportZip(
         state,
         selectedLocations,
-        canvasState
+        canvasState,
+        { preset: selectedExportPreset }
       );
-      downloadZip(result.zipBlob, "zendesk-icons.zip");
+
+      // Use preset name for filename
+      const filename = selectedExportPreset
+        ? `${selectedExportPreset.name.toLowerCase().replace(/\s+/g, "-")}-icons.zip`
+        : "app-icons.zip";
+
+      downloadZip(result.zipBlob, filename);
       onOpenChange(false);
     } catch (error) {
       console.error("Export error:", error);
@@ -106,18 +143,30 @@ export function ExportModal({
     }
   };
 
+  // Count formats
+  const formatCounts = React.useMemo(() => {
+    return {
+      png: variants.filter((v) => v.format === "png").length,
+      jpeg: variants.filter((v) => v.format === "jpeg").length,
+      webp: variants.filter((v) => v.format === "webp").length,
+      svg: variants.filter((v) => v.format === "svg").length,
+      ico: variants.filter((v) => v.format === "ico").length,
+    };
+  }, [variants]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[500px] max-h-[85vh] flex flex-col overflow-hidden">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle>Export Icon Assets</DialogTitle>
           <DialogDescription>
-            Review the export details and download your Zendesk-compliant icon
-            bundle.
+            {selectedExportPreset
+              ? `Exporting with "${selectedExportPreset.name}" preset`
+              : "Download your icon bundle"}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="flex-1 min-h-0 overflow-y-auto space-y-4 py-4">
           {/* Export Summary */}
           <div className="space-y-2">
             <h4 className="text-sm font-medium">Export Summary</h4>
@@ -131,18 +180,36 @@ export function ExportModal({
                     {variants.length} file{variants.length !== 1 ? "s" : ""}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">PNG files:</span>
-                  <span className="font-medium">
-                    {variants.filter((v) => v.format === "png").length}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">SVG files:</span>
-                  <span className="font-medium">
-                    {variants.filter((v) => v.format === "svg").length}
-                  </span>
-                </div>
+                {formatCounts.png > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">PNG files:</span>
+                    <span className="font-medium">{formatCounts.png}</span>
+                  </div>
+                )}
+                {formatCounts.jpeg > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">JPEG files:</span>
+                    <span className="font-medium">{formatCounts.jpeg}</span>
+                  </div>
+                )}
+                {formatCounts.webp > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">WebP files:</span>
+                    <span className="font-medium">{formatCounts.webp}</span>
+                  </div>
+                )}
+                {formatCounts.svg > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">SVG files:</span>
+                    <span className="font-medium">{formatCounts.svg}</span>
+                  </div>
+                )}
+                {formatCounts.ico > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">ICO files:</span>
+                    <span className="font-medium">{formatCounts.ico}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -208,7 +275,7 @@ export function ExportModal({
           )}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-shrink-0">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}

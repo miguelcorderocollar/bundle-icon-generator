@@ -5,6 +5,7 @@ import { IconSearchPane } from "@/components/IconSearchPane";
 import { CustomizationControlsPane } from "@/components/CustomizationControlsPane";
 import { PreviewPane } from "@/components/PreviewPane";
 import { useIconGenerator } from "@/src/hooks/use-icon-generator";
+import { useCanvasEditor } from "@/src/hooks/use-canvas-editor";
 import { APP_NAME, APP_DESCRIPTION, ICON_PACKS } from "@/src/constants/app";
 import {
   Dialog,
@@ -15,17 +16,27 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Info, Github, Globe, Moon, Sun } from "lucide-react";
+import { Info, Github, Globe, Moon, Sun, Lock } from "lucide-react";
 import { useTheme } from "@/src/components/ThemeProvider";
 import { WelcomeModal } from "@/src/components/WelcomeModal";
 import { hasSeenWelcome } from "@/src/utils/local-storage";
 import { CanvasControlsPane } from "@/src/components/CanvasControlsPane";
+import { useRestriction } from "@/src/contexts/RestrictionContext";
 
 export default function Home() {
   const { state, actions } = useIconGenerator();
   const [isInfoOpen, setIsInfoOpen] = React.useState(false);
   const [isWelcomeOpen, setIsWelcomeOpen] = React.useState(false);
   const { theme, mounted, toggleTheme } = useTheme();
+  const {
+    isRestricted,
+    isLoading: isRestrictionLoading,
+    defaultIconPack,
+    isIconPackAllowed,
+  } = useRestriction();
+
+  // Canvas editor state - lifted to page level for sharing between components
+  const { state: canvasState, actions: canvasActions } = useCanvasEditor();
 
   // Check if canvas mode is active
   const isCanvasMode = state.selectedPack === ICON_PACKS.CANVAS;
@@ -37,13 +48,64 @@ export default function Home() {
     }
   }, []);
 
+  // Track if we've already set the initial pack in restricted mode
+  const hasSetRestrictedPackRef = React.useRef(false);
+
+  // Auto-select the default icon pack in restricted mode
+  // This ensures users start with the configured default, not whatever was persisted
+  React.useEffect(() => {
+    if (isRestrictionLoading) return;
+
+    // Check if current pack is allowed
+    if (!isIconPackAllowed(state.selectedPack)) {
+      // Current pack not allowed - switch to default
+      if (defaultIconPack) {
+        actions.setSelectedPack(defaultIconPack);
+        hasSetRestrictedPackRef.current = true;
+      }
+    } else if (isRestricted && !hasSetRestrictedPackRef.current) {
+      // In restricted mode, use the configured default pack on initial load
+      if (defaultIconPack && state.selectedPack !== defaultIconPack) {
+        actions.setSelectedPack(defaultIconPack);
+      }
+      hasSetRestrictedPackRef.current = true;
+    }
+  }, [
+    isRestrictionLoading,
+    isRestricted,
+    state.selectedPack,
+    defaultIconPack,
+    isIconPackAllowed,
+    actions,
+  ]);
+
+  // Handler to apply icon color to all colorable layers in canvas
+  const handleApplyIconColorToLayers = React.useCallback(
+    (color: string) => {
+      canvasState.layers.forEach((layer) => {
+        if (layer.type === "icon" || layer.type === "text") {
+          canvasActions.updateLayer(layer.id, { color });
+        }
+      });
+    },
+    [canvasState.layers, canvasActions]
+  );
+
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       {/* Header */}
       <header className="border-b bg-background px-6 py-4">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-semibold">{APP_NAME}</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-semibold">{APP_NAME}</h1>
+              {!isRestrictionLoading && isRestricted ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+                  <Lock className="h-3 w-3" />
+                  Restricted Mode
+                </span>
+              ) : null}
+            </div>
             <p className="text-sm text-muted-foreground">{APP_DESCRIPTION}</p>
           </div>
           <div className="flex items-center gap-2">
@@ -76,28 +138,27 @@ export default function Home() {
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                   <p className="text-sm text-muted-foreground">
-                    Zendesk App Icon Generator is a local-first tool for
-                    crafting compliant Zendesk app icon bundles. It streamlines
-                    choosing icons from vetted packs, customizing colors and
-                    effects, and exporting the required asset set with correct
-                    naming and sizing.
+                    App Icon Generator is a local-first tool for crafting icon
+                    bundles for any platform. It streamlines choosing icons from
+                    vetted packs, customizing colors and effects, and exporting
+                    the required asset set with correct naming and sizing.
                   </p>
                   <div className="space-y-2">
                     <h3 className="text-sm font-semibold">Key Features</h3>
                     <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                       <li>
-                        Centralized Apache-2.0 friendly icon packs (Zendesk
-                        Garden, Feather, and more)
+                        Multiple icon packs (Zendesk Garden, Feather, RemixIcon,
+                        and more)
                       </li>
                       <li>
-                        Intuitive search and selection experience tailored to
-                        Zendesk app locations
+                        Flexible export presets for different platforms
+                        (Zendesk, Raycast, macOS, PWA, etc.)
                       </li>
                       <li>
                         Real-time previews with configurable styling presets
                       </li>
                       <li>
-                        One-click ZIP export with correct naming and sizing
+                        One-click ZIP export with customizable formats and sizes
                       </li>
                     </ul>
                   </div>
@@ -186,6 +247,7 @@ export default function Home() {
                   onPackChange={actions.setSelectedPack}
                   backgroundColor={state.backgroundColor}
                   onBackgroundColorChange={actions.setBackgroundColor}
+                  onApplyIconColor={handleApplyIconColorToLayers}
                 />
               </div>
 
@@ -195,6 +257,8 @@ export default function Home() {
                   selectedLocations={state.selectedLocations}
                   selectedIconId={state.selectedIconId}
                   state={state}
+                  canvasState={canvasState}
+                  canvasActions={canvasActions}
                 />
               </div>
             </>
@@ -215,8 +279,6 @@ export default function Home() {
 
               <div className="flex min-h-[400px] flex-shrink-0 flex-col overflow-hidden md:h-full md:min-h-0 md:flex-1">
                 <CustomizationControlsPane
-                  selectedLocations={state.selectedLocations}
-                  onLocationsChange={actions.setSelectedLocations}
                   backgroundColor={state.backgroundColor}
                   onBackgroundColorChange={actions.setBackgroundColor}
                   iconColor={state.iconColor}

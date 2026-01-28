@@ -121,7 +121,7 @@ export function AddLayerModal({
 
   const handleAddText = () => {
     if (!textContent.trim()) return;
-    actions.addTextLayer(textContent.trim(), { fontFamily });
+    actions.addTextLayer(textContent.trim(), { fontFamily, color: iconColor });
     setTextContent("");
     onOpenChange(false);
   };
@@ -143,7 +143,7 @@ export function AddLayerModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl h-[80vh] flex flex-col">
+      <DialogContent className="max-w-2xl h-[80vh] flex flex-col overflow-hidden">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle>Add Layer</DialogTitle>
         </DialogHeader>
@@ -151,7 +151,7 @@ export function AddLayerModal({
         <Tabs
           value={activeTab}
           onValueChange={(v) => setActiveTab(v as TabValue)}
-          className="flex-1 flex flex-col min-h-0"
+          className="flex-1 flex flex-col min-h-0 overflow-hidden"
         >
           <TabsList className="grid w-full grid-cols-3 flex-shrink-0">
             <TabsTrigger value="icons" className="gap-2">

@@ -279,12 +279,31 @@ function createTextObject(
 }
 
 /**
- * Render canvas state to a PNG blob at the specified size
+ * Supported raster formats for canvas export
  */
-export async function renderCanvasToPng(
+export type CanvasExportFormat = "png" | "jpeg" | "webp";
+
+/**
+ * Options for rendering canvas to raster format
+ */
+export interface CanvasRenderOptions {
+  /** Output width/height in pixels */
+  outputSize: number;
+  /** Output format */
+  format?: CanvasExportFormat;
+  /** Quality for JPEG/WebP (0-100) */
+  quality?: number;
+}
+
+/**
+ * Render canvas state to a raster blob at the specified size
+ */
+export async function renderCanvasToRaster(
   canvasState: CanvasEditorState,
-  outputSize: number
+  options: CanvasRenderOptions
 ): Promise<Blob> {
+  const { outputSize, format = "png", quality = 92 } = options;
+
   // Create canvas element for StaticCanvas
   const canvasEl = document.createElement("canvas");
   canvasEl.width = outputSize;
@@ -311,10 +330,15 @@ export async function renderCanvasToPng(
 
   canvas.renderAll();
 
-  // Export to blob
-  const blob = await canvas.toBlob({ format: "png", multiplier: 1 });
+  // Export to blob with the specified format
+  const blob = await canvas.toBlob({
+    format: format as "png" | "jpeg" | "webp",
+    multiplier: 1,
+    quality: format === "png" ? undefined : quality / 100,
+  });
+
   if (!blob) {
-    throw new Error("Failed to generate PNG from canvas");
+    throw new Error(`Failed to generate ${format.toUpperCase()} from canvas`);
   }
 
   canvas.dispose();
@@ -322,16 +346,42 @@ export async function renderCanvasToPng(
 }
 
 /**
- * Generate canvas export assets (PNG files only)
+ * Render canvas state to a PNG blob at the specified size
+ * @deprecated Use renderCanvasToRaster instead
+ */
+export async function renderCanvasToPng(
+  canvasState: CanvasEditorState,
+  outputSize: number
+): Promise<Blob> {
+  return renderCanvasToRaster(canvasState, { outputSize, format: "png" });
+}
+
+/**
+ * Canvas export variant specification
+ */
+export interface CanvasExportVariant {
+  filename: string;
+  width: number;
+  height: number;
+  format?: CanvasExportFormat;
+  quality?: number;
+}
+
+/**
+ * Generate canvas export assets (raster files)
  */
 export async function generateCanvasExportAssets(
   canvasState: CanvasEditorState,
-  variants: Array<{ filename: string; width: number; height: number }>
+  variants: CanvasExportVariant[]
 ): Promise<Map<string, Blob>> {
   const assets = new Map<string, Blob>();
 
   for (const variant of variants) {
-    const blob = await renderCanvasToPng(canvasState, variant.width);
+    const blob = await renderCanvasToRaster(canvasState, {
+      outputSize: variant.width,
+      format: variant.format || "png",
+      quality: variant.quality,
+    });
     assets.set(variant.filename, blob);
   }
 
