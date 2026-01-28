@@ -139,7 +139,7 @@ export function ExportPresetEditor({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[85vh] flex flex-col">
+      <DialogContent className="sm:max-w-[600px] max-h-[85vh] flex flex-col overflow-hidden">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle>
             {mode === "create" ? "Create Export Preset" : "Edit Export Preset"}
@@ -149,7 +149,7 @@ export function ExportPresetEditor({
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 -mx-6 px-6">
+        <ScrollArea className="flex-1 min-h-0 -mx-6 px-6">
           <div className="space-y-4 py-4 pr-4">
             {/* Name and Description */}
             <div className="space-y-4">

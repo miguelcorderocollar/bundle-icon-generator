@@ -335,6 +335,12 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     backgroundColor: KALE_COLORS["900"],
     iconColor: "#ffffff",
     isBuiltIn: true,
+    colorPalette: [
+      { id: "kale-primary", name: "Primary", color: "#ffffff" },
+      { id: "kale-secondary", name: "Secondary", color: KALE_COLORS["100"] },
+      { id: "kale-tertiary", name: "Tertiary", color: KALE_COLORS["300"] },
+      { id: "kale-accent", name: "Accent", color: KALE_COLORS["600"] },
+    ],
   },
   {
     id: "dark-mode",
@@ -342,6 +348,12 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     backgroundColor: "#1e1e1e",
     iconColor: "#ffffff",
     isBuiltIn: true,
+    colorPalette: [
+      { id: "dark-primary", name: "Primary", color: "#ffffff" },
+      { id: "dark-secondary", name: "Secondary", color: "#a0a0a0" },
+      { id: "dark-tertiary", name: "Tertiary", color: "#666666" },
+      { id: "dark-accent", name: "Accent", color: "#3b82f6" },
+    ],
   },
   {
     id: "light-mode",
@@ -349,6 +361,12 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     backgroundColor: "#ffffff",
     iconColor: "#000000",
     isBuiltIn: true,
+    colorPalette: [
+      { id: "light-primary", name: "Primary", color: "#000000" },
+      { id: "light-secondary", name: "Secondary", color: "#333333" },
+      { id: "light-tertiary", name: "Tertiary", color: "#666666" },
+      { id: "light-accent", name: "Accent", color: "#2563eb" },
+    ],
   },
   {
     id: "ocean-gradient",
@@ -356,6 +374,12 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     backgroundColor: GRADIENT_PRESETS["ocean-blue"],
     iconColor: "#ffffff",
     isBuiltIn: true,
+    colorPalette: [
+      { id: "ocean-primary", name: "Primary", color: "#ffffff" },
+      { id: "ocean-secondary", name: "Secondary", color: "#bae6fd" },
+      { id: "ocean-tertiary", name: "Tertiary", color: "#7dd3fc" },
+      { id: "ocean-accent", name: "Accent", color: "#0284c7" },
+    ],
   },
   {
     id: "sunset-gradient",
@@ -363,6 +387,12 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     backgroundColor: GRADIENT_PRESETS["warm-sunset"],
     iconColor: "#ffffff",
     isBuiltIn: true,
+    colorPalette: [
+      { id: "sunset-primary", name: "Primary", color: "#ffffff" },
+      { id: "sunset-secondary", name: "Secondary", color: "#fef3c7" },
+      { id: "sunset-tertiary", name: "Tertiary", color: "#fcd34d" },
+      { id: "sunset-accent", name: "Accent", color: "#b45309" },
+    ],
   },
   {
     id: "forest-gradient",
@@ -370,6 +400,12 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     backgroundColor: GRADIENT_PRESETS["forest-green"],
     iconColor: "#ffffff",
     isBuiltIn: true,
+    colorPalette: [
+      { id: "forest-primary", name: "Primary", color: "#ffffff" },
+      { id: "forest-secondary", name: "Secondary", color: "#bbf7d0" },
+      { id: "forest-tertiary", name: "Tertiary", color: "#86efac" },
+      { id: "forest-accent", name: "Accent", color: "#15803d" },
+    ],
   },
   {
     id: "purple-dream",
@@ -377,6 +413,12 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     backgroundColor: GRADIENT_PRESETS["purple-dream"],
     iconColor: "#ffffff",
     isBuiltIn: true,
+    colorPalette: [
+      { id: "purple-primary", name: "Primary", color: "#ffffff" },
+      { id: "purple-secondary", name: "Secondary", color: "#e9d5ff" },
+      { id: "purple-tertiary", name: "Tertiary", color: "#d8b4fe" },
+      { id: "purple-accent", name: "Accent", color: "#7e22ce" },
+    ],
   },
   {
     id: "rose-pink",
@@ -384,6 +426,12 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     backgroundColor: GRADIENT_PRESETS["rose-pink"],
     iconColor: "#ffffff",
     isBuiltIn: true,
+    colorPalette: [
+      { id: "rose-primary", name: "Primary", color: "#ffffff" },
+      { id: "rose-secondary", name: "Secondary", color: "#fecdd3" },
+      { id: "rose-tertiary", name: "Tertiary", color: "#fda4af" },
+      { id: "rose-accent", name: "Accent", color: "#be123c" },
+    ],
   },
   {
     id: "kale-gradient",
@@ -391,6 +439,12 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     backgroundColor: createDefaultLinearGradient(),
     iconColor: "#ffffff",
     isBuiltIn: true,
+    colorPalette: [
+      { id: "kaleg-primary", name: "Primary", color: "#ffffff" },
+      { id: "kaleg-secondary", name: "Secondary", color: KALE_COLORS["200"] },
+      { id: "kaleg-tertiary", name: "Tertiary", color: KALE_COLORS["400"] },
+      { id: "kaleg-accent", name: "Accent", color: KALE_COLORS["700"] },
+    ],
   },
   {
     id: "midnight",
@@ -398,6 +452,12 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     backgroundColor: GRADIENT_PRESETS["dark-night"],
     iconColor: "#ffffff",
     isBuiltIn: true,
+    colorPalette: [
+      { id: "midnight-primary", name: "Primary", color: "#ffffff" },
+      { id: "midnight-secondary", name: "Secondary", color: "#94a3b8" },
+      { id: "midnight-tertiary", name: "Tertiary", color: "#64748b" },
+      { id: "midnight-accent", name: "Accent", color: "#6366f1" },
+    ],
   },
 ];
 

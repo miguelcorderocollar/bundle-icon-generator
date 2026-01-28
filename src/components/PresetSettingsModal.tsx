@@ -134,8 +134,8 @@ export function PresetSettingsModal({
             </Button>
           )}
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[600px] max-h-[80vh] flex flex-col">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[600px] max-h-[80vh] flex flex-col overflow-hidden">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle>Preset Settings</DialogTitle>
             <DialogDescription>
               Manage your custom export and style presets
@@ -144,7 +144,7 @@ export function PresetSettingsModal({
 
           <Tabs
             defaultValue="export"
-            className="flex-1 overflow-hidden flex flex-col"
+            className="flex-1 min-h-0 overflow-hidden flex flex-col"
           >
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="export" className="flex items-center gap-2">

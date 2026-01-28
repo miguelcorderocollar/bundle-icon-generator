@@ -132,6 +132,26 @@ describe("preset-storage", () => {
       expect(customPresets).toHaveLength(1);
     });
 
+    it("should add a new style preset with colorPalette", () => {
+      const preset = addStylePreset({
+        name: "My Style With Palette",
+        backgroundColor: "#ff0000",
+        iconColor: "#ffffff",
+        colorPalette: [
+          { id: "color-1", name: "Primary", color: "#ffffff" },
+          { id: "color-2", name: "Secondary", color: "#000000" },
+        ],
+      });
+
+      expect(preset.colorPalette).toBeDefined();
+      expect(preset.colorPalette).toHaveLength(2);
+      expect(preset.colorPalette?.[0].name).toBe("Primary");
+
+      const customPresets = getCustomStylePresets();
+      expect(customPresets).toHaveLength(1);
+      expect(customPresets[0].colorPalette).toHaveLength(2);
+    });
+
     it("should update an existing style preset", () => {
       const preset = addStylePreset({
         name: "My Style",
@@ -190,7 +210,7 @@ describe("preset-storage", () => {
   });
 
   describe("Import/Export", () => {
-    it("should export user presets as JSON", () => {
+    it("should export user presets as JSON with version 2", () => {
       addExportPreset({
         name: "Export Test",
         description: "Test",
@@ -201,14 +221,16 @@ describe("preset-storage", () => {
         name: "Style Test",
         backgroundColor: "#000000",
         iconColor: "#ffffff",
+        colorPalette: [{ id: "color-1", name: "Primary", color: "#ffffff" }],
       });
 
       const json = exportUserPresets();
       const data = JSON.parse(json);
 
-      expect(data.version).toBe(1);
+      expect(data.version).toBe(2);
       expect(data.exportPresets).toHaveLength(1);
       expect(data.stylePresets).toHaveLength(1);
+      expect(data.stylePresets[0].colorPalette).toHaveLength(1);
       expect(data.exportedAt).toBeDefined();
     });
 
@@ -244,6 +266,37 @@ describe("preset-storage", () => {
 
       expect(getCustomExportPresets()).toHaveLength(1);
       expect(getCustomStylePresets()).toHaveLength(1);
+    });
+
+    it("should import presets with colorPalette", () => {
+      const importData = JSON.stringify({
+        version: 2,
+        exportPresets: [],
+        stylePresets: [
+          {
+            id: "v2-style",
+            name: "V2 Style With Palette",
+            backgroundColor: "#123456",
+            iconColor: "#ffffff",
+            isBuiltIn: false,
+            colorPalette: [
+              { id: "color-1", name: "Primary", color: "#ffffff" },
+              { id: "color-2", name: "Secondary", color: "#000000" },
+            ],
+          },
+        ],
+        exportedAt: new Date().toISOString(),
+      });
+
+      const result = importUserPresets(importData);
+
+      expect(result.success).toBe(true);
+      expect(result.stylePresetsImported).toBe(1);
+
+      const presets = getCustomStylePresets();
+      expect(presets).toHaveLength(1);
+      expect(presets[0].colorPalette).toHaveLength(2);
+      expect(presets[0].colorPalette?.[0].name).toBe("Primary");
     });
 
     it("should handle invalid JSON during import", () => {

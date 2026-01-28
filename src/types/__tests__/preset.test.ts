@@ -8,6 +8,7 @@ import {
   isStylePreset,
   isExportVariantConfig,
   isPresetExportData,
+  isColorPaletteEntry,
   formatSupportsQuality,
   formatSupportsTransparency,
   getFormatMimeType,
@@ -19,6 +20,7 @@ import type {
   StylePreset,
   ExportVariantConfig,
   PresetExportData,
+  ColorPaletteEntry,
 } from "../preset";
 
 describe("preset types", () => {
@@ -42,6 +44,27 @@ describe("preset types", () => {
     });
   });
 
+  describe("isColorPaletteEntry", () => {
+    it("should return true for valid color palette entry", () => {
+      const entry: ColorPaletteEntry = {
+        id: "color-1",
+        name: "Primary",
+        color: "#ffffff",
+      };
+      expect(isColorPaletteEntry(entry)).toBe(true);
+    });
+
+    it("should return false for invalid objects", () => {
+      expect(isColorPaletteEntry(null)).toBe(false);
+      expect(isColorPaletteEntry(undefined)).toBe(false);
+      expect(isColorPaletteEntry({ id: "test" })).toBe(false);
+      expect(isColorPaletteEntry({ id: "test", name: "Test" })).toBe(false);
+      expect(
+        isColorPaletteEntry({ id: 123, name: "Test", color: "#fff" })
+      ).toBe(false);
+    });
+  });
+
   describe("isStylePreset", () => {
     it("should return true for valid style preset", () => {
       const preset: StylePreset = {
@@ -52,6 +75,57 @@ describe("preset types", () => {
         isBuiltIn: false,
       };
       expect(isStylePreset(preset)).toBe(true);
+    });
+
+    it("should return true for style preset with valid colorPalette", () => {
+      const preset: StylePreset = {
+        id: "test",
+        name: "Test",
+        backgroundColor: "#000000",
+        iconColor: "#ffffff",
+        isBuiltIn: false,
+        colorPalette: [
+          { id: "color-1", name: "Primary", color: "#ffffff" },
+          { id: "color-2", name: "Secondary", color: "#000000" },
+        ],
+      };
+      expect(isStylePreset(preset)).toBe(true);
+    });
+
+    it("should return true for style preset with empty colorPalette", () => {
+      const preset: StylePreset = {
+        id: "test",
+        name: "Test",
+        backgroundColor: "#000000",
+        iconColor: "#ffffff",
+        isBuiltIn: false,
+        colorPalette: [],
+      };
+      expect(isStylePreset(preset)).toBe(true);
+    });
+
+    it("should return false for style preset with invalid colorPalette", () => {
+      const preset = {
+        id: "test",
+        name: "Test",
+        backgroundColor: "#000000",
+        iconColor: "#ffffff",
+        isBuiltIn: false,
+        colorPalette: [{ invalid: "entry" }],
+      };
+      expect(isStylePreset(preset)).toBe(false);
+    });
+
+    it("should return false for style preset with non-array colorPalette", () => {
+      const preset = {
+        id: "test",
+        name: "Test",
+        backgroundColor: "#000000",
+        iconColor: "#ffffff",
+        isBuiltIn: false,
+        colorPalette: "not-an-array",
+      };
+      expect(isStylePreset(preset)).toBe(false);
     });
 
     it("should return false for invalid objects", () => {

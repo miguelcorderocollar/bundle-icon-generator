@@ -19,6 +19,7 @@ import {
   type ColorType,
 } from "@/src/utils/color-history";
 import { useDebouncedValue } from "@/src/hooks/use-debounced-value";
+import type { ColorPaletteEntry } from "@/src/types/preset";
 
 export interface ColorPickerProps {
   id: string;
@@ -28,6 +29,8 @@ export interface ColorPickerProps {
   className?: string;
   colorType?: ColorType;
   isCustomSvg?: boolean;
+  /** Optional color palette from the active style preset */
+  paletteColors?: ColorPaletteEntry[];
 }
 
 export function ColorPicker({
@@ -38,6 +41,7 @@ export function ColorPicker({
   className,
   colorType,
   isCustomSvg = false,
+  paletteColors,
 }: ColorPickerProps) {
   const [recentColors, setRecentColors] = React.useState<string[]>([]);
 
@@ -152,6 +156,41 @@ export function ColorPicker({
           maxLength={7}
         />
       </div>
+      {paletteColors && paletteColors.length > 0 && (
+        <div className="space-y-1.5">
+          <p className="text-xs text-muted-foreground">Preset colors</p>
+          <TooltipProvider>
+            <div className="flex gap-2 flex-wrap">
+              {paletteColors.map((entry) => (
+                <Tooltip key={entry.id}>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() => handleRecentColorClick(entry.color)}
+                      className={cn(
+                        "h-8 w-8 rounded-md border-2 transition-all",
+                        "hover:scale-110 hover:ring-2 hover:ring-ring",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                        localValue.toLowerCase() ===
+                          entry.color.toLowerCase() &&
+                          "ring-2 ring-primary ring-offset-1"
+                      )}
+                      style={{ backgroundColor: entry.color }}
+                      aria-label={`Select ${entry.name} (${entry.color})`}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{entry.name}</p>
+                    <p className="text-xs text-muted-foreground font-mono">
+                      {entry.color}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </div>
+          </TooltipProvider>
+        </div>
+      )}
       {colorType && recentColors.length > 0 && (
         <div className="space-y-1.5">
           <p className="text-xs text-muted-foreground">Recent colors</p>

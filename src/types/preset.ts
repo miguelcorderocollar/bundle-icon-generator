@@ -48,6 +48,18 @@ export interface ExportPreset {
 }
 
 /**
+ * Named color entry in a palette for brand colors
+ */
+export interface ColorPaletteEntry {
+  /** Unique identifier for the color */
+  id: string;
+  /** Display name (e.g., "Primary", "Secondary") */
+  name: string;
+  /** Hex color value */
+  color: string;
+}
+
+/**
  * Style preset - background and icon color combination
  */
 export interface StylePreset {
@@ -61,6 +73,8 @@ export interface StylePreset {
   iconColor: string;
   /** Whether this is a built-in preset (cannot be deleted) */
   isBuiltIn: boolean;
+  /** Optional color palette for easy brand color access */
+  colorPalette?: ColorPaletteEntry[];
   /** Creation timestamp (ISO string) */
   createdAt?: string;
   /** Last update timestamp (ISO string) */
@@ -112,17 +126,53 @@ export function isExportPreset(value: unknown): value is ExportPreset {
 }
 
 /**
- * Type guard for StylePreset
+ * Type guard for ColorPaletteEntry
  */
-export function isStylePreset(value: unknown): value is StylePreset {
+export function isColorPaletteEntry(
+  value: unknown
+): value is ColorPaletteEntry {
   return (
     typeof value === "object" &&
     value !== null &&
     "id" in value &&
+    typeof (value as ColorPaletteEntry).id === "string" &&
     "name" in value &&
-    "backgroundColor" in value &&
-    "iconColor" in value
+    typeof (value as ColorPaletteEntry).name === "string" &&
+    "color" in value &&
+    typeof (value as ColorPaletteEntry).color === "string"
   );
+}
+
+/**
+ * Type guard for StylePreset
+ */
+export function isStylePreset(value: unknown): value is StylePreset {
+  if (
+    typeof value !== "object" ||
+    value === null ||
+    !("id" in value) ||
+    !("name" in value) ||
+    !("backgroundColor" in value) ||
+    !("iconColor" in value)
+  ) {
+    return false;
+  }
+
+  // Validate colorPalette if present
+  const preset = value as StylePreset;
+  if (preset.colorPalette !== undefined) {
+    if (!Array.isArray(preset.colorPalette)) {
+      return false;
+    }
+    // Validate each entry in the palette
+    for (const entry of preset.colorPalette) {
+      if (!isColorPaletteEntry(entry)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 /**

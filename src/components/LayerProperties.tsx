@@ -28,13 +28,20 @@ import {
   AVAILABLE_FONTS,
 } from "@/src/types/canvas";
 import type { CanvasEditorActions } from "@/src/hooks/use-canvas-editor";
+import type { ColorPaletteEntry } from "@/src/types/preset";
 
 interface LayerPropertiesProps {
   layer: CanvasLayer | undefined;
   actions: CanvasEditorActions;
+  /** Optional color palette from the active style preset */
+  paletteColors?: ColorPaletteEntry[];
 }
 
-export function LayerProperties({ layer, actions }: LayerPropertiesProps) {
+export function LayerProperties({
+  layer,
+  actions,
+  paletteColors,
+}: LayerPropertiesProps) {
   if (!layer) {
     return (
       <div className="p-3 border rounded-lg bg-background">
@@ -63,6 +70,7 @@ export function LayerProperties({ layer, actions }: LayerPropertiesProps) {
             key={`icon-${layer.id}`}
             layer={layer}
             actions={actions}
+            paletteColors={paletteColors}
           />
         )}
         {isImageLayer(layer) && (
@@ -75,6 +83,7 @@ export function LayerProperties({ layer, actions }: LayerPropertiesProps) {
             key={`text-${layer.id}`}
             layer={layer}
             actions={actions}
+            paletteColors={paletteColors}
           />
         )}
       </div>
@@ -269,9 +278,11 @@ function TransformControls({
 function IconProperties({
   layer,
   actions,
+  paletteColors,
 }: {
   layer: IconLayer;
   actions: CanvasEditorActions;
+  paletteColors?: ColorPaletteEntry[];
 }) {
   const handleColorChange = React.useCallback(
     (color: string) => {
@@ -287,6 +298,7 @@ function IconProperties({
         label="Icon Color"
         value={layer.color}
         onChange={handleColorChange}
+        paletteColors={paletteColors}
       />
     </div>
   );
@@ -298,9 +310,11 @@ function IconProperties({
 function TextProperties({
   layer,
   actions,
+  paletteColors,
 }: {
   layer: TextLayer;
   actions: CanvasEditorActions;
+  paletteColors?: ColorPaletteEntry[];
 }) {
   const [fontSize, setFontSize] = React.useState(layer.fontSize);
   const debounceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -433,6 +447,7 @@ function TextProperties({
         label="Text Color"
         value={layer.color}
         onChange={handleColorChange}
+        paletteColors={paletteColors}
       />
     </div>
   );

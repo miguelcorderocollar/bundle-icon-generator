@@ -32,8 +32,9 @@ const STORAGE_KEYS = {
 
 /**
  * Current preset export version
+ * v2: Added optional colorPalette to StylePreset
  */
-const PRESET_EXPORT_VERSION = 1;
+const PRESET_EXPORT_VERSION = 2;
 
 // ============================================================================
 // Export Presets
@@ -466,6 +467,7 @@ export function importUserPresets(json: string): PresetImportResult {
       ]);
 
       for (const preset of data.stylePresets) {
+        // Skip invalid presets (incompatible format will be automatically filtered)
         if (!isStylePreset(preset)) continue;
 
         // Skip built-in presets
@@ -554,6 +556,13 @@ export function clearAllCustomPresets(): void {
  */
 function generatePresetId(): string {
   return `preset-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+}
+
+/**
+ * Generate a unique color palette entry ID
+ */
+export function generateColorPaletteEntryId(): string {
+  return `color-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 }
 
 /**

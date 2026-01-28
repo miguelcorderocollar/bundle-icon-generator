@@ -148,8 +148,8 @@ export function ExportModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[500px] max-h-[85vh] flex flex-col overflow-hidden">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle>Export Icon Assets</DialogTitle>
           <DialogDescription>
             {selectedExportPreset
@@ -158,7 +158,7 @@ export function ExportModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="flex-1 min-h-0 overflow-y-auto space-y-4 py-4">
           {/* Export Summary */}
           <div className="space-y-2">
             <h4 className="text-sm font-medium">Export Summary</h4>
@@ -267,7 +267,7 @@ export function ExportModal({
           )}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-shrink-0">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}

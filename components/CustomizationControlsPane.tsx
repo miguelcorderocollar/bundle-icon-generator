@@ -87,6 +87,12 @@ export function CustomizationControlsPane({
     return selectedExportPreset.variants.some((v) => v.format === "svg");
   }, [selectedExportPreset]);
 
+  // Get the selected style preset (for accessing color palette)
+  const selectedStylePreset = React.useMemo(() => {
+    if (!selectedStylePresetId) return null;
+    return stylePresets.find((p) => p.id === selectedStylePresetId) || null;
+  }, [selectedStylePresetId, stylePresets]);
+
   // Handle applying a style preset
   const handleApplyStylePreset = React.useCallback(
     (preset: StylePreset) => {
@@ -318,6 +324,7 @@ export function CustomizationControlsPane({
                 onChange={onIconColorChange}
                 colorType="icon"
                 isCustomSvg={selectedIconId?.startsWith("custom-svg-")}
+                paletteColors={selectedStylePreset?.colorPalette}
               />
             )}
           {onBackgroundColorChange && (

@@ -153,4 +153,77 @@ describe("ColorPicker", () => {
       expect(button).toHaveAttribute("aria-label");
     });
   });
+
+  describe("paletteColors prop", () => {
+    const paletteColors = [
+      { id: "color-1", name: "Primary", color: "#ff0000" },
+      { id: "color-2", name: "Secondary", color: "#00ff00" },
+      { id: "color-3", name: "Tertiary", color: "#0000ff" },
+    ];
+
+    it("renders preset colors section when paletteColors is provided", () => {
+      render(<ColorPicker {...defaultProps} paletteColors={paletteColors} />);
+      expect(screen.getByText("Preset colors")).toBeInTheDocument();
+    });
+
+    it("does not render preset colors section when paletteColors is empty", () => {
+      render(<ColorPicker {...defaultProps} paletteColors={[]} />);
+      expect(screen.queryByText("Preset colors")).not.toBeInTheDocument();
+    });
+
+    it("does not render preset colors section when paletteColors is undefined", () => {
+      render(<ColorPicker {...defaultProps} />);
+      expect(screen.queryByText("Preset colors")).not.toBeInTheDocument();
+    });
+
+    it("renders palette color buttons", () => {
+      render(<ColorPicker {...defaultProps} paletteColors={paletteColors} />);
+
+      // Should have buttons for the palette colors
+      const buttons = screen.getAllByRole("button");
+      expect(buttons.length).toBe(3); // 3 palette colors
+    });
+
+    it("calls onChange when palette color is clicked", async () => {
+      const onChange = vi.fn();
+      render(
+        <ColorPicker
+          {...defaultProps}
+          onChange={onChange}
+          paletteColors={paletteColors}
+        />
+      );
+
+      const paletteButtons = screen.getAllByRole("button");
+      await userEvent.click(paletteButtons[0]);
+
+      expect(onChange).toHaveBeenCalledWith("#ff0000");
+    });
+
+    it("has proper accessibility labels for palette colors", () => {
+      render(<ColorPicker {...defaultProps} paletteColors={paletteColors} />);
+
+      const buttons = screen.getAllByRole("button");
+      buttons.forEach((button) => {
+        expect(button).toHaveAttribute("aria-label");
+      });
+    });
+
+    it("renders both palette colors and recent colors when both are provided", () => {
+      render(
+        <ColorPicker
+          {...defaultProps}
+          paletteColors={paletteColors}
+          colorType="background"
+        />
+      );
+
+      expect(screen.getByText("Preset colors")).toBeInTheDocument();
+      expect(screen.getByText("Recent colors")).toBeInTheDocument();
+
+      // Should have 3 palette + 3 recent = 6 color buttons
+      const buttons = screen.getAllByRole("button");
+      expect(buttons.length).toBe(6);
+    });
+  });
 });

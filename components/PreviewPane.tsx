@@ -233,6 +233,7 @@ export function PreviewPane({
                   <LayerProperties
                     layer={selectedLayer}
                     actions={canvasActions}
+                    paletteColors={selectedStylePreset?.colorPalette}
                   />
                 </div>
               </div>
