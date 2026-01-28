@@ -46,6 +46,17 @@ export function PresetPreview({
 
   const isCustomImage = isCustomImageIcon(iconId);
 
+  // Extract individual state values to track changes properly
+  const backgroundColor = state?.backgroundColor;
+  const iconColor = state?.iconColor;
+  const iconSize = state?.iconSize;
+
+  // Serialize variants to detect content changes (not just length)
+  const variantsHash = React.useMemo(
+    () => JSON.stringify(preset.variants),
+    [preset.variants]
+  );
+
   // Calculate skipped variants
   const skippedCount = React.useMemo(() => {
     return preset.variants.filter((v) => {
@@ -201,8 +212,17 @@ export function PresetPreview({
         if (p.url) URL.revokeObjectURL(p.url);
       });
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [iconId, state, preset.id, preset.variants.length, isCanvasMode]);
+    // Using individual state values and variantsHash for proper change detection
+  }, [
+    iconId,
+    backgroundColor,
+    iconColor,
+    iconSize,
+    preset.id,
+    variantsHash,
+    isCanvasMode,
+    state,
+  ]);
 
   if (!iconId || !state) {
     return (
@@ -249,7 +269,7 @@ export function PresetPreview({
           </span>
         </div>
 
-        {/* Preview grid */}
+        {/* Preview grid - sorted from biggest to smallest */}
         <div className="grid grid-cols-2 gap-4">
           {(previews.length > 0
             ? previews
@@ -260,92 +280,99 @@ export function PresetPreview({
                   isSkipped: false,
                 })
               )
-          ).map((item, index) => {
-            const { variant, url, isSkipped, skipReason } = item;
-            const maxPreviewSize = 160;
-            const scale = Math.min(
-              maxPreviewSize / variant.width,
-              maxPreviewSize / variant.height,
-              1
-            );
-            const previewWidth = Math.round(variant.width * scale);
-            const previewHeight = Math.round(variant.height * scale);
+          )
+            .slice()
+            .sort(
+              (a, b) =>
+                b.variant.width * b.variant.height -
+                a.variant.width * a.variant.height
+            )
+            .map((item, index) => {
+              const { variant, url, isSkipped, skipReason } = item;
+              const maxPreviewSize = 160;
+              const scale = Math.min(
+                maxPreviewSize / variant.width,
+                maxPreviewSize / variant.height,
+                1
+              );
+              const previewWidth = Math.round(variant.width * scale);
+              const previewHeight = Math.round(variant.height * scale);
 
-            return (
-              <div
-                key={`${variant.filename}-${index}`}
-                className={`space-y-2 ${isSkipped ? "opacity-50" : ""}`}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-mono truncate flex-1">
-                    {variant.filename}
-                  </span>
-                  <Badge variant="secondary" className="text-[10px] shrink-0">
-                    {variant.format.toUpperCase()}
-                  </Badge>
-                </div>
-
+              return (
                 <div
-                  className={`flex items-center justify-center rounded-lg border-2 border-dashed p-2 ${
-                    isSkipped
-                      ? "bg-muted/10"
-                      : variant.format === "svg"
-                        ? "bg-[repeating-conic-gradient(#e5e5e5_0%_25%,#ffffff_0%_50%)] bg-[length:8px_8px]"
-                        : "bg-muted/20"
-                  }`}
-                  style={{
-                    width: previewWidth + 16,
-                    height: previewHeight + 16,
-                    minHeight: 48,
-                  }}
+                  key={`${variant.filename}-${index}`}
+                  className={`space-y-2 ${isSkipped ? "opacity-50" : ""}`}
                 >
-                  {isSkipped ? (
-                    <div className="flex flex-col items-center gap-1 text-center px-2">
-                      <AlertTriangle className="h-4 w-4 text-amber-500" />
-                      <span className="text-[10px] text-muted-foreground">
-                        Skipped
-                      </span>
-                    </div>
-                  ) : isLoading ? (
-                    <span className="text-xs text-muted-foreground">
-                      Loading...
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-mono truncate flex-1">
+                      {variant.filename}
                     </span>
-                  ) : url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={url}
-                      alt={variant.filename}
-                      style={{
-                        width: previewWidth,
-                        height: previewHeight,
-                      }}
-                      className="object-contain"
-                    />
-                  ) : (
-                    <div
-                      className="rounded"
-                      style={{
-                        width: previewWidth,
-                        height: previewHeight,
-                        ...getBackgroundStyle(),
-                      }}
-                    />
+                    <Badge variant="secondary" className="text-[10px] shrink-0">
+                      {variant.format.toUpperCase()}
+                    </Badge>
+                  </div>
+
+                  <div
+                    className={`flex items-center justify-center rounded-lg border-2 border-dashed p-2 ${
+                      isSkipped
+                        ? "bg-muted/10"
+                        : variant.format === "svg"
+                          ? "bg-[repeating-conic-gradient(#e5e5e5_0%_25%,#ffffff_0%_50%)] bg-[length:8px_8px]"
+                          : "bg-muted/20"
+                    }`}
+                    style={{
+                      width: previewWidth + 16,
+                      height: previewHeight + 16,
+                      minHeight: 48,
+                    }}
+                  >
+                    {isSkipped ? (
+                      <div className="flex flex-col items-center gap-1 text-center px-2">
+                        <AlertTriangle className="h-4 w-4 text-amber-500" />
+                        <span className="text-[10px] text-muted-foreground">
+                          Skipped
+                        </span>
+                      </div>
+                    ) : isLoading ? (
+                      <span className="text-xs text-muted-foreground">
+                        Loading...
+                      </span>
+                    ) : url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={url}
+                        alt={variant.filename}
+                        style={{
+                          width: previewWidth,
+                          height: previewHeight,
+                        }}
+                        className="object-contain"
+                      />
+                    ) : (
+                      <div
+                        className="rounded"
+                        style={{
+                          width: previewWidth,
+                          height: previewHeight,
+                          ...getBackgroundStyle(),
+                        }}
+                      />
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                    <span>
+                      {variant.width}×{variant.height}
+                    </span>
+                    {variant.quality && <span>Q: {variant.quality}%</span>}
+                  </div>
+
+                  {isSkipped && skipReason && (
+                    <p className="text-[10px] text-amber-600">{skipReason}</p>
                   )}
                 </div>
-
-                <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-                  <span>
-                    {variant.width}×{variant.height}
-                  </span>
-                  {variant.quality && <span>Q: {variant.quality}%</span>}
-                </div>
-
-                {isSkipped && skipReason && (
-                  <p className="text-[10px] text-amber-600">{skipReason}</p>
-                )}
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       </div>
     </ScrollArea>

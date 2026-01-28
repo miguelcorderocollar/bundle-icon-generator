@@ -103,16 +103,46 @@ export function usePresets(): UsePresetsReturn {
     setStylePresets(getAllStylePresets());
   }, []);
 
+  // Listen for preset changes from other hook instances in the same tab
+  useEffect(() => {
+    const handlePresetChange = () => {
+      refreshPresets();
+      setSelectedExportPresetIdState(getSelectedExportPresetId());
+      setSelectedStylePresetIdState(getSelectedStylePresetId());
+    };
+
+    window.addEventListener("presetChange", handlePresetChange);
+    return () => window.removeEventListener("presetChange", handlePresetChange);
+  }, [refreshPresets]);
+
+  // Listen for storage changes from other tabs/windows
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      // Only respond to preset-related storage changes
+      if (e.key?.includes("preset")) {
+        refreshPresets();
+        setSelectedExportPresetIdState(getSelectedExportPresetId());
+        setSelectedStylePresetIdState(getSelectedStylePresetId());
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [refreshPresets]);
+
   // Export preset operations
   const selectExportPreset = useCallback((id: string) => {
     setSelectedExportPresetId(id);
     setSelectedExportPresetIdState(id);
+    // Notify other hook instances in the same tab
+    window.dispatchEvent(new CustomEvent("presetChange"));
   }, []);
 
   const handleCreateExportPreset = useCallback(
     (preset: Omit<ExportPreset, "id" | "isBuiltIn" | "createdAt">) => {
       const newPreset = addExportPreset(preset);
       refreshPresets();
+      window.dispatchEvent(new CustomEvent("presetChange"));
       return newPreset;
     },
     [refreshPresets]
@@ -122,6 +152,7 @@ export function usePresets(): UsePresetsReturn {
     (id: string, updates: Partial<Omit<ExportPreset, "id" | "isBuiltIn">>) => {
       updateExportPreset(id, updates);
       refreshPresets();
+      window.dispatchEvent(new CustomEvent("presetChange"));
     },
     [refreshPresets]
   );
@@ -135,6 +166,7 @@ export function usePresets(): UsePresetsReturn {
         if (selectedExportPresetId === id) {
           setSelectedExportPresetIdState(DEFAULT_EXPORT_PRESET_ID);
         }
+        window.dispatchEvent(new CustomEvent("presetChange"));
       }
       return result;
     },
@@ -145,12 +177,15 @@ export function usePresets(): UsePresetsReturn {
   const selectStylePreset = useCallback((id: string | null) => {
     setSelectedStylePresetId(id);
     setSelectedStylePresetIdState(id);
+    // Notify other hook instances in the same tab
+    window.dispatchEvent(new CustomEvent("presetChange"));
   }, []);
 
   const handleCreateStylePreset = useCallback(
     (preset: Omit<StylePreset, "id" | "isBuiltIn" | "createdAt">) => {
       const newPreset = addStylePreset(preset);
       refreshPresets();
+      window.dispatchEvent(new CustomEvent("presetChange"));
       return newPreset;
     },
     [refreshPresets]
@@ -160,6 +195,7 @@ export function usePresets(): UsePresetsReturn {
     (id: string, updates: Partial<Omit<StylePreset, "id" | "isBuiltIn">>) => {
       updateStylePreset(id, updates);
       refreshPresets();
+      window.dispatchEvent(new CustomEvent("presetChange"));
     },
     [refreshPresets]
   );
@@ -173,6 +209,7 @@ export function usePresets(): UsePresetsReturn {
         if (selectedStylePresetId === id) {
           setSelectedStylePresetIdState(null);
         }
+        window.dispatchEvent(new CustomEvent("presetChange"));
       }
       return result;
     },
@@ -189,6 +226,7 @@ export function usePresets(): UsePresetsReturn {
       const result = await importPresetsFromFile(file);
       if (result.success) {
         refreshPresets();
+        window.dispatchEvent(new CustomEvent("presetChange"));
       }
       return result;
     },
@@ -200,6 +238,7 @@ export function usePresets(): UsePresetsReturn {
     refreshPresets();
     setSelectedExportPresetIdState(DEFAULT_EXPORT_PRESET_ID);
     setSelectedStylePresetIdState(null);
+    window.dispatchEvent(new CustomEvent("presetChange"));
   }, [refreshPresets]);
 
   // Computed values - derived from state for reactivity

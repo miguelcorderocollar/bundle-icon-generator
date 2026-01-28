@@ -56,7 +56,10 @@ describe("PreviewPane", () => {
 
   it("renders Preview title", () => {
     render(<PreviewPane />);
-    expect(screen.getByText("Preview")).toBeInTheDocument();
+    // Check for the CardTitle which is a heading
+    expect(
+      screen.getByRole("heading", { name: /preview/i })
+    ).toBeInTheDocument();
   });
 
   it("shows empty state when no icon selected", () => {
@@ -82,7 +85,7 @@ describe("PreviewPane", () => {
     expect(screen.getByRole("button", { name: /export zip/i })).toBeEnabled();
   });
 
-  it("shows preset preview when icon is selected", () => {
+  it("shows Edit and Preview tabs when icon is selected", () => {
     const state = createMockState({ selectedIconId: "test-icon" });
     render(
       <PreviewPane
@@ -91,7 +94,8 @@ describe("PreviewPane", () => {
         state={state}
       />
     );
-    expect(screen.getByTestId("preset-preview")).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /edit/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /preview/i })).toBeInTheDocument();
   });
 
   it("shows file count in export section", () => {

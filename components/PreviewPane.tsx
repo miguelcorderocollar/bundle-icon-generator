@@ -9,13 +9,14 @@ import { Download, Monitor } from "lucide-react";
 import { EmptyState } from "@/src/components/EmptyState";
 import { PreviewHeader } from "@/src/components/PreviewHeader";
 import { PresetPreview } from "@/src/components/PresetPreview";
+import { renderPng, renderPngFromImage } from "@/src/utils/renderer";
+import { getIconById } from "@/src/utils/icon-catalog";
 import {
   CanvasEditor,
   LayersPanel,
   LayerProperties,
   AddLayerModal,
 } from "@/src/components";
-import { CanvasPngPreview } from "@/src/components/CanvasPngPreview";
 import { ICON_PACKS } from "@/src/constants/app";
 import type { AppLocation } from "@/src/types/app-location";
 import type { IconGeneratorState } from "@/src/hooks/use-icon-generator";
@@ -47,6 +48,9 @@ export function PreviewPane({
   const [isExportModalOpen, setIsExportModalOpen] = React.useState(false);
   const [isAddLayerModalOpen, setIsAddLayerModalOpen] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
+  const [editPreviewUrl, setEditPreviewUrl] = React.useState<string | null>(
+    null
+  );
   const iconMetadata = useIconMetadata(selectedIconId);
 
   // Presets hook
@@ -70,8 +74,78 @@ export function PreviewPane({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  // Generate edit preview (single large icon)
+  React.useEffect(() => {
+    if (!selectedIconId || !state) {
+      setEditPreviewUrl(null);
+      return;
+    }
+
+    let cancelled = false;
+    let currentUrl: string | null = null;
+
+    async function generateEditPreview() {
+      try {
+        if (!selectedIconId || !state) return;
+
+        const isCustomImg = isCustomImageIcon(selectedIconId);
+
+        if (isCustomImg) {
+          const imageDataUrl =
+            typeof window !== "undefined"
+              ? sessionStorage.getItem(selectedIconId)
+              : null;
+          if (!imageDataUrl || cancelled) return;
+
+          const blob = await renderPngFromImage({
+            imageDataUrl,
+            backgroundColor: state.backgroundColor,
+            size: state.iconSize,
+            width: 512,
+            height: 512,
+          });
+          if (cancelled) return;
+          currentUrl = URL.createObjectURL(blob);
+          setEditPreviewUrl(currentUrl);
+        } else {
+          const icon = await getIconById(selectedIconId);
+          if (!icon || cancelled) return;
+
+          const blob = await renderPng({
+            icon,
+            backgroundColor: state.backgroundColor,
+            iconColor: state.iconColor,
+            size: state.iconSize,
+            width: 512,
+            height: 512,
+          });
+          if (cancelled) return;
+          currentUrl = URL.createObjectURL(blob);
+          setEditPreviewUrl(currentUrl);
+        }
+      } catch (error) {
+        console.error("Error generating edit preview:", error);
+      }
+    }
+
+    generateEditPreview();
+
+    return () => {
+      cancelled = true;
+      if (currentUrl) URL.revokeObjectURL(currentUrl);
+    };
+  }, [selectedIconId, state]);
+
   const isCanvasMode = state?.selectedPack === ICON_PACKS.CANVAS;
   const isCustomImage = isCustomImageIcon(selectedIconId);
+
+  // Memoize resolved icon color for AddLayerModal to ensure consistent color
+  const currentIconColor = React.useMemo(() => {
+    return (
+      selectedStylePreset?.iconColor ??
+      (typeof state?.iconColor === "string" ? state.iconColor : "#ffffff")
+    );
+  }, [selectedStylePreset?.iconColor, state?.iconColor]);
 
   // Calculate export info from selected preset
   const exportInfo = React.useMemo(() => {
@@ -136,63 +210,34 @@ export function PreviewPane({
           <CardTitle>Canvas Editor</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-1 flex-col overflow-hidden p-4 pt-0">
-          {/* Canvas Editor with Tabs */}
-          <Tabs defaultValue="canvas" className="flex flex-1 flex-col min-h-0">
-            <TabsList className="grid w-full grid-cols-2 flex-shrink-0">
-              <TabsTrigger value="canvas">Canvas</TabsTrigger>
-              <TabsTrigger value="preview">Preview</TabsTrigger>
-            </TabsList>
-
-            <TabsContent
-              value="canvas"
-              className="flex-1 overflow-hidden mt-3 min-h-0 data-[state=inactive]:hidden"
-            >
-              <ScrollArea className="h-full">
-                <div className="pr-3 space-y-4">
-                  {/* Two column layout: Canvas + Controls */}
-                  <div className="flex gap-4">
-                    {/* Left: Canvas preview */}
-                    <div className="flex-shrink-0">
-                      <CanvasEditor
-                        state={canvasState}
-                        actions={canvasActions}
-                        onAddLayerClick={() => setIsAddLayerModalOpen(true)}
-                      />
-                    </div>
-
-                    {/* Right: Layers + Properties */}
-                    <div className="flex-1 min-w-0 space-y-3">
-                      {/* Layers panel */}
-                      <LayersPanel
-                        state={canvasState}
-                        actions={canvasActions}
-                      />
-
-                      {/* Properties panel */}
-                      <LayerProperties
-                        layer={selectedLayer}
-                        actions={canvasActions}
-                      />
-                    </div>
-                  </div>
+          {/* Canvas Editor - no tabs, just the editor */}
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="pr-3 space-y-4">
+              {/* Two column layout: Canvas + Controls */}
+              <div className="flex gap-4">
+                {/* Left: Canvas preview */}
+                <div className="flex-shrink-0">
+                  <CanvasEditor
+                    state={canvasState}
+                    actions={canvasActions}
+                    onAddLayerClick={() => setIsAddLayerModalOpen(true)}
+                  />
                 </div>
-              </ScrollArea>
-            </TabsContent>
 
-            <TabsContent
-              value="preview"
-              className="flex-1 overflow-hidden mt-3 min-h-0 data-[state=inactive]:hidden"
-            >
-              {canvasState.layers.length > 0 && selectedExportPreset ? (
-                <CanvasPngPreview canvasState={canvasState} />
-              ) : (
-                <EmptyState
-                  title="No layers"
-                  description="Add layers to the canvas to see a preview."
-                />
-              )}
-            </TabsContent>
-          </Tabs>
+                {/* Right: Layers + Properties */}
+                <div className="flex-1 min-w-0 space-y-3">
+                  {/* Layers panel */}
+                  <LayersPanel state={canvasState} actions={canvasActions} />
+
+                  {/* Properties panel */}
+                  <LayerProperties
+                    layer={selectedLayer}
+                    actions={canvasActions}
+                  />
+                </div>
+              </div>
+            </div>
+          </ScrollArea>
 
           {/* Export Button - sticky at bottom */}
           <div className="flex-shrink-0 border-t pt-3 mt-3 space-y-2">
@@ -218,10 +263,7 @@ export function PreviewPane({
           open={isAddLayerModalOpen}
           onOpenChange={setIsAddLayerModalOpen}
           actions={canvasActions}
-          iconColor={
-            selectedStylePreset?.iconColor ??
-            (typeof state?.iconColor === "string" ? state.iconColor : "#ffffff")
-          }
+          iconColor={currentIconColor}
         />
 
         {/* Export Modal */}
@@ -238,38 +280,78 @@ export function PreviewPane({
     );
   }
 
-  // Standard mode
+  // Standard mode with Edit/Preview tabs
   return (
     <Card className="flex h-full flex-col">
-      <CardHeader className="flex-shrink-0">
+      <CardHeader className="flex-shrink-0 pb-2">
         <CardTitle>Preview</CardTitle>
         <PreviewHeader iconMetadata={iconMetadata} />
       </CardHeader>
-      <CardContent className="flex flex-1 flex-col gap-4 overflow-hidden p-6">
-        {/* Preview Content Area - Scrollable */}
-        <div className="flex-1 min-h-0 overflow-hidden">
-          {!hasSelection ? (
-            <EmptyState
-              title="No icon selected"
-              description="Select an icon from the search pane to see a preview here."
-            />
-          ) : selectedExportPreset ? (
-            <PresetPreview
-              preset={selectedExportPreset}
-              iconId={selectedIconId}
-              state={state}
-              isCanvasMode={false}
-            />
-          ) : (
-            <EmptyState
-              title="No preset selected"
-              description="Select an export preset to see previews."
-            />
-          )}
-        </div>
+      <CardContent className="flex flex-1 flex-col overflow-hidden p-4 pt-0">
+        <Tabs defaultValue="edit" className="flex flex-1 flex-col min-h-0">
+          <TabsList className="grid w-full grid-cols-2 flex-shrink-0">
+            <TabsTrigger value="edit">Edit</TabsTrigger>
+            <TabsTrigger value="preview">Preview</TabsTrigger>
+          </TabsList>
+
+          {/* Edit Tab - Single large icon preview for working */}
+          <TabsContent
+            value="edit"
+            className="flex-1 overflow-hidden mt-3 min-h-0 data-[state=inactive]:hidden"
+          >
+            {!hasSelection ? (
+              <EmptyState
+                title="No icon selected"
+                description="Select an icon from the search pane to see a preview here."
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <div className="flex aspect-square w-full max-w-[320px] items-center justify-center rounded-lg border-2 border-dashed bg-muted/20 p-2">
+                  {editPreviewUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={editPreviewUrl}
+                      alt="Icon preview"
+                      className="max-w-full max-h-full rounded"
+                    />
+                  ) : (
+                    <span className="text-sm text-muted-foreground">
+                      Loading...
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Preview Tab - All export variants */}
+          <TabsContent
+            value="preview"
+            className="flex-1 overflow-hidden mt-3 min-h-0 data-[state=inactive]:hidden"
+          >
+            {!hasSelection ? (
+              <EmptyState
+                title="No icon selected"
+                description="Select an icon from the search pane to see a preview here."
+              />
+            ) : selectedExportPreset ? (
+              <PresetPreview
+                preset={selectedExportPreset}
+                iconId={selectedIconId}
+                state={state}
+                isCanvasMode={false}
+              />
+            ) : (
+              <EmptyState
+                title="No preset selected"
+                description="Select an export preset to see previews."
+              />
+            )}
+          </TabsContent>
+        </Tabs>
 
         {/* Export Button - Sticky at bottom */}
-        <div className="flex-shrink-0 border-t pt-4 mt-auto space-y-2">
+        <div className="flex-shrink-0 border-t pt-3 mt-3 space-y-2">
           {canExport && hasSelection && (
             <div className="text-xs text-muted-foreground">
               Will export {exportInfo.exportable} file

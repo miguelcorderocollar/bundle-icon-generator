@@ -6,11 +6,45 @@
 
 import * as React from "react";
 import { Loader2 } from "lucide-react";
-import type { CanvasEditorState } from "@/src/types/canvas";
+import type { CanvasEditorState, CanvasLayer } from "@/src/types/canvas";
 import { renderCanvasToPng } from "@/src/utils/canvas-export";
 
 interface CanvasPngPreviewProps {
   canvasState: CanvasEditorState;
+}
+
+/**
+ * Serialize a layer to capture all render-affecting properties
+ */
+function serializeLayer(layer: CanvasLayer): object {
+  const base = {
+    id: layer.id,
+    type: layer.type,
+    left: layer.left,
+    top: layer.top,
+    scaleX: layer.scaleX,
+    scaleY: layer.scaleY,
+    angle: layer.angle,
+    opacity: layer.opacity,
+    visible: layer.visible,
+  };
+
+  switch (layer.type) {
+    case "icon":
+      return { ...base, iconId: layer.iconId, color: layer.color };
+    case "image":
+      return { ...base, imageDataUrl: layer.imageDataUrl };
+    case "text":
+      return {
+        ...base,
+        text: layer.text,
+        fontFamily: layer.fontFamily,
+        fontSize: layer.fontSize,
+        color: layer.color,
+        bold: layer.bold,
+        italic: layer.italic,
+      };
+  }
 }
 
 export function CanvasPngPreview({ canvasState }: CanvasPngPreviewProps) {
@@ -21,9 +55,25 @@ export function CanvasPngPreview({ canvasState }: CanvasPngPreviewProps) {
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
+  // Keep a ref to the latest canvasState to avoid stale closure issues
+  const canvasStateRef = React.useRef(canvasState);
+  React.useEffect(() => {
+    canvasStateRef.current = canvasState;
+  }, [canvasState]);
+
+  // Create a stable hash of all render-affecting state
+  // Depend on the entire canvasState to ensure all changes are detected
+  const stateHash = React.useMemo(() => {
+    return JSON.stringify({
+      layers: canvasState.layers.map(serializeLayer),
+      backgroundColor: canvasState.backgroundColor,
+    });
+  }, [canvasState]);
+
   // Generate preview when canvas state changes
   React.useEffect(() => {
-    if (canvasState.layers.length === 0) {
+    const currentState = canvasStateRef.current;
+    if (currentState.layers.length === 0) {
       setPreviewUrls({ logo: null, logoSmall: null });
       setIsLoading(false);
       return;
@@ -36,12 +86,15 @@ export function CanvasPngPreview({ canvasState }: CanvasPngPreviewProps) {
       setError(null);
 
       try {
+        // Use the ref to get the latest state
+        const stateToRender = canvasStateRef.current;
+
         // Generate 320x320 preview for logo.png (scaled down from 1024)
-        const logoBlob = await renderCanvasToPng(canvasState, 320);
+        const logoBlob = await renderCanvasToPng(stateToRender, 320);
         const logoUrl = URL.createObjectURL(logoBlob);
 
         // Generate 128x128 preview for logo-small.png (scaled down from 512)
-        const logoSmallBlob = await renderCanvasToPng(canvasState, 128);
+        const logoSmallBlob = await renderCanvasToPng(stateToRender, 128);
         const logoSmallUrl = URL.createObjectURL(logoSmallBlob);
 
         if (!cancelled) {
@@ -73,8 +126,9 @@ export function CanvasPngPreview({ canvasState }: CanvasPngPreviewProps) {
       cancelled = true;
       clearTimeout(timeoutId);
     };
+    // stateHash captures all render-affecting properties, canvasState needed for rendering
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canvasState.layers, canvasState.backgroundColor]);
+  }, [stateHash]);
 
   // Cleanup URLs on unmount
   React.useEffect(() => {
