@@ -70,7 +70,7 @@ function saveCanvasState(state: CanvasEditorState): void {
 export interface CanvasEditorActions {
   /** Add a new layer and return its ID */
   addIconLayer: (iconId: string, color?: string) => string;
-  addImageLayer: (imageDataUrl: string, name?: string) => string;
+  addImageLayer: (imageDataUrl: string, name?: string, svgContent?: string) => string;
   addTextLayer: (text: string, options?: Partial<TextLayer>) => string;
   /** Remove a layer by ID */
   removeLayer: (id: string) => void;
@@ -160,7 +160,7 @@ export function useCanvasEditor() {
         return id;
       },
 
-      addImageLayer: (imageDataUrl: string, name?: string) => {
+      addImageLayer: (imageDataUrl: string, name?: string, svgContent?: string) => {
         const id = generateLayerId();
         const newLayer: ImageLayer = {
           id,
@@ -169,6 +169,7 @@ export function useCanvasEditor() {
             `Image ${state.layers.filter((l) => l.type === "image").length + 1}`,
           type: "image",
           imageDataUrl,
+          svgContent,
           visible: true,
           locked: false,
           left: state.canvasSize / 2,

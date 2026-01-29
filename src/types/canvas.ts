@@ -55,6 +55,8 @@ export interface ImageLayer extends BaseLayer {
   type: "image";
   /** Base64 data URL of the image */
   imageDataUrl: string;
+  /** Raw SVG content (when the uploaded file is an SVG) */
+  svgContent?: string;
 }
 
 /**

@@ -89,19 +89,36 @@ export function AddLayerModal({
 
   // Image dropzone
   const onDrop = React.useCallback(
-    (acceptedFiles: File[]) => {
+    async (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
       if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const dataUrl = e.target?.result as string;
-        if (dataUrl) {
-          actions.addImageLayer(dataUrl, file.name);
+      // Check if the file is an SVG
+      const isSvgFile = file.type === "image/svg+xml" || file.name.toLowerCase().endsWith(".svg");
+
+      if (isSvgFile) {
+        // For SVG files, read as text to preserve the raw SVG content
+        try {
+          const svgContent = await file.text();
+          // Also create a data URL for fallback/preview
+          const dataUrl = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgContent)))}`;
+          actions.addImageLayer(dataUrl, file.name, svgContent);
           onOpenChange(false);
+        } catch (error) {
+          console.error("Error reading SVG file:", error);
         }
-      };
-      reader.readAsDataURL(file);
+      } else {
+        // For non-SVG images, read as data URL
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const dataUrl = e.target?.result as string;
+          if (dataUrl) {
+            actions.addImageLayer(dataUrl, file.name);
+            onOpenChange(false);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
     },
     [actions, onOpenChange]
   );

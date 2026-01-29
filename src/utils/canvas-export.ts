@@ -230,6 +230,43 @@ async function createImageObject(
   scale: number
 ): Promise<fabric.FabricObject | null> {
   try {
+    // If the layer has SVG content, use normalizeSvgDimensions for proper sizing
+    if (layer.svgContent) {
+      const {
+        svg: normalizedSvg,
+        width,
+        height,
+      } = normalizeSvgDimensions(layer.svgContent);
+      const svgSize = Math.max(width, height);
+
+      const svgBlob = new Blob([normalizedSvg], { type: "image/svg+xml" });
+      const url = URL.createObjectURL(svgBlob);
+
+      try {
+        const img = await fabric.FabricImage.fromURL(url);
+
+        // Default size: 50% of internal canvas = 512px
+        const baseScale = (INTERNAL_SIZE * 0.5) / svgSize;
+        const finalScale = baseScale * layer.scaleX * scale;
+
+        img.set({
+          left: layer.left * scale,
+          top: layer.top * scale,
+          scaleX: finalScale,
+          scaleY: baseScale * layer.scaleY * scale,
+          angle: layer.angle,
+          opacity: layer.opacity,
+          originX: "center",
+          originY: "center",
+        });
+
+        return img;
+      } finally {
+        URL.revokeObjectURL(url);
+      }
+    }
+
+    // For non-SVG images, use the data URL directly
     const img = await fabric.FabricImage.fromURL(layer.imageDataUrl);
     const imgSize = Math.max(img.width || 1, img.height || 1);
 
