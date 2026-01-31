@@ -64,12 +64,12 @@ export function ExportPresetSelector({
               {selectedPreset?.name}
             </SelectValue>
           </SelectTrigger>
-          <SelectContent>
-            {/* Built-in presets */}
-            {builtInPresets.length > 0 && (
+          <SelectContent className="max-h-64">
+            {/* Custom presets first */}
+            {customPresets.length > 0 && (
               <SelectGroup>
-                <SelectLabel>Built-in Presets</SelectLabel>
-                {builtInPresets.map((preset) => (
+                <SelectLabel>Custom Presets</SelectLabel>
+                {customPresets.map((preset) => (
                   <SelectItem key={preset.id} value={preset.id}>
                     <div className="flex flex-col">
                       <span>{preset.name}</span>
@@ -83,13 +83,13 @@ export function ExportPresetSelector({
               </SelectGroup>
             )}
 
-            {/* Custom presets */}
-            {customPresets.length > 0 && (
+            {/* Built-in presets */}
+            {builtInPresets.length > 0 && (
               <>
-                {builtInPresets.length > 0 && <SelectSeparator />}
+                {customPresets.length > 0 && <SelectSeparator />}
                 <SelectGroup>
-                  <SelectLabel>Custom Presets</SelectLabel>
-                  {customPresets.map((preset) => (
+                  <SelectLabel>Built-in Presets</SelectLabel>
+                  {builtInPresets.map((preset) => (
                     <SelectItem key={preset.id} value={preset.id}>
                       <div className="flex flex-col">
                         <span>{preset.name}</span>
