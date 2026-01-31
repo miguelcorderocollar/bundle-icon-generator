@@ -10,13 +10,23 @@ import type { IconGeneratorState } from "../hooks/use-icon-generator";
 import { renderPng, renderPngFromImage } from "../utils/renderer";
 import { getIconById } from "../utils/icon-catalog";
 import { isCustomImageIcon } from "../utils/locations";
+import {
+  getColorOverride,
+  getColorAnalysis,
+} from "../utils/image-color-analysis";
 
 export interface PngPreviewProps {
   iconId?: string;
   state?: IconGeneratorState;
+  /** Key to trigger re-render when color override changes */
+  colorOverrideKey?: number;
 }
 
-export function PngPreview({ iconId, state }: PngPreviewProps) {
+export function PngPreview({
+  iconId,
+  state,
+  colorOverrideKey,
+}: PngPreviewProps) {
   const [logoUrl, setLogoUrl] = React.useState<string | null>(null);
   const [logoSmallUrl, setLogoSmallUrl] = React.useState<string | null>(null);
 
@@ -45,6 +55,11 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
 
           if (!imageDataUrl || cancelled) return;
 
+          // Get color override if available
+          const colorOverride = getColorOverride(iconId);
+          const colorAnalysis = getColorAnalysis(iconId);
+          const originalColor = colorAnalysis?.dominantColor;
+
           // Generate logo.png from custom image
           const logoBlob = await renderPngFromImage({
             imageDataUrl,
@@ -52,6 +67,8 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
             size: state.iconSize,
             width: PNG_SPECS.LOGO.width,
             height: PNG_SPECS.LOGO.height,
+            colorOverride,
+            originalColor,
           });
 
           if (cancelled) return;
@@ -65,6 +82,8 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
             size: state.iconSize,
             width: PNG_SPECS.LOGO_SMALL.width,
             height: PNG_SPECS.LOGO_SMALL.height,
+            colorOverride,
+            originalColor,
           });
 
           if (cancelled) return;
@@ -118,7 +137,7 @@ export function PngPreview({ iconId, state }: PngPreviewProps) {
       if (logoSmallUrl) URL.revokeObjectURL(logoSmallUrl);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- logoUrl and logoSmallUrl are intentionally excluded to prevent infinite loops (they are outputs, not inputs)
-  }, [iconId, state]);
+  }, [iconId, state, colorOverrideKey]);
 
   if (!iconId || !state) {
     return (

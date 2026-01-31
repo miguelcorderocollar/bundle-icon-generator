@@ -14,6 +14,65 @@ import {
 import { compressToMaxSize } from "./image-compression";
 
 /**
+ * Parse hex color to RGB components
+ */
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : null;
+}
+
+/**
+ * Apply color override to image data by replacing pixels similar to the original color
+ * with the new override color while preserving alpha values
+ */
+function applyColorOverride(
+  imageData: ImageData,
+  originalColor: string,
+  newColor: string,
+  tolerance: number = 80
+): void {
+  const original = hexToRgb(originalColor);
+  const replacement = hexToRgb(newColor);
+
+  if (!original || !replacement) return;
+
+  const data = imageData.data;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+    const a = data[i + 3];
+
+    // Skip fully transparent pixels
+    if (a === 0) continue;
+
+    // Calculate color distance
+    const distance = Math.sqrt(
+      Math.pow(r - original.r, 2) +
+        Math.pow(g - original.g, 2) +
+        Math.pow(b - original.b, 2)
+    );
+
+    // If within tolerance, replace with new color
+    if (distance <= tolerance) {
+      // Blend based on how close the color is to the original
+      const blendFactor = 1 - distance / tolerance;
+      data[i] = Math.round(r + (replacement.r - r) * blendFactor);
+      data[i + 1] = Math.round(g + (replacement.g - g) * blendFactor);
+      data[i + 2] = Math.round(b + (replacement.b - b) * blendFactor);
+      // Keep alpha unchanged
+    }
+  }
+}
+
+/**
  * Render options for SVG generation
  */
 export interface SvgRenderOptions {
@@ -757,6 +816,8 @@ export async function renderRasterFromImage(
     format = "png",
     quality = 0.92,
     maxFileSize,
+    colorOverride,
+    originalColor,
   } = options;
 
   // Create canvas
@@ -812,8 +873,33 @@ export async function renderRasterFromImage(
   const drawX = (width - drawWidth) / 2;
   const drawY = (height - drawHeight) / 2;
 
-  // Draw the image
-  ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+  // If color override is enabled, process the image pixels
+  if (colorOverride && originalColor) {
+    // Create a temporary canvas to process the image before drawing
+    const tempCanvas = document.createElement("canvas");
+    tempCanvas.width = Math.ceil(drawWidth);
+    tempCanvas.height = Math.ceil(drawHeight);
+    const tempCtx = tempCanvas.getContext("2d");
+    if (tempCtx) {
+      tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
+      const imageData = tempCtx.getImageData(
+        0,
+        0,
+        tempCanvas.width,
+        tempCanvas.height
+      );
+      applyColorOverride(imageData, originalColor, colorOverride);
+      tempCtx.putImageData(imageData, 0, 0);
+      // Draw the processed image onto the main canvas
+      ctx.drawImage(tempCanvas, drawX, drawY, drawWidth, drawHeight);
+    } else {
+      // Fallback: draw without color override
+      ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+    }
+  } else {
+    // Draw the image normally
+    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+  }
 
   // Get MIME type
   const mimeType =
@@ -870,6 +956,10 @@ export interface ImageRenderOptions {
   width: number;
   /** Canvas height */
   height: number;
+  /** Optional color to replace the detected uniform color in the image */
+  colorOverride?: string | null;
+  /** The detected dominant color from the original image (required if colorOverride is used) */
+  originalColor?: string;
 }
 
 /**
@@ -879,7 +969,15 @@ export interface ImageRenderOptions {
 export async function renderPngFromImage(
   options: ImageRenderOptions
 ): Promise<Blob> {
-  const { imageDataUrl, backgroundColor, size, width, height } = options;
+  const {
+    imageDataUrl,
+    backgroundColor,
+    size,
+    width,
+    height,
+    colorOverride,
+    originalColor,
+  } = options;
 
   // Create canvas
   const canvas = document.createElement("canvas");
@@ -937,8 +1035,33 @@ export async function renderPngFromImage(
   const drawX = (width - drawWidth) / 2;
   const drawY = (height - drawHeight) / 2;
 
-  // Draw the image
-  ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+  // If color override is enabled, we need to process the image pixels
+  if (colorOverride && originalColor) {
+    // Create a temporary canvas to process the image before drawing
+    const tempCanvas = document.createElement("canvas");
+    tempCanvas.width = Math.ceil(drawWidth);
+    tempCanvas.height = Math.ceil(drawHeight);
+    const tempCtx = tempCanvas.getContext("2d");
+    if (tempCtx) {
+      tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
+      const imageData = tempCtx.getImageData(
+        0,
+        0,
+        tempCanvas.width,
+        tempCanvas.height
+      );
+      applyColorOverride(imageData, originalColor, colorOverride);
+      tempCtx.putImageData(imageData, 0, 0);
+      // Draw the processed image onto the main canvas
+      ctx.drawImage(tempCanvas, drawX, drawY, drawWidth, drawHeight);
+    } else {
+      // Fallback: draw without color override
+      ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+    }
+  } else {
+    // Draw the image normally
+    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+  }
 
   // Convert to blob
   return new Promise<Blob>((resolve, reject) => {

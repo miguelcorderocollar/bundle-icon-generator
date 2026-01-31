@@ -20,12 +20,18 @@ import {
 import { getIconById } from "../utils/icon-catalog";
 import { isCustomImageIcon } from "../utils/locations";
 import { isGradient, gradientToCss } from "../utils/gradients";
+import {
+  getColorOverride,
+  getColorAnalysis,
+} from "../utils/image-color-analysis";
 
 export interface PresetPreviewProps {
   preset: ExportPreset;
   iconId?: string;
   state?: IconGeneratorState;
   isCanvasMode?: boolean;
+  /** Key to trigger re-render when color override changes */
+  colorOverrideKey?: number;
 }
 
 interface PreviewItem {
@@ -40,6 +46,7 @@ export function PresetPreview({
   iconId,
   state,
   isCanvasMode = false,
+  colorOverrideKey,
 }: PresetPreviewProps) {
   const [previews, setPreviews] = React.useState<PreviewItem[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -134,7 +141,12 @@ export function PresetPreview({
               });
               const blob = new Blob([svgString], { type: "image/svg+xml" });
               url = URL.createObjectURL(blob);
-            } else if (isCustomImg && imageDataUrl) {
+            } else if (isCustomImg && imageDataUrl && iconId) {
+              // Get color override if available
+              const colorOverride = getColorOverride(iconId);
+              const colorAnalysis = getColorAnalysis(iconId);
+              const originalColor = colorAnalysis?.dominantColor;
+
               // Custom image raster rendering
               const blob = await renderPngFromImage({
                 imageDataUrl,
@@ -142,6 +154,8 @@ export function PresetPreview({
                 size: state.iconSize,
                 width: variant.width,
                 height: variant.height,
+                colorOverride,
+                originalColor,
               });
               url = URL.createObjectURL(blob);
             } else if (icon) {
@@ -222,6 +236,7 @@ export function PresetPreview({
     variantsHash,
     isCanvasMode,
     state,
+    colorOverrideKey,
   ]);
 
   if (!iconId || !state) {

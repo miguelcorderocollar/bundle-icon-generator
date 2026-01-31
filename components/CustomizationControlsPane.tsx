@@ -23,6 +23,7 @@ import { isCustomImageIcon } from "@/src/utils/locations";
 import { useRestriction } from "@/src/contexts/RestrictionContext";
 import { RestrictedStyleSelector } from "@/src/components/RestrictedStyleSelector";
 import type { RestrictedStyle } from "@/src/types/restriction";
+import { CustomImageColorOverride } from "@/src/components/CustomImageColorOverride";
 
 export interface CustomizationControlsPaneProps {
   backgroundColor?: BackgroundValue;
@@ -34,6 +35,10 @@ export interface CustomizationControlsPaneProps {
   svgIconSize?: number;
   onSvgIconSizeChange?: (size: number) => void;
   selectedIconId?: string;
+  /** Callback when custom image color override changes */
+  onCustomImageColorOverride?: (overrideColor: string | null) => void;
+  /** Key to trigger re-reading color analysis (incremented when analysis completes) */
+  colorAnalysisKey?: number;
 }
 
 export function CustomizationControlsPane({
@@ -46,6 +51,8 @@ export function CustomizationControlsPane({
   svgIconSize = ICON_GRID.DEFAULT_ICON_SIZE,
   onSvgIconSizeChange,
   selectedIconId,
+  onCustomImageColorOverride,
+  colorAnalysisKey,
 }: CustomizationControlsPaneProps) {
   // Restriction mode
   const {
@@ -404,6 +411,14 @@ export function CustomizationControlsPane({
                     paletteColors={selectedStylePreset?.colorPalette}
                   />
                 )}
+              {/* Custom image color override for PNG images with uniform color */}
+              {isCustomImage && selectedIconId && (
+                <CustomImageColorOverride
+                  imageId={selectedIconId}
+                  onOverrideChange={onCustomImageColorOverride}
+                  analysisKey={colorAnalysisKey}
+                />
+              )}
               {onBackgroundColorChange && (
                 <BackgroundControls
                   value={backgroundColor}

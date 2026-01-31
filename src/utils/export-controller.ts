@@ -20,6 +20,7 @@ import { isSolidColor, isGradient } from "./gradients";
 import { isCustomImageIcon, hasSvgRequirements } from "./locations";
 import { ICON_PACKS } from "../constants/app";
 import { getSelectedExportPreset } from "./preset-storage";
+import { getColorOverride, getColorAnalysis } from "./image-color-analysis";
 
 /**
  * Export result
@@ -119,6 +120,11 @@ export async function generateExportZip(
       throw new Error("Custom image data not found");
     }
 
+    // Get color override if available
+    const colorOverride = getColorOverride(state.selectedIconId);
+    const colorAnalysis = getColorAnalysis(state.selectedIconId);
+    const originalColor = colorAnalysis?.dominantColor;
+
     for (const variant of variants) {
       // Determine the raster format (ico and svg are not supported for custom images)
       const rasterFormat: "png" | "jpeg" | "webp" =
@@ -135,6 +141,8 @@ export async function generateExportZip(
         format: rasterFormat,
         quality: variant.quality ? variant.quality / 100 : undefined,
         maxFileSize: variant.maxSize ? variant.maxSize * 1024 : undefined,
+        colorOverride,
+        originalColor,
       });
       zip.file(variant.filename, blob);
       filenames.push(variant.filename);

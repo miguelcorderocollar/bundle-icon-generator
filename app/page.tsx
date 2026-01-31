@@ -57,6 +57,24 @@ export default function Home() {
   // Canvas editor state - lifted to page level for sharing between components
   const { state: canvasState, actions: canvasActions } = useCanvasEditor();
 
+  // Track color override changes to trigger preview re-renders
+  const [colorOverrideKey, setColorOverrideKey] = React.useState(0);
+
+  // Track color analysis completion to trigger CustomImageColorOverride re-read
+  const [colorAnalysisKey, setColorAnalysisKey] = React.useState(0);
+
+  // Handle custom image color override changes
+  const handleCustomImageColorOverride = React.useCallback(() => {
+    // Increment key to trigger preview re-renders
+    setColorOverrideKey((prev) => prev + 1);
+  }, []);
+
+  // Handle color analysis completion
+  const handleColorAnalysisComplete = React.useCallback(() => {
+    // Increment key to trigger CustomImageColorOverride to re-read analysis
+    setColorAnalysisKey((prev) => prev + 1);
+  }, []);
+
   // Check if canvas mode is active
   const isCanvasMode = state.selectedPack === ICON_PACKS.CANVAS;
 
@@ -328,6 +346,7 @@ export default function Home() {
                   selectedIconId={state.selectedIconId}
                   onIconSelect={actions.setSelectedIconId}
                   selectedLocations={state.selectedLocations}
+                  onColorAnalysisComplete={handleColorAnalysisComplete}
                 />
               </div>
 
@@ -342,6 +361,8 @@ export default function Home() {
                   svgIconSize={state.svgIconSize}
                   onSvgIconSizeChange={actions.setSvgIconSize}
                   selectedIconId={state.selectedIconId}
+                  onCustomImageColorOverride={handleCustomImageColorOverride}
+                  colorAnalysisKey={colorAnalysisKey}
                 />
               </div>
 
@@ -350,6 +371,7 @@ export default function Home() {
                   selectedLocations={state.selectedLocations}
                   selectedIconId={state.selectedIconId}
                   state={state}
+                  colorOverrideKey={colorOverrideKey}
                 />
               </div>
             </>

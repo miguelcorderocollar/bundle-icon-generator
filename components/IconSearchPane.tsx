@@ -53,6 +53,8 @@ export interface IconSearchPaneProps {
   selectedLocations?: AppLocation[];
   /** When true, shows minimal UI (just pack selector) for canvas mode */
   isCanvasMode?: boolean;
+  /** Called when color analysis completes for a custom PNG image */
+  onColorAnalysisComplete?: () => void;
 }
 
 export function IconSearchPane({
@@ -63,6 +65,7 @@ export function IconSearchPane({
   selectedIconId,
   onIconSelect,
   isCanvasMode = false,
+  onColorAnalysisComplete,
 }: IconSearchPaneProps) {
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const [isMac, setIsMac] = React.useState<boolean>(false); // Default to false to avoid hydration mismatch
@@ -452,6 +455,10 @@ export function IconSearchPane({
             <CustomImageInput
               onSelect={(imageId) => {
                 handleIconSelect(imageId);
+              }}
+              onColorAnalysis={() => {
+                // Notify parent that color analysis completed
+                onColorAnalysisComplete?.();
               }}
             />
           ) : selectedPack === ICON_PACKS.CUSTOM_SVG ? (

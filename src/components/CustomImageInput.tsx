@@ -7,6 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Upload, X, AlertCircle, ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  analyzeImageColors,
+  storeColorAnalysis,
+  type ColorAnalysisResult,
+} from "@/src/utils/image-color-analysis";
 
 /** Maximum file size in bytes (2MB) */
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
@@ -21,6 +26,8 @@ const ACCEPTED_IMAGE_TYPES = {
 export interface CustomImageInputProps {
   /** Called when an image is selected with the custom image ID */
   onSelect?: (imageId: string) => void;
+  /** Called when color analysis completes for a PNG image */
+  onColorAnalysis?: (imageId: string, result: ColorAnalysisResult) => void;
   /** Whether the input is disabled (e.g., when SVG locations are selected) */
   disabled?: boolean;
   /** Message to show when disabled */
@@ -30,6 +37,7 @@ export interface CustomImageInputProps {
 
 export function CustomImageInput({
   onSelect,
+  onColorAnalysis,
   disabled = false,
   disabledMessage,
   className,
@@ -37,6 +45,7 @@ export function CustomImageInput({
   const [imageDataUrl, setImageDataUrl] = React.useState<string | null>(null);
   const [imageName, setImageName] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = React.useState(false);
 
   const onDrop = React.useCallback(
     (
@@ -70,7 +79,7 @@ export function CustomImageInput({
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = () => {
+      reader.onload = async () => {
         const dataUrl = reader.result as string;
         setImageDataUrl(dataUrl);
         setImageName(file.name);
@@ -82,13 +91,28 @@ export function CustomImageInput({
         }
 
         onSelect?.(imageId);
+
+        // Run color analysis for PNG images
+        if (file.type === "image/png") {
+          setIsAnalyzing(true);
+          try {
+            const analysisResult = await analyzeImageColors(dataUrl);
+            storeColorAnalysis(imageId, analysisResult);
+            onColorAnalysis?.(imageId, analysisResult);
+          } catch (analysisError) {
+            console.warn("Color analysis failed:", analysisError);
+            // Non-fatal - don't show error to user
+          } finally {
+            setIsAnalyzing(false);
+          }
+        }
       };
       reader.onerror = () => {
         setError("Failed to read file. Please try again.");
       };
       reader.readAsDataURL(file);
     },
-    [onSelect]
+    [onSelect, onColorAnalysis]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -165,7 +189,9 @@ export function CustomImageInput({
                 {imageName}
               </p>
               <p className="text-xs text-muted-foreground">
-                Drop a new image to replace
+                {isAnalyzing
+                  ? "Analyzing colors..."
+                  : "Drop a new image to replace"}
               </p>
             </div>
           ) : (

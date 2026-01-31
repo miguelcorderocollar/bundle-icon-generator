@@ -29,6 +29,10 @@ import { useIconMetadata } from "@/src/hooks/use-icon-metadata";
 import { isCustomImageIcon } from "@/src/utils/locations";
 import { useRestriction } from "@/src/contexts/RestrictionContext";
 import type { ColorPaletteEntry } from "@/src/types/preset";
+import {
+  getColorOverride,
+  getColorAnalysis,
+} from "@/src/utils/image-color-analysis";
 
 export interface PreviewPaneProps {
   selectedLocations?: AppLocation[];
@@ -38,6 +42,8 @@ export interface PreviewPaneProps {
   canvasState?: CanvasEditorState;
   /** Canvas actions passed from parent */
   canvasActions?: CanvasEditorActions;
+  /** Key to trigger re-render when custom image color override changes */
+  colorOverrideKey?: number;
 }
 
 export function PreviewPane({
@@ -46,6 +52,7 @@ export function PreviewPane({
   state,
   canvasState: externalCanvasState,
   canvasActions: externalCanvasActions,
+  colorOverrideKey,
 }: PreviewPaneProps) {
   const [isExportModalOpen, setIsExportModalOpen] = React.useState(false);
   const [isAddLayerModalOpen, setIsAddLayerModalOpen] = React.useState(false);
@@ -171,12 +178,19 @@ export function PreviewPane({
               : null;
           if (!imageDataUrl || cancelled) return;
 
+          // Get color override if available
+          const colorOverride = getColorOverride(selectedIconId);
+          const colorAnalysis = getColorAnalysis(selectedIconId);
+          const originalColor = colorAnalysis?.dominantColor;
+
           const blob = await renderPngFromImage({
             imageDataUrl,
             backgroundColor: state.backgroundColor,
             size: state.iconSize,
             width: 512,
             height: 512,
+            colorOverride,
+            originalColor,
           });
           if (cancelled) return;
           currentUrl = URL.createObjectURL(blob);
@@ -208,7 +222,7 @@ export function PreviewPane({
       cancelled = true;
       if (currentUrl) URL.revokeObjectURL(currentUrl);
     };
-  }, [selectedIconId, state]);
+  }, [selectedIconId, state, colorOverrideKey]);
 
   const isCanvasMode = state?.selectedPack === ICON_PACKS.CANVAS;
   const isCustomImage = isCustomImageIcon(selectedIconId);
@@ -419,6 +433,7 @@ export function PreviewPane({
                 iconId={selectedIconId}
                 state={state}
                 isCanvasMode={false}
+                colorOverrideKey={colorOverrideKey}
               />
             ) : (
               <EmptyState
