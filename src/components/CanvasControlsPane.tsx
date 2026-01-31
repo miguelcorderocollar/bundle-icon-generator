@@ -318,9 +318,21 @@ export function CanvasControlsPane({
           presets={effectiveExportPresets}
           selectedPresetId={selectedExportPresetId}
           onSelectPreset={selectExportPreset}
-          onCreatePreset={!isRestrictionLoading && !isRestricted ? handleCreateExportPreset : undefined}
-          onEditPreset={!isRestrictionLoading && !isRestricted ? handleEditExportPreset : undefined}
-          onDeletePreset={!isRestrictionLoading && !isRestricted ? deleteExportPreset : undefined}
+          onCreatePreset={
+            !isRestrictionLoading && !isRestricted
+              ? handleCreateExportPreset
+              : undefined
+          }
+          onEditPreset={
+            !isRestrictionLoading && !isRestricted
+              ? handleEditExportPreset
+              : undefined
+          }
+          onDeletePreset={
+            !isRestrictionLoading && !isRestricted
+              ? deleteExportPreset
+              : undefined
+          }
         />
 
         {/* SVG Warning for Canvas Mode */}

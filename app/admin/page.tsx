@@ -872,7 +872,9 @@ export default function AdminPage() {
                             variant="ghost"
                             size="icon"
                             className="h-6 w-6 shrink-0"
-                            onClick={() => handleSetDefaultIconPack(option.value)}
+                            onClick={() =>
+                              handleSetDefaultIconPack(option.value)
+                            }
                           >
                             <Star
                               className={`h-3.5 w-3.5 ${
@@ -902,8 +904,9 @@ export default function AdminPage() {
                 <>
                   {" · "}
                   Default:{" "}
-                  {ICON_PACK_OPTIONS.find((o) => o.value === config.defaultIconPack)
-                    ?.label || config.defaultIconPack}
+                  {ICON_PACK_OPTIONS.find(
+                    (o) => o.value === config.defaultIconPack
+                  )?.label || config.defaultIconPack}
                 </>
               )}
             </p>

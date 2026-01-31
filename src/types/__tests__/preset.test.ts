@@ -10,6 +10,7 @@ import {
   isPresetExportData,
   isColorPaletteEntry,
   formatSupportsQuality,
+  formatSupportsMaxSize,
   formatSupportsTransparency,
   getFormatMimeType,
   getFormatExtension,
@@ -187,6 +188,28 @@ describe("preset types", () => {
 
     it("should return false for ICO", () => {
       expect(formatSupportsQuality("ico")).toBe(false);
+    });
+  });
+
+  describe("formatSupportsMaxSize", () => {
+    it("should return true for JPEG", () => {
+      expect(formatSupportsMaxSize("jpeg")).toBe(true);
+    });
+
+    it("should return true for WebP", () => {
+      expect(formatSupportsMaxSize("webp")).toBe(true);
+    });
+
+    it("should return false for PNG (lossless format)", () => {
+      expect(formatSupportsMaxSize("png")).toBe(false);
+    });
+
+    it("should return false for SVG", () => {
+      expect(formatSupportsMaxSize("svg")).toBe(false);
+    });
+
+    it("should return false for ICO", () => {
+      expect(formatSupportsMaxSize("ico")).toBe(false);
     });
   });
 

@@ -42,7 +42,11 @@ function serializeLayerForHash(layer: CanvasLayer): object {
     return { ...base, iconId: layer.iconId, color: layer.color };
   }
   if (isImageLayer(layer)) {
-    return { ...base, imageDataUrl: layer.imageDataUrl, svgContent: layer.svgContent };
+    return {
+      ...base,
+      imageDataUrl: layer.imageDataUrl,
+      svgContent: layer.svgContent,
+    };
   }
   if (isTextLayer(layer)) {
     return {

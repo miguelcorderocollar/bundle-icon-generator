@@ -25,6 +25,8 @@ export interface ExportVariantConfig {
   quality?: number;
   /** Description of this variant's purpose */
   description?: string;
+  /** Maximum file size in KB (optional) - triggers compression if exceeded */
+  maxSize?: number;
 }
 
 /**
@@ -221,6 +223,14 @@ export const EXPORT_FORMATS: ExportFormat[] = [
  * Check if a format supports quality setting
  */
 export function formatSupportsQuality(format: ExportFormat): boolean {
+  return format === "jpeg" || format === "webp";
+}
+
+/**
+ * Check if a format supports max size compression
+ * Only lossy formats (JPEG, WebP) support quality-based compression
+ */
+export function formatSupportsMaxSize(format: ExportFormat): boolean {
   return format === "jpeg" || format === "webp";
 }
 

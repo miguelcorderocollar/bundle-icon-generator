@@ -15,6 +15,7 @@ import { isIconLayer, isImageLayer, isTextLayer } from "@/src/types/canvas";
 import { getIconById } from "./icon-catalog";
 import type { BackgroundValue } from "./gradients";
 import { isLinearGradient, isRadialGradient } from "./gradients";
+import { compressToMaxSize } from "./image-compression";
 
 // Internal canvas size (must match CanvasEditor)
 const INTERNAL_SIZE = 1024;
@@ -330,6 +331,8 @@ export interface CanvasRenderOptions {
   format?: CanvasExportFormat;
   /** Quality for JPEG/WebP (0-100) */
   quality?: number;
+  /** Maximum file size in bytes (optional) - triggers compression if exceeded */
+  maxFileSize?: number;
 }
 
 /**
@@ -339,7 +342,7 @@ export async function renderCanvasToRaster(
   canvasState: CanvasEditorState,
   options: CanvasRenderOptions
 ): Promise<Blob> {
-  const { outputSize, format = "png", quality = 92 } = options;
+  const { outputSize, format = "png", quality = 92, maxFileSize } = options;
 
   // Create canvas element for StaticCanvas
   const canvasEl = document.createElement("canvas");
@@ -378,6 +381,23 @@ export async function renderCanvasToRaster(
     throw new Error(`Failed to generate ${format.toUpperCase()} from canvas`);
   }
 
+  // Apply max size compression if needed (only for lossy formats)
+  if (
+    maxFileSize &&
+    blob.size > maxFileSize &&
+    (format === "jpeg" || format === "webp")
+  ) {
+    // We need to use the underlying canvas element for compression
+    const result = await compressToMaxSize({
+      targetMaxBytes: maxFileSize,
+      format,
+      initialQuality: quality / 100,
+      canvas: canvasEl,
+    });
+    canvas.dispose();
+    return result.blob;
+  }
+
   canvas.dispose();
   return blob;
 }
@@ -402,6 +422,8 @@ export interface CanvasExportVariant {
   height: number;
   format?: CanvasExportFormat;
   quality?: number;
+  /** Maximum file size in KB (optional) - triggers compression if exceeded */
+  maxSize?: number;
 }
 
 /**
@@ -418,6 +440,7 @@ export async function generateCanvasExportAssets(
       outputSize: variant.width,
       format: variant.format || "png",
       quality: variant.quality,
+      maxFileSize: variant.maxSize ? variant.maxSize * 1024 : undefined,
     });
     assets.set(variant.filename, blob);
   }

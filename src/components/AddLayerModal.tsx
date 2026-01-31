@@ -94,7 +94,9 @@ export function AddLayerModal({
       if (!file) return;
 
       // Check if the file is an SVG
-      const isSvgFile = file.type === "image/svg+xml" || file.name.toLowerCase().endsWith(".svg");
+      const isSvgFile =
+        file.type === "image/svg+xml" ||
+        file.name.toLowerCase().endsWith(".svg");
 
       if (isSvgFile) {
         // For SVG files, read as text to preserve the raw SVG content

@@ -48,8 +48,12 @@ export function CustomizationControlsPane({
   selectedIconId,
 }: CustomizationControlsPaneProps) {
   // Restriction mode
-  const { isRestricted, allowedStyles, allowedExportPresets, isLoading: isRestrictionLoading } =
-    useRestriction();
+  const {
+    isRestricted,
+    allowedStyles,
+    allowedExportPresets,
+    isLoading: isRestrictionLoading,
+  } = useRestriction();
 
   // Presets hook
   const {
@@ -280,9 +284,21 @@ export function CustomizationControlsPane({
           presets={effectiveExportPresets}
           selectedPresetId={selectedExportPresetId}
           onSelectPreset={selectExportPreset}
-          onCreatePreset={!isRestrictionLoading && !isRestricted ? handleCreateExportPreset : undefined}
-          onEditPreset={!isRestrictionLoading && !isRestricted ? handleEditExportPreset : undefined}
-          onDeletePreset={!isRestrictionLoading && !isRestricted ? deleteExportPreset : undefined}
+          onCreatePreset={
+            !isRestrictionLoading && !isRestricted
+              ? handleCreateExportPreset
+              : undefined
+          }
+          onEditPreset={
+            !isRestrictionLoading && !isRestricted
+              ? handleEditExportPreset
+              : undefined
+          }
+          onDeletePreset={
+            !isRestrictionLoading && !isRestricted
+              ? deleteExportPreset
+              : undefined
+          }
         />
 
         {/* SVG Warning for Custom Images */}
@@ -302,7 +318,9 @@ export function CustomizationControlsPane({
         <Separator />
 
         {/* Style Preset Selection - hidden in restricted mode */}
-        {!isRestrictionLoading && !isRestricted && (onBackgroundColorChange || onIconColorChange) ? (
+        {!isRestrictionLoading &&
+        !isRestricted &&
+        (onBackgroundColorChange || onIconColorChange) ? (
           <>
             <StylePresetSelector
               presets={stylePresets}

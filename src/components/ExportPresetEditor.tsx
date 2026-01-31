@@ -32,6 +32,7 @@ import type {
 import {
   EXPORT_FORMATS,
   formatSupportsQuality,
+  formatSupportsMaxSize,
   getFormatExtension,
 } from "@/src/types/preset";
 
@@ -318,6 +319,33 @@ function VariantEditor({
                 step={1}
                 className="mt-2"
               />
+            </div>
+          )}
+
+          {/* Max Size (only for PNG/JPEG/WebP) */}
+          {formatSupportsMaxSize(variant.format) && (
+            <div className="col-span-2 space-y-1">
+              <Label className="text-xs text-muted-foreground">
+                Max Size (KB)
+              </Label>
+              <Input
+                type="number"
+                value={variant.maxSize || ""}
+                onChange={(e) =>
+                  onChange({
+                    maxSize: e.target.value
+                      ? parseInt(e.target.value)
+                      : undefined,
+                  })
+                }
+                placeholder="No limit"
+                className="h-8"
+                min={1}
+              />
+              <p className="text-xs text-muted-foreground">
+                Leave empty for no size limit. If set, quality may be reduced to
+                meet target.
+              </p>
             </div>
           )}
         </div>

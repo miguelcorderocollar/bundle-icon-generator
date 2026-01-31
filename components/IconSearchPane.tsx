@@ -66,7 +66,11 @@ export function IconSearchPane({
 }: IconSearchPaneProps) {
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const [isMac, setIsMac] = React.useState<boolean>(false); // Default to false to avoid hydration mismatch
-  const { isRestricted, isIconPackAllowed, isLoading: isRestrictionLoading } = useRestriction();
+  const {
+    isRestricted,
+    isIconPackAllowed,
+    isLoading: isRestrictionLoading,
+  } = useRestriction();
   const [sortBy, setSortBy] = React.useState<SortOption>("name");
   const [_favorites, setFavorites] = React.useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(

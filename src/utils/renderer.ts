@@ -11,6 +11,7 @@ import {
   gradientToSvgDef,
   createCanvasGradient,
 } from "./gradients";
+import { compressToMaxSize } from "./image-compression";
 
 /**
  * Render options for SVG generation
@@ -604,6 +605,8 @@ export interface RasterRenderOptions extends PngRenderOptions {
   format?: "png" | "jpeg" | "webp";
   /** Quality for JPEG/WebP (0-1, defaults to 0.92) */
   quality?: number;
+  /** Maximum file size in bytes (optional) - triggers compression if exceeded */
+  maxFileSize?: number;
 }
 
 /**
@@ -621,6 +624,7 @@ export async function renderRaster(
     height,
     format = "png",
     quality = 0.92,
+    maxFileSize,
   } = options;
 
   // Create canvas
@@ -694,11 +698,11 @@ export async function renderRaster(
         : "image/png";
 
   // Convert to blob
-  return new Promise<Blob>((resolve, reject) => {
+  const blob = await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(
-      (blob) => {
-        if (blob) {
-          resolve(blob);
+      (b) => {
+        if (b) {
+          resolve(b);
         } else {
           reject(new Error(`Failed to convert canvas to ${format}`));
         }
@@ -707,6 +711,23 @@ export async function renderRaster(
       format === "png" ? undefined : quality
     );
   });
+
+  // Apply max size compression if needed (only for lossy formats)
+  if (
+    maxFileSize &&
+    blob.size > maxFileSize &&
+    (format === "jpeg" || format === "webp")
+  ) {
+    const result = await compressToMaxSize({
+      targetMaxBytes: maxFileSize,
+      format,
+      initialQuality: quality,
+      canvas,
+    });
+    return result.blob;
+  }
+
+  return blob;
 }
 
 /**
@@ -717,6 +738,8 @@ export interface ImageRasterRenderOptions extends ImageRenderOptions {
   format?: "png" | "jpeg" | "webp";
   /** Quality for JPEG/WebP (0-1, defaults to 0.92) */
   quality?: number;
+  /** Maximum file size in bytes (optional) - triggers compression if exceeded */
+  maxFileSize?: number;
 }
 
 /**
@@ -733,6 +756,7 @@ export async function renderRasterFromImage(
     height,
     format = "png",
     quality = 0.92,
+    maxFileSize,
   } = options;
 
   // Create canvas
@@ -800,11 +824,11 @@ export async function renderRasterFromImage(
         : "image/png";
 
   // Convert to blob
-  return new Promise<Blob>((resolve, reject) => {
+  const blob = await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(
-      (blob) => {
-        if (blob) {
-          resolve(blob);
+      (b) => {
+        if (b) {
+          resolve(b);
         } else {
           reject(new Error(`Failed to convert canvas to ${format}`));
         }
@@ -813,6 +837,23 @@ export async function renderRasterFromImage(
       format === "png" ? undefined : quality
     );
   });
+
+  // Apply max size compression if needed (only for lossy formats)
+  if (
+    maxFileSize &&
+    blob.size > maxFileSize &&
+    (format === "jpeg" || format === "webp")
+  ) {
+    const result = await compressToMaxSize({
+      targetMaxBytes: maxFileSize,
+      format,
+      initialQuality: quality,
+      canvas,
+    });
+    return result.blob;
+  }
+
+  return blob;
 }
 
 /**
@@ -940,6 +981,8 @@ export interface ExportVariantSpec {
   format: ExportFormatType;
   quality?: number;
   description?: string;
+  /** Maximum file size in KB (optional) - triggers compression if exceeded */
+  maxSize?: number;
 }
 
 /**
@@ -1019,6 +1062,7 @@ export async function generateExportAssets(
         height: variant.height,
         format: variant.format,
         quality: variant.quality ? variant.quality / 100 : undefined,
+        maxFileSize: variant.maxSize ? variant.maxSize * 1024 : undefined,
       });
       assets.set(variant.filename, blob);
     }

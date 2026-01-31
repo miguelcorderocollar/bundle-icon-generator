@@ -54,6 +54,7 @@ function toVariantSpec(config: ExportVariantConfig): ExportVariantSpec {
     format: config.format,
     quality: config.quality,
     description: config.description,
+    maxSize: config.maxSize,
   };
 }
 
@@ -133,6 +134,7 @@ export async function generateExportZip(
         height: variant.height,
         format: rasterFormat,
         quality: variant.quality ? variant.quality / 100 : undefined,
+        maxFileSize: variant.maxSize ? variant.maxSize * 1024 : undefined,
       });
       zip.file(variant.filename, blob);
       filenames.push(variant.filename);
@@ -237,6 +239,7 @@ async function generateCanvasExportZip(
     height: number;
     format: "png" | "jpeg" | "webp";
     quality?: number;
+    maxSize?: number;
   }>;
 
   if (options?.preset) {
@@ -251,6 +254,7 @@ async function generateCanvasExportZip(
         height: v.height,
         format: v.format as "png" | "jpeg" | "webp",
         quality: v.quality,
+        maxSize: v.maxSize,
       }));
   } else {
     // Default canvas export (Zendesk sizes)
