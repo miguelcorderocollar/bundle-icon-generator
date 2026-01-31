@@ -100,11 +100,13 @@ The `generate-icons` script processes icons from installed icon packs and genera
 ## Icon Sources & Licensing
 
 - **Bundled icon packs**:
-  - [`@zendeskgarden/svg-icons`](https://github.com/zendeskgarden/svg-icons) (Apache-2.0)
-  - [`feather-icons`](https://github.com/feathericons/feather) (MIT)
-  - [`remixicon`](https://github.com/Remix-Design/RemixIcon) (Apache-2.0)
+  - [`@zendeskgarden/svg-icons`](https://github.com/zendeskgarden/svg-icons) v8.0.0 — Apache-2.0, added November 2025
+  - [`feather-icons`](https://github.com/feathericons/feather) v4.29.2 — MIT, added November 2025
+  - [`remixicon`](https://github.com/Remix-Design/RemixIcon) v4.7.0 — Apache-2.0 (at time of integration), added November 2025
 - **Custom icons**: User-uploaded SVG icons and emojis stored in localStorage
-- All icon packs maintain their original licenses. Attribution is displayed in the app's About dialog.
+- All icon packs maintain their original licenses. See [THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md) for complete license texts and attribution details.
+
+**Note on RemixIcon**: RemixIcon changed their license from Apache 2.0 to "Remix Icon License v1.0" effective January 2026. This project uses v4.7.0 (released October 2024), which was licensed under Apache 2.0 at the time of integration.
 
 ## Development Guidelines
 
@@ -128,7 +130,7 @@ The `generate-icons` script processes icons from installed icon packs and genera
 
 ## License
 
-- **Project code**: MIT License - See [LICENSE](LICENSE) file for details.
-- **Bundled icon packs**: Respect original licenses; include copies in the repository and reference them within the app as needed.
+- **Project code**: MIT License — See [LICENSE](LICENSE) file for details.
+- **Bundled icon packs**: Each maintains its original license (MIT or Apache 2.0). See [THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md) for complete license texts, attribution, and version/date information.
 
-If you introduce new third-party assets or libraries, document their licenses here and ensure they are compatible with your target distribution platform.
+If you introduce new third-party assets or libraries, document their licenses in THIRD-PARTY-LICENSES.md and ensure they are compatible with your target distribution platform.

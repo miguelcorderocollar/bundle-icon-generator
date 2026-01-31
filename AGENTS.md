@@ -244,7 +244,25 @@ See `docs/zendesk-icon-docs.md` for complete requirements.
 - **No backend** - All processing is client-side
 - **No external API calls** - Icons are bundled locally
 - **localStorage only** - No sensitive data storage
-- **License compliance** - Icon packs maintain original licenses (Apache-2.0, MIT)
+- **License compliance** - Icon packs maintain original licenses; see `THIRD-PARTY-LICENSES.md`
+
+## Third-Party Icon Licenses
+
+This project bundles icons from external libraries. Proper license compliance is documented in `THIRD-PARTY-LICENSES.md`.
+
+| Library                  | Version | License      | Date Added        |
+| ------------------------ | ------- | ------------ | ----------------- |
+| Feather Icons            | 4.29.2  | MIT          | November 9, 2025  |
+| Zendesk Garden SVG Icons | 8.0.0   | Apache 2.0   | November 9, 2025  |
+| RemixIcon                | 4.7.0   | Apache 2.0\* | November 14, 2025 |
+
+\*RemixIcon changed to "Remix Icon License v1.0" effective January 2026. This project uses v4.7.0 (released October 2024), which was licensed under Apache 2.0 at the time of integration.
+
+**When updating icon dependencies:**
+
+1. Document the version, license, and date in `THIRD-PARTY-LICENSES.md`
+2. Verify the license is compatible with the project's MIT license
+3. Include any required attribution notices
 
 ## CI/CD Pipeline
 
@@ -296,6 +314,7 @@ The project uses GitHub Actions (`.github/workflows/test.yml`) with two jobs:
 - **Development Plan**: `docs/development-plan.md`
 - **Icon Integration**: `docs/icon-integration.md`
 - **Zendesk Guidelines**: `docs/zendesk-icon-docs.md`
+- **Third-Party Licenses**: `THIRD-PARTY-LICENSES.md`
 - **README**: `README.md` (human-focused documentation)
 
 ## Quick Reference: Essential Commands

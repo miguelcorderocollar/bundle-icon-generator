@@ -22,18 +22,39 @@ SOFTWARE.
 
 ---
 
-Third-Party Icon Licenses:
+## Third-Party Icon Licenses
 
-This project includes icons from the following sources:
+This project includes icons from the following sources. Each icon library
+maintains its original license. See [THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md)
+for complete license texts and compliance details.
 
-- Feather Icons (MIT License)
-  Source: https://github.com/feathericons/feather
-  License: https://github.com/feathericons/feather/blob/master/LICENSE
+### Feather Icons
+- **License**: MIT License
+- **Copyright**: Copyright (c) 2013-2023 Cole Bemis
+- **Source**: https://github.com/feathericons/feather
+- **Version**: 4.29.2
+- **Date Added**: November 9, 2025
 
-- Zendesk Garden SVG Icons (Apache-2.0 License)
-  Source: https://github.com/zendeskgarden/svg-icons
-  License: https://github.com/zendeskgarden/svg-icons/blob/main/LICENSE.md
+### Zendesk Garden SVG Icons
+- **License**: Apache License 2.0
+- **Copyright**: Copyright Zendesk
+- **Source**: https://github.com/zendeskgarden/svg-icons
+- **Version**: 8.0.0
+- **Date Added**: November 9, 2025
 
-These icon packs maintain their original licenses and are used in accordance
-with their respective license terms.
+### RemixIcon
+- **License**: Apache License 2.0 (at time of integration)
+- **Copyright**: Copyright (c) 2017-2025 Remix Design
+- **Source**: https://github.com/Remix-Design/RemixIcon
+- **Version**: 4.7.0
+- **Date Added**: November 14, 2025
 
+**Note**: RemixIcon changed their license from Apache 2.0 to "Remix Icon License v1.0"
+effective January 2026. This project uses version 4.7.0, which was released on
+October 10, 2024 under the Apache 2.0 license. The Apache 2.0 license applies to
+the icons integrated into this project.
+
+---
+
+These icon libraries are used in accordance with their respective license terms.
+All required attributions are provided above and in THIRD-PARTY-LICENSES.md.

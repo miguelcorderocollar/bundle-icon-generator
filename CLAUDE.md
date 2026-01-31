@@ -141,3 +141,17 @@ Strict mode enabled. Path alias `@/*` maps to repository root.
 - Prefer functional React components, typed props
 - Use shadcn/ui for consistent UI patterns
 - Single source of truth for Zendesk sizing/naming rules (see `src/constants/app.ts`)
+
+## Third-Party Icon Licenses
+
+This project uses icon libraries with specific licensing requirements. See `THIRD-PARTY-LICENSES.md` for full details.
+
+| Library                  | Version | License      | Date Added        |
+| ------------------------ | ------- | ------------ | ----------------- |
+| Feather Icons            | 4.29.2  | MIT          | November 9, 2025  |
+| Zendesk Garden SVG Icons | 8.0.0   | Apache 2.0   | November 9, 2025  |
+| RemixIcon                | 4.7.0   | Apache 2.0\* | November 14, 2025 |
+
+\*RemixIcon changed to "Remix Icon License v1.0" in January 2026. This project uses v4.7.0 (released October 2024), which was under Apache 2.0 at integration time.
+
+When updating icon pack dependencies, document the version, license, and date in `THIRD-PARTY-LICENSES.md`.
