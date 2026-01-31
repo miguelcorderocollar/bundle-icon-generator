@@ -196,16 +196,29 @@ test.describe("Share Page", () => {
     await expect(page.getByText("Create Export Preset")).toBeVisible();
   });
 
-  test("persists state after page reload", async ({ page }) => {
-    // Add a new style
-    await page.getByRole("button", { name: /add style/i }).click();
-    await expect(page.getByText("Style 2", { exact: true })).toBeVisible();
+  test("persists state after page reload", async ({ context }) => {
+    // This test needs a fresh context without the localStorage.clear() init script
+    // Create a new page without the beforeEach's addInitScript affecting reload
+    const newPage = await context.newPage();
 
-    // Reload page
-    await page.reload();
-    await page.waitForLoadState("networkidle");
+    // Navigate to share page (this will use a clean state since we didn't add any init scripts)
+    await newPage.goto("/share");
+    await newPage.waitForLoadState("networkidle");
+
+    // Add a new style
+    await newPage.getByRole("button", { name: /add style/i }).click();
+    await expect(newPage.getByText("Style 2", { exact: true })).toBeVisible();
+
+    // Wait for localStorage save to complete (useEffect runs after render)
+    await newPage.waitForTimeout(500);
+
+    // Reload page - this time localStorage won't be cleared
+    await newPage.reload();
+    await newPage.waitForLoadState("networkidle");
 
     // State should persist (use exact match)
-    await expect(page.getByText("Style 2", { exact: true })).toBeVisible();
+    await expect(newPage.getByText("Style 2", { exact: true })).toBeVisible();
+
+    await newPage.close();
   });
 });
