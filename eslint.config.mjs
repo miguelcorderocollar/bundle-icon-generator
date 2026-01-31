@@ -62,6 +62,9 @@ const eslintConfig = defineConfig([
     "dist/**",
     "*.config.js",
     "*.config.ts",
+    // Playwright generated files
+    "playwright-report/**",
+    "test-results/**",
   ]),
 ]);
 
