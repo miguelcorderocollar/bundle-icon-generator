@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Tooltip,
   TooltipContent,
@@ -34,6 +35,8 @@ import {
   Edit2,
   ExternalLink,
   Star,
+  Lock,
+  PackagePlus,
 } from "lucide-react";
 import { ICON_PACKS, type IconPack } from "@/src/constants/app";
 import type {
@@ -52,7 +55,10 @@ import {
   encodeRestrictionConfig,
   decodeRestrictionConfig,
   RESTRICTION_URL_PARAM,
+  encodePresetConfig,
+  CONFIG_URL_PARAM,
 } from "@/src/utils/restriction-codec";
+import type { StylePreset, ExportPreset } from "@/src/types/preset";
 import {
   isGradient,
   gradientToCss,
@@ -61,7 +67,6 @@ import {
 } from "@/src/utils/gradients";
 import { BackgroundControls } from "@/src/components/BackgroundControls";
 import { ExportPresetEditor } from "@/src/components/ExportPresetEditor";
-import type { ExportPreset } from "@/src/types/preset";
 import Link from "next/link";
 
 /**
@@ -94,7 +99,10 @@ function getBackgroundCss(value: BackgroundValue): string {
 /**
  * Admin page for generating restricted mode links
  */
-export default function AdminPage() {
+type ShareMode = "restricted" | "import";
+
+export default function SharePage() {
+  const [shareMode, setShareMode] = React.useState<ShareMode>("restricted");
   const [config, setConfig] = React.useState<RestrictionConfig>(
     createDefaultRestrictionConfig()
   );
@@ -130,22 +138,67 @@ export default function AdminPage() {
     }
   }, [config, isInitialized]);
 
-  // Generate URL whenever config changes
+  // Generate URL whenever config or mode changes
   React.useEffect(() => {
     try {
-      const encoded = encodeRestrictionConfig(config);
       const baseUrl =
         typeof window !== "undefined"
           ? window.location.origin
           : "http://localhost:3000";
       const url = new URL(baseUrl);
-      url.searchParams.set(RESTRICTION_URL_PARAM, encoded);
+
+      if (shareMode === "restricted") {
+        // Restricted mode: encode full restriction config
+        const encoded = encodeRestrictionConfig(config);
+        url.searchParams.set(RESTRICTION_URL_PARAM, encoded);
+      } else {
+        // Import mode: convert to PresetExportData format
+        const stylePresets: StylePreset[] = config.styles.map(
+          (style, index) => ({
+            id: `shared-style-${Date.now()}-${index}`,
+            name: style.name,
+            backgroundColor: style.backgroundColor,
+            iconColor: style.iconColor,
+            isBuiltIn: false,
+            colorPalette: style.colorPalette?.map((c, i) => ({
+              id: `color-${i}`,
+              name: c.name,
+              color: c.color,
+            })),
+            createdAt: new Date().toISOString(),
+          })
+        );
+
+        const exportPresets: ExportPreset[] = (
+          config.allowedExportPresets || []
+        )
+          .filter((p) => p.variants && p.variants.length > 0)
+          .map((preset, index) => ({
+            id: `shared-export-${Date.now()}-${index}`,
+            name: preset.name,
+            description: preset.description || "",
+            variants: preset.variants || [],
+            isBuiltIn: false,
+            createdAt: new Date().toISOString(),
+          }));
+
+        const presetData = {
+          version: 2,
+          exportPresets,
+          stylePresets,
+          exportedAt: new Date().toISOString(),
+        };
+
+        const encoded = encodePresetConfig(presetData);
+        url.searchParams.set(CONFIG_URL_PARAM, encoded);
+      }
+
       setGeneratedUrl(url.toString());
     } catch (error) {
       console.error("Failed to generate URL:", error);
       setGeneratedUrl("");
     }
-  }, [config]);
+  }, [config, shareMode]);
 
   // Add a new style
   const handleAddStyle = () => {
@@ -534,9 +587,9 @@ export default function AdminPage() {
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-semibold">Restriction Mode Admin</h1>
+              <h1 className="text-2xl font-semibold">Share Configuration</h1>
               <p className="text-sm text-muted-foreground">
-                Generate restricted links for internal use
+                Generate shareable links with presets and configurations
               </p>
             </div>
           </div>
@@ -606,12 +659,52 @@ export default function AdminPage() {
           </div>
         </div>
 
+        {/* Share Mode Tabs */}
+        <Tabs
+          value={shareMode}
+          onValueChange={(value) => setShareMode(value as ShareMode)}
+        >
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="restricted" className="gap-2">
+              <Lock className="h-4 w-4" />
+              Restricted Link
+            </TabsTrigger>
+            <TabsTrigger value="import" className="gap-2">
+              <PackagePlus className="h-4 w-4" />
+              Import Link
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        {/* Mode Description */}
+        <Alert>
+          <AlertDescription>
+            {shareMode === "restricted" ? (
+              <>
+                <strong>Restricted Mode:</strong> Users will be locked to the
+                presets you configure below. They cannot change colors or add
+                their own presets.
+              </>
+            ) : (
+              <>
+                <strong>Import Mode:</strong> Users will receive the presets you
+                configure below added to their collection. Existing presets are
+                not overridden.
+              </>
+            )}
+          </AlertDescription>
+        </Alert>
+
         <div className="grid gap-6 md:grid-cols-2">
           {/* Style Configuration */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>Style Presets</span>
+                <span>
+                  {shareMode === "restricted"
+                    ? "Style Presets"
+                    : "Style Presets to Share"}
+                </span>
                 <Button size="sm" variant="outline" onClick={handleAddStyle}>
                   <Plus className="mr-2 h-4 w-4" />
                   Add Style
@@ -824,111 +917,121 @@ export default function AdminPage() {
           </Card>
         </div>
 
-        {/* Icon Pack Restrictions */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Allowed Icon Packs</span>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleToggleAllPacks}
-              >
-                {(config.allowedIconPacks?.length ?? 0) ===
-                ICON_PACK_OPTIONS.length
-                  ? "Deselect All"
-                  : "Select All"}
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {ICON_PACK_OPTIONS.map((option) => {
-                const isChecked =
-                  !config.allowedIconPacks ||
-                  config.allowedIconPacks.includes(option.value);
-                const isDefault = config.defaultIconPack === option.value;
-
-                return (
-                  <div
-                    key={option.value}
-                    className="flex items-center gap-2 rounded-md border p-3 hover:bg-accent"
-                  >
-                    <Checkbox
-                      checked={isChecked}
-                      onCheckedChange={() => handleToggleIconPack(option.value)}
-                      id={`pack-${option.value}`}
-                    />
-                    <label
-                      htmlFor={`pack-${option.value}`}
-                      className="flex-1 cursor-pointer text-sm"
-                    >
-                      {option.label}
-                    </label>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6 shrink-0"
-                            onClick={() =>
-                              handleSetDefaultIconPack(option.value)
-                            }
-                          >
-                            <Star
-                              className={`h-3.5 w-3.5 ${
-                                isDefault
-                                  ? "fill-amber-400 text-amber-400"
-                                  : "text-muted-foreground"
-                              }`}
-                            />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          {isDefault
-                            ? "Default pack (click to unset)"
-                            : "Set as default pack"}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                );
-              })}
-            </div>
-            <p className="mt-3 text-xs text-muted-foreground">
-              {!config.allowedIconPacks
-                ? "All icon packs are allowed"
-                : `${config.allowedIconPacks.length} pack(s) allowed`}
-              {config.defaultIconPack && (
-                <>
-                  {" · "}
-                  Default:{" "}
-                  {ICON_PACK_OPTIONS.find(
-                    (o) => o.value === config.defaultIconPack
-                  )?.label || config.defaultIconPack}
-                </>
-              )}
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Export Preset Restrictions */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Allowed Export Presets</span>
-              <div className="flex items-center gap-2">
+        {/* Icon Pack Restrictions - Only show in restricted mode */}
+        {shareMode === "restricted" && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Allowed Icon Packs</span>
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={handleToggleAllExportPresets}
+                  onClick={handleToggleAllPacks}
                 >
-                  {(config.allowedExportPresets?.length ?? 0) ===
-                  BUILTIN_EXPORT_PRESETS.length
+                  {(config.allowedIconPacks?.length ?? 0) ===
+                  ICON_PACK_OPTIONS.length
                     ? "Deselect All"
                     : "Select All"}
                 </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {ICON_PACK_OPTIONS.map((option) => {
+                  const isChecked =
+                    !config.allowedIconPacks ||
+                    config.allowedIconPacks.includes(option.value);
+                  const isDefault = config.defaultIconPack === option.value;
+
+                  return (
+                    <div
+                      key={option.value}
+                      className="flex items-center gap-2 rounded-md border p-3 hover:bg-accent"
+                    >
+                      <Checkbox
+                        checked={isChecked}
+                        onCheckedChange={() =>
+                          handleToggleIconPack(option.value)
+                        }
+                        id={`pack-${option.value}`}
+                      />
+                      <label
+                        htmlFor={`pack-${option.value}`}
+                        className="flex-1 cursor-pointer text-sm"
+                      >
+                        {option.label}
+                      </label>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 shrink-0"
+                              onClick={() =>
+                                handleSetDefaultIconPack(option.value)
+                              }
+                            >
+                              <Star
+                                className={`h-3.5 w-3.5 ${
+                                  isDefault
+                                    ? "fill-amber-400 text-amber-400"
+                                    : "text-muted-foreground"
+                                }`}
+                              />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {isDefault
+                              ? "Default pack (click to unset)"
+                              : "Set as default pack"}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="mt-3 text-xs text-muted-foreground">
+                {!config.allowedIconPacks
+                  ? "All icon packs are allowed"
+                  : `${config.allowedIconPacks.length} pack(s) allowed`}
+                {config.defaultIconPack && (
+                  <>
+                    {" · "}
+                    Default:{" "}
+                    {ICON_PACK_OPTIONS.find(
+                      (o) => o.value === config.defaultIconPack
+                    )?.label || config.defaultIconPack}
+                  </>
+                )}
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Export Preset Restrictions - Different UI based on mode */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span>
+                {shareMode === "restricted"
+                  ? "Allowed Export Presets"
+                  : "Custom Export Presets to Share"}
+              </span>
+              <div className="flex items-center gap-2">
+                {shareMode === "restricted" && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleToggleAllExportPresets}
+                  >
+                    {(config.allowedExportPresets?.length ?? 0) ===
+                    BUILTIN_EXPORT_PRESETS.length
+                      ? "Deselect All"
+                      : "Select All"}
+                  </Button>
+                )}
                 <Button
                   size="sm"
                   variant="outline"
@@ -941,48 +1044,52 @@ export default function AdminPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Built-in Presets */}
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-2">
-                Built-in Presets
-              </p>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {BUILTIN_EXPORT_PRESETS.map((preset) => {
-                  const isChecked =
-                    !config.allowedExportPresets ||
-                    config.allowedExportPresets.some((p) => p.id === preset.id);
+            {/* Built-in Presets - Only show in restricted mode */}
+            {shareMode === "restricted" && (
+              <div>
+                <p className="text-xs font-medium text-muted-foreground mb-2">
+                  Built-in Presets
+                </p>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {BUILTIN_EXPORT_PRESETS.map((preset) => {
+                    const isChecked =
+                      !config.allowedExportPresets ||
+                      config.allowedExportPresets.some(
+                        (p) => p.id === preset.id
+                      );
 
-                  return (
-                    <label
-                      key={preset.id}
-                      className="flex items-start gap-3 cursor-pointer rounded-md border p-3 hover:bg-accent"
-                    >
-                      <Checkbox
-                        checked={isChecked}
-                        onCheckedChange={() =>
-                          handleToggleExportPreset(preset.id)
-                        }
-                        className="mt-0.5"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium">{preset.name}</p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {preset.description}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {preset.variants.length} variant(s)
-                        </p>
-                      </div>
-                    </label>
-                  );
-                })}
+                    return (
+                      <label
+                        key={preset.id}
+                        className="flex items-start gap-3 cursor-pointer rounded-md border p-3 hover:bg-accent"
+                      >
+                        <Checkbox
+                          checked={isChecked}
+                          onCheckedChange={() =>
+                            handleToggleExportPreset(preset.id)
+                          }
+                          className="mt-0.5"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium">{preset.name}</p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {preset.description}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {preset.variants.length} variant(s)
+                          </p>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Custom Presets */}
-            {customExportPresets.length > 0 && (
+            {customExportPresets.length > 0 ? (
               <div>
-                <Separator className="my-4" />
+                {shareMode === "restricted" && <Separator className="my-4" />}
                 <p className="text-xs font-medium text-muted-foreground mb-2">
                   Custom Presets
                 </p>
@@ -1041,12 +1148,27 @@ export default function AdminPage() {
                   ))}
                 </div>
               </div>
+            ) : (
+              shareMode === "import" && (
+                <p className="text-center text-sm text-muted-foreground py-4">
+                  No custom export presets yet. Click &quot;Custom&quot; to
+                  create one to share.
+                </p>
+              )
             )}
 
             <p className="text-xs text-muted-foreground">
-              {!config.allowedExportPresets
-                ? "All export presets are allowed"
-                : `${config.allowedExportPresets.length} preset(s) allowed`}
+              {shareMode === "restricted" ? (
+                !config.allowedExportPresets ? (
+                  "All export presets are allowed"
+                ) : (
+                  `${config.allowedExportPresets.length} preset(s) allowed`
+                )
+              ) : (
+                <>
+                  {customExportPresets.length} custom preset(s) will be shared
+                </>
+              )}
             </p>
           </CardContent>
         </Card>
@@ -1075,7 +1197,9 @@ export default function AdminPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Link2 className="h-5 w-5" />
-              Generated Restriction URL
+              {shareMode === "restricted"
+                ? "Generated Restricted URL"
+                : "Generated Import URL"}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -1108,9 +1232,20 @@ export default function AdminPage() {
               </TooltipProvider>
             </div>
             <p className="text-xs text-muted-foreground">
-              Share this URL with users to give them a restricted experience.
-              They will only see the style presets and icon packs you&apos;ve
-              configured above.
+              {shareMode === "restricted" ? (
+                <>
+                  Share this URL with users to give them a restricted
+                  experience. They will only see the style presets and icon
+                  packs you&apos;ve configured above.
+                </>
+              ) : (
+                <>
+                  Share this URL with users to add the configured presets to
+                  their collection. Their existing presets will not be
+                  overridden - duplicates will be renamed with
+                  &quot;(imported)&quot; suffix.
+                </>
+              )}
             </p>
             <div className="flex gap-2">
               <Button variant="outline" asChild className="w-full">

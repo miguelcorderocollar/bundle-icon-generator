@@ -14,19 +14,38 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Info, Github, Globe, Moon, Sun, Lock } from "lucide-react";
+import {
+  Info,
+  Github,
+  Globe,
+  Moon,
+  Sun,
+  Lock,
+  Share2,
+  CheckCircle2,
+} from "lucide-react";
+import Link from "next/link";
 import { useTheme } from "@/src/components/ThemeProvider";
 import { WelcomeModal } from "@/src/components/WelcomeModal";
 import { hasSeenWelcome } from "@/src/utils/local-storage";
 import { CanvasControlsPane } from "@/src/components/CanvasControlsPane";
 import { useRestriction } from "@/src/contexts/RestrictionContext";
+import {
+  getPresetConfigFromUrl,
+  removeConfigFromUrl,
+} from "@/src/utils/restriction-codec";
+import { importUserPresets } from "@/src/utils/preset-storage";
+import type { PresetImportResult } from "@/src/types/preset";
 
 export default function Home() {
   const { state, actions } = useIconGenerator();
   const [isInfoOpen, setIsInfoOpen] = React.useState(false);
   const [isWelcomeOpen, setIsWelcomeOpen] = React.useState(false);
+  const [importResult, setImportResult] =
+    React.useState<PresetImportResult | null>(null);
   const { theme, mounted, toggleTheme } = useTheme();
   const {
     isRestricted,
@@ -41,11 +60,34 @@ export default function Home() {
   // Check if canvas mode is active
   const isCanvasMode = state.selectedPack === ICON_PACKS.CANVAS;
 
-  // Show welcome modal on first visit
+  // Handle config import from URL - run before welcome modal check
+  const hasImportedConfigRef = React.useRef(false);
   React.useEffect(() => {
-    if (!hasSeenWelcome()) {
-      setIsWelcomeOpen(true);
+    if (hasImportedConfigRef.current) return;
+
+    const configData = getPresetConfigFromUrl();
+    if (configData) {
+      hasImportedConfigRef.current = true;
+      // Import the presets
+      const result = importUserPresets(JSON.stringify(configData));
+      setImportResult(result);
+      // Clean the URL
+      removeConfigFromUrl();
+      // Notify other hook instances (like usePresets) about the change
+      window.dispatchEvent(new CustomEvent("presetChange"));
     }
+  }, []);
+
+  // Show welcome modal on first visit - but not if we just imported config
+  React.useEffect(() => {
+    // Wait a tick to let import effect run first
+    const timer = setTimeout(() => {
+      // Don't show welcome if we're showing import result
+      if (!hasSeenWelcome() && !hasImportedConfigRef.current) {
+        setIsWelcomeOpen(true);
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   // Track if we've already set the initial pack in restricted mode
@@ -109,6 +151,18 @@ export default function Home() {
             <p className="text-sm text-muted-foreground">{APP_DESCRIPTION}</p>
           </div>
           <div className="flex items-center gap-2">
+            {!isRestrictionLoading && !isRestricted && (
+              <Button
+                variant="ghost"
+                size="icon-lg"
+                className="shrink-0"
+                asChild
+              >
+                <Link href="/share" aria-label="Share configuration">
+                  <Share2 className="h-5 w-5" />
+                </Link>
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="icon-lg"
@@ -302,6 +356,56 @@ export default function Home() {
           )}
         </div>
       </main>
+
+      {/* Preset Import Result Dialog */}
+      <Dialog
+        open={importResult !== null}
+        onOpenChange={(open) => !open && setImportResult(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-green-500" />
+              Presets Imported
+            </DialogTitle>
+            <DialogDescription>
+              {importResult?.success
+                ? "The shared presets have been added to your collection."
+                : "There was an issue importing the presets."}
+            </DialogDescription>
+          </DialogHeader>
+          {importResult && (
+            <div className="space-y-3 py-2">
+              {importResult.success ? (
+                <>
+                  <p className="text-sm text-muted-foreground">
+                    <strong>{importResult.stylePresetsImported}</strong> style
+                    preset(s) and{" "}
+                    <strong>{importResult.exportPresetsImported}</strong> export
+                    preset(s) were imported.
+                  </p>
+                  {importResult.warnings &&
+                    importResult.warnings.length > 0 && (
+                      <div className="rounded-md bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-900/20 dark:text-amber-400">
+                        <p className="font-medium">Notes:</p>
+                        <ul className="mt-1 list-disc list-inside">
+                          {importResult.warnings.map((warning, i) => (
+                            <li key={i}>{warning}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                </>
+              ) : (
+                <p className="text-sm text-destructive">{importResult.error}</p>
+              )}
+            </div>
+          )}
+          <DialogFooter>
+            <Button onClick={() => setImportResult(null)}>Done</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
