@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { BackgroundControls } from "./BackgroundControls";
 import { ColorPicker } from "./ColorPicker";
+import { DebouncedColorInput } from "./DebouncedColorInput";
 import type { StylePreset, ColorPaletteEntry } from "@/src/types/preset";
 import type { BackgroundValue } from "@/src/utils/gradients";
 import { KALE_COLORS } from "@/src/utils/gradients";
@@ -204,14 +205,12 @@ export function StylePresetEditor({
                 <div className="space-y-2">
                   {colorPalette.map((entry, index) => (
                     <div key={entry.id} className="flex items-center gap-2">
-                      <input
-                        type="color"
+                      <DebouncedColorInput
                         value={entry.color}
-                        onChange={(e) =>
-                          handleUpdateColorValue(entry.id, e.target.value)
+                        onChange={(color) =>
+                          handleUpdateColorValue(entry.id, color)
                         }
-                        className="h-8 w-10 cursor-pointer rounded-md border flex-shrink-0"
-                        aria-label={`Color for ${entry.name}`}
+                        ariaLabel={`Color for ${entry.name}`}
                       />
                       <Input
                         value={entry.name}
@@ -220,15 +219,6 @@ export function StylePresetEditor({
                         }
                         placeholder={DEFAULT_COLOR_NAMES[index] || "Color name"}
                         className="flex-1"
-                      />
-                      <Input
-                        value={entry.color}
-                        onChange={(e) =>
-                          handleUpdateColorValue(entry.id, e.target.value)
-                        }
-                        placeholder="#ffffff"
-                        className="w-24 font-mono text-xs"
-                        maxLength={7}
                       />
                       <Button
                         variant="ghost"
