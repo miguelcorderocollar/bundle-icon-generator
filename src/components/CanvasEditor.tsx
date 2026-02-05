@@ -14,6 +14,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Plus, RotateCcw } from "lucide-react";
 import type { CanvasLayer, CanvasEditorState } from "@/src/types/canvas";
 import { isIconLayer, isImageLayer, isTextLayer } from "@/src/types/canvas";
@@ -170,19 +181,34 @@ export function CanvasEditor({
           </Tooltip>
 
           {state.layers.length > 0 && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => actions.clearCanvas()}
-                >
-                  <RotateCcw className="size-4 mr-1" />
-                  Clear
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Clear all layers</TooltipContent>
-            </Tooltip>
+            <AlertDialog>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <RotateCcw className="size-4 mr-1" />
+                      Clear
+                    </Button>
+                  </AlertDialogTrigger>
+                </TooltipTrigger>
+                <TooltipContent>Clear all layers</TooltipContent>
+              </Tooltip>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Clear canvas?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will remove all layers from the canvas. This action
+                    cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => actions.clearCanvas()}>
+                    Clear
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </TooltipProvider>
       </div>

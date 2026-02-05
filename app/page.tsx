@@ -52,6 +52,7 @@ export default function Home() {
     isLoading: isRestrictionLoading,
     defaultIconPack,
     isIconPackAllowed,
+    allowedStyles,
   } = useRestriction();
 
   // Canvas editor state - lifted to page level for sharing between components
@@ -111,6 +112,9 @@ export default function Home() {
   // Track if we've already set the initial pack in restricted mode
   const hasSetRestrictedPackRef = React.useRef(false);
 
+  // Track if we've already set the initial style in restricted mode
+  const hasSetRestrictedStyleRef = React.useRef(false);
+
   // Auto-select the default icon pack in restricted mode
   // This ensures users start with the configured default, not whatever was persisted
   React.useEffect(() => {
@@ -138,6 +142,22 @@ export default function Home() {
     isIconPackAllowed,
     actions,
   ]);
+
+  // Auto-apply the first restricted style on initial load in restricted mode
+  // This ensures users start with a valid style from the allowed styles list
+  React.useEffect(() => {
+    if (isRestrictionLoading) return;
+    if (!isRestricted) return;
+    if (hasSetRestrictedStyleRef.current) return;
+
+    // If we have allowed styles, apply the first one
+    if (allowedStyles.length > 0) {
+      const firstStyle = allowedStyles[0];
+      actions.setBackgroundColor(firstStyle.backgroundColor);
+      actions.setIconColor(firstStyle.iconColor);
+      hasSetRestrictedStyleRef.current = true;
+    }
+  }, [isRestrictionLoading, isRestricted, allowedStyles, actions]);
 
   // Handler to apply icon color to all colorable layers in canvas
   const handleApplyIconColorToLayers = React.useCallback(
