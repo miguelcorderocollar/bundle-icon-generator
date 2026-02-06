@@ -256,11 +256,6 @@ export function RestrictedStyleSelector({
           </TooltipProvider>
         </div>
       )}
-
-      <p className="text-xs text-muted-foreground">
-        This session has restricted styling options. To unlock all options,
-        clear your browser cache and reload without the restriction URL.
-      </p>
     </div>
   );
 }
