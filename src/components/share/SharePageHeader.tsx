@@ -8,7 +8,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ArrowLeft, Download, Upload, ExternalLink } from "lucide-react";
+import {
+  ArrowLeft,
+  Download,
+  Upload,
+  ExternalLink,
+  Layers,
+} from "lucide-react";
 import Link from "next/link";
 import type { UseConfigImportExportReturn } from "@/src/hooks/use-config-import-export";
 
@@ -46,6 +52,21 @@ export function SharePageHeader({ importExport }: SharePageHeaderProps) {
         </div>
       </div>
       <div className="flex items-center gap-2">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link href="/batch">
+                <Button variant="outline" size="sm">
+                  <Layers className="mr-2 h-4 w-4" />
+                  Batch
+                </Button>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>
+              Generate multiple icon bundles at once
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <input
           ref={fileInputRef}
           type="file"

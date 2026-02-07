@@ -26,6 +26,7 @@ import {
   Lock,
   Share2,
   CheckCircle2,
+  Layers,
 } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "@/src/components/ThemeProvider";
@@ -170,16 +171,28 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-2">
             {!isRestrictionLoading && !isRestricted && (
-              <Button
-                variant="ghost"
-                size="icon-lg"
-                className="shrink-0"
-                asChild
-              >
-                <Link href="/share" aria-label="Share configuration">
-                  <Share2 className="h-5 w-5" />
-                </Link>
-              </Button>
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon-lg"
+                  className="shrink-0"
+                  asChild
+                >
+                  <Link href="/batch" aria-label="Batch generator">
+                    <Layers className="h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon-lg"
+                  className="shrink-0"
+                  asChild
+                >
+                  <Link href="/share" aria-label="Share configuration">
+                    <Share2 className="h-5 w-5" />
+                  </Link>
+                </Button>
+              </>
             )}
             <Button
               variant="ghost"
