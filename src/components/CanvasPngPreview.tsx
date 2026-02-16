@@ -168,6 +168,7 @@ export function CanvasPngPreview({ canvasState }: CanvasPngPreviewProps) {
         </div>
         <div className="flex justify-center">
           {previewUrls.logo ? (
+            // eslint-disable-next-line @next/next/no-img-element -- blob URL from canvas, Next Image doesn't support blob URLs
             <img
               src={previewUrls.logo}
               alt="Logo preview"
@@ -190,6 +191,7 @@ export function CanvasPngPreview({ canvasState }: CanvasPngPreviewProps) {
         </div>
         <div className="flex justify-center">
           {previewUrls.logoSmall ? (
+            // eslint-disable-next-line @next/next/no-img-element -- blob URL from canvas, Next Image doesn't support blob URLs
             <img
               src={previewUrls.logoSmall}
               alt="Logo small preview"

@@ -226,13 +226,16 @@ export function PresetPreview({
         if (p.url) URL.revokeObjectURL(p.url);
       });
     };
-    // Using individual state values and variantsHash for proper change detection
+    // previews excluded: including it would cause infinite loop (effect sets previews -> re-runs -> sets again)
+    // preset.variants captured via variantsHash
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     iconId,
     backgroundColor,
     iconColor,
     iconSize,
     preset.id,
+    preset.variants,
     variantsHash,
     isCanvasMode,
     state,
