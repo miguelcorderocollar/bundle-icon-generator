@@ -346,7 +346,7 @@ export function PreviewPane({
               onClick={() => setIsExportModalOpen(true)}
             >
               <Download className="mr-2 size-4" />
-              Export ZIP
+              Export
             </Button>
           </div>
         </CardContent>
@@ -460,7 +460,7 @@ export function PreviewPane({
             onClick={() => setIsExportModalOpen(true)}
           >
             <Download className="mr-2 size-4" />
-            Export ZIP
+            Export
           </Button>
         </div>
       </CardContent>

@@ -68,7 +68,7 @@ test.describe("Icon Selection Flow", () => {
     await page.waitForTimeout(1000);
 
     // Export button should be visible
-    const exportButton = page.getByRole("button", { name: /export zip/i });
+    const exportButton = page.getByRole("button", { name: /^export$/i });
     await expect(exportButton).toBeVisible();
 
     // If an icon is selected (by default), button should be enabled

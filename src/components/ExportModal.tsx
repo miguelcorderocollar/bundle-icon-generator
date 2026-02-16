@@ -21,8 +21,8 @@ import type { AppLocation } from "../types/app-location";
 import type { CanvasEditorState } from "../types/canvas";
 import type { ExportVariantConfig } from "../types/preset";
 import {
-  generateExportZip,
-  downloadZip,
+  generateExportDownloadPayload,
+  downloadFile,
   validateExport,
 } from "../utils/export-controller";
 import { getRequiredExportVariants } from "../types/export";
@@ -119,19 +119,13 @@ export function ExportModal({
     setExportError(null);
 
     try {
-      const result = await generateExportZip(
+      const result = await generateExportDownloadPayload(
         state,
         selectedLocations,
         canvasState,
         { preset: selectedExportPreset }
       );
-
-      // Use preset name for filename
-      const filename = selectedExportPreset
-        ? `${selectedExportPreset.name.toLowerCase().replace(/\s+/g, "-")}-icons.zip`
-        : "app-icons.zip";
-
-      downloadZip(result.zipBlob, filename);
+      downloadFile(result.blob, result.filename);
       onOpenChange(false);
     } catch (error) {
       console.error("Export error:", error);
@@ -162,7 +156,9 @@ export function ExportModal({
           <DialogDescription>
             {selectedExportPreset
               ? `Exporting with "${selectedExportPreset.name}" preset`
-              : "Download your icon bundle"}
+              : variants.length === 1
+                ? "Download your icon file"
+                : "Download your icon files"}
           </DialogDescription>
         </DialogHeader>
 
@@ -295,7 +291,7 @@ export function ExportModal({
             ) : (
               <>
                 <Download className="mr-2 h-4 w-4" />
-                Download ZIP
+                Download
               </>
             )}
           </Button>

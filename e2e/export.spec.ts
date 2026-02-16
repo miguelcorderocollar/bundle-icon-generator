@@ -13,19 +13,19 @@ test.describe("Export Flow", () => {
   });
 
   test("export button is visible", async ({ page }) => {
-    const exportButton = page.getByRole("button", { name: /export zip/i });
+    const exportButton = page.getByRole("button", { name: /^export$/i });
     await expect(exportButton).toBeVisible();
   });
 
   test("export button is enabled when icon is selected", async ({ page }) => {
-    const exportButton = page.getByRole("button", { name: /export zip/i });
+    const exportButton = page.getByRole("button", { name: /^export$/i });
 
     // App auto-selects a random icon, so button should be enabled
     await expect(exportButton).toBeEnabled();
   });
 
   test("clicking export opens export modal", async ({ page }) => {
-    const exportButton = page.getByRole("button", { name: /export zip/i });
+    const exportButton = page.getByRole("button", { name: /^export$/i });
 
     if (await exportButton.isEnabled()) {
       await exportButton.click();
@@ -43,7 +43,7 @@ test.describe("Export Flow", () => {
   });
 
   test("export modal shows file list", async ({ page }) => {
-    const exportButton = page.getByRole("button", { name: /export zip/i });
+    const exportButton = page.getByRole("button", { name: /^export$/i });
 
     if (await exportButton.isEnabled()) {
       await exportButton.click();
@@ -63,7 +63,7 @@ test.describe("Export Flow", () => {
   });
 
   test("export modal has download button", async ({ page }) => {
-    const exportButton = page.getByRole("button", { name: /export zip/i });
+    const exportButton = page.getByRole("button", { name: /^export$/i });
 
     if (await exportButton.isEnabled()) {
       await exportButton.click();
@@ -85,7 +85,7 @@ test.describe("Export Flow", () => {
   });
 
   test("export modal can be closed", async ({ page }) => {
-    const exportButton = page.getByRole("button", { name: /export zip/i });
+    const exportButton = page.getByRole("button", { name: /^export$/i });
 
     if (await exportButton.isEnabled()) {
       await exportButton.click();

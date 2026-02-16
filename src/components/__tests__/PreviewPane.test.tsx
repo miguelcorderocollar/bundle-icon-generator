@@ -108,22 +108,22 @@ describe("PreviewPane", () => {
     expect(screen.getByText("No icon selected")).toBeInTheDocument();
   });
 
-  it("shows Export ZIP button", () => {
+  it("shows Export button", () => {
     render(<PreviewPane selectedIconId="test-icon" />);
     expect(
-      screen.getByRole("button", { name: /export zip/i })
+      screen.getByRole("button", { name: /^export$/i })
     ).toBeInTheDocument();
   });
 
   it("disables export button when no icon selected", () => {
     render(<PreviewPane selectedIconId={undefined} />);
-    expect(screen.getByRole("button", { name: /export zip/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /^export$/i })).toBeDisabled();
   });
 
   it("enables export button when icon is selected", () => {
     const state = createMockState({ selectedIconId: "test-icon" });
     render(<PreviewPane selectedIconId="test-icon" state={state} />);
-    expect(screen.getByRole("button", { name: /export zip/i })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /^export$/i })).toBeEnabled();
   });
 
   it("shows Edit and Preview tabs when icon is selected", () => {

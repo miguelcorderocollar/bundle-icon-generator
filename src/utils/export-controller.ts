@@ -35,6 +35,22 @@ export interface ExportResult {
 }
 
 /**
+ * Download payload for export action
+ */
+export interface ExportDownloadPayload {
+  /** Blob to download (ZIP or single file) */
+  blob: Blob;
+  /** Suggested download filename */
+  filename: string;
+  /** Whether the blob is a ZIP archive */
+  isZip: boolean;
+  /** Export metadata */
+  metadata: ExportMetadata;
+  /** List of exported filenames */
+  filenames: string[];
+}
+
+/**
  * Export options
  */
 export interface ExportOptions {
@@ -42,6 +58,13 @@ export interface ExportOptions {
   preset?: ExportPreset;
   /** Use legacy Zendesk location-based variants */
   useLegacyVariants?: boolean;
+}
+
+function getZipDownloadFilename(options?: ExportOptions): string {
+  if (options?.preset) {
+    return `${options.preset.name.toLowerCase().replace(/\s+/g, "-")}-icons.zip`;
+  }
+  return "app-icons.zip";
 }
 
 /**
@@ -229,6 +252,51 @@ export async function generateExportZipWithPreset(
 }
 
 /**
+ * Generate export download payload.
+ * If exactly one asset is exported, return that file directly instead of a ZIP.
+ */
+export async function generateExportDownloadPayload(
+  state: IconGeneratorState,
+  selectedLocations: AppLocation[],
+  canvasState?: CanvasEditorState,
+  options?: ExportOptions
+): Promise<ExportDownloadPayload> {
+  const result = await generateExportZip(
+    state,
+    selectedLocations,
+    canvasState,
+    options
+  );
+
+  if (result.filenames.length === 1) {
+    const singleFilename = result.filenames[0];
+    const zip = await JSZip.loadAsync(result.zipBlob);
+    const entry = zip.file(singleFilename);
+
+    if (!entry) {
+      throw new Error(`Exported file not found in ZIP: ${singleFilename}`);
+    }
+
+    const blob = await entry.async("blob");
+    return {
+      blob,
+      filename: singleFilename,
+      isZip: false,
+      metadata: result.metadata,
+      filenames: result.filenames,
+    };
+  }
+
+  return {
+    blob: result.zipBlob,
+    filename: getZipDownloadFilename(options),
+    isZip: true,
+    metadata: result.metadata,
+    filenames: result.filenames,
+  };
+}
+
+/**
  * Generate export ZIP for canvas mode
  */
 async function generateCanvasExportZip(
@@ -323,12 +391,19 @@ async function generateCanvasExportZip(
 }
 
 /**
- * Download ZIP file
+ * Download blob as ZIP file
  */
 export function downloadZip(
   blob: Blob,
   filename: string = "zendesk-icons.zip"
 ): void {
+  downloadFile(blob, filename);
+}
+
+/**
+ * Download blob as file
+ */
+export function downloadFile(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
