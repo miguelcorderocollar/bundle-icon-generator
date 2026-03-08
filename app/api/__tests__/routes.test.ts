@@ -89,6 +89,12 @@ describe("API routes", () => {
     expect(response.status).toBe(200);
     expect(body.svg).toBe("<svg>rendered</svg>");
     expect(body.icon.id).toBe("feather-star");
+    expect(body.settings.padding).toBe(8);
+    expect(renderSvgServer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        padding: 8,
+      })
+    );
   });
 
   it("returns raw SVG when Accept header requests image/svg+xml", async () => {
