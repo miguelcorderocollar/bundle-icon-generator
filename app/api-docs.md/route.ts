@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
       headers: {
         "Content-Type": "text/markdown; charset=utf-8",
         "Cache-Control": "no-store",
+        Link: '</api-docs>; rel="canonical"',
       },
     });
   } catch (error) {
