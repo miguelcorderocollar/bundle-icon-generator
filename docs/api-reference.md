@@ -84,7 +84,7 @@ Request body:
   "backgroundColor": "#063940",
   "iconColor": "#ffffff",
   "size": 128,
-  "padding": 0,
+  "padding": 8,
   "outputSize": 128,
   "zendeskLocationMode": false,
   "filename": "logo.svg"
@@ -97,7 +97,7 @@ Rules:
 - `backgroundColor`: `#RRGGBB` or a gradient object
 - `iconColor`: `#RRGGBB`
 - `size`: integer `48..300`
-- `padding`: optional `-200..200`
+- `padding`: optional `-200..200` (default `8`)
 - `outputSize`: optional integer `16..4096`
 - `zendeskLocationMode`: optional boolean
 
