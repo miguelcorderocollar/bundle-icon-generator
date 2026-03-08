@@ -13,6 +13,7 @@
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "verify": "bun run build && bun run lint && bun run test:run",
     "generate-icons": "tsx scripts/generate-icon-catalog.ts",
+    "generate-favicons": "python3 scripts/generate-favicons.py",
     "test": "vitest",
     "test:run": "vitest run",
     "test:ui": "vitest --ui",

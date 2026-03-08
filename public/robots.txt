@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://zendesk-icon-generator.vercel.app/sitemap.xml
+Sitemap: https://bundle-icon-generator.vercel.app/sitemap.xml

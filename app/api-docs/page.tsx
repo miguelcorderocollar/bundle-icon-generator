@@ -11,6 +11,9 @@ import { CopyAgentPromptButton } from "./CopyAgentPromptButton";
 export const metadata: Metadata = {
   title: "API Docs",
   description: "Icon Generator API reference for AI agents and scripts.",
+  alternates: {
+    canonical: "/api-docs",
+  },
 };
 
 async function loadApiReferenceMarkdown(): Promise<string> {
