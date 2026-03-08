@@ -80,6 +80,33 @@ bun run lint            # Run ESLint
 
 The `generate-icons` script processes icons from installed icon packs and generates a unified catalog at `public/icon-catalog.json`. Run this after installing or updating icon pack dependencies.
 
+## Agent Skill (skills.sh)
+
+This repository includes a reusable agent skill at `.agents/skills/icon-bundle-generator/`.
+
+What it provides:
+
+- API-driven icon generation workflow based on `docs/api-reference.md`
+- Automatic favicon asset generation using a bundled Python script
+
+Install locally from this repository:
+
+```bash
+npx skills add . --list
+npx skills add . --skill icon-bundle-generator --agent cursor
+```
+
+Install from GitHub:
+
+```bash
+npx skills add https://github.com/miguelcorderocollar/zdk.icon-generator --skill icon-bundle-generator --agent cursor
+```
+
+Notes:
+
+- `skills.sh` leaderboard entries are driven by `skills` CLI installs.
+- The skill bundles `scripts/generate-bundle-assets.py` for preset-aligned asset generation from SVG.
+
 ## Project Structure
 
 - `app/` — Next.js App Router pages and layout
@@ -93,6 +120,7 @@ The `generate-icons` script processes icons from installed icon packs and genera
   - `adapters/` — Icon pack adapters for normalization (Zendesk Garden, Feather, RemixIcon)
   - `contexts/` — React contexts (RestrictionContext for restricted mode)
 - `docs/` — Product concept, development plan, and platform-specific icon guidelines
+- `.agents/skills/` — Reusable agent skills (including `icon-bundle-generator`)
 - `public/` — Static assets (including generated `icon-catalog.json`)
 - `scripts/` — Build and data processing scripts (icon catalog generation)
 - `e2e/` — Playwright end-to-end tests

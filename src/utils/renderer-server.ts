@@ -63,7 +63,9 @@ function parseSvg(svgString: string): {
 
   const inheritedFill = fillMatch ? fillMatch[1] : undefined;
   const inheritedStroke = strokeMatch ? strokeMatch[1] : undefined;
-  const inheritedStrokeWidth = strokeWidthMatch ? strokeWidthMatch[1] : undefined;
+  const inheritedStrokeWidth = strokeWidthMatch
+    ? strokeWidthMatch[1]
+    : undefined;
   const inheritedStrokeLinecap = strokeLinecapMatch
     ? strokeLinecapMatch[1]
     : undefined;

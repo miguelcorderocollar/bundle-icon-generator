@@ -34,7 +34,8 @@ export async function GET(
       svg: icon.svg,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to get icon";
+    const message =
+      error instanceof Error ? error.message : "Failed to get icon";
     return NextResponse.json(
       {
         error: "icon_read_failed",
