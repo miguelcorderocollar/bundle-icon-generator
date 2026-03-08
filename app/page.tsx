@@ -21,6 +21,7 @@ import {
   Info,
   Github,
   Globe,
+  BookOpen,
   Moon,
   Sun,
   Lock,
@@ -189,6 +190,12 @@ export default function Home() {
             <p className="text-sm text-muted-foreground">{APP_DESCRIPTION}</p>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="shrink-0" asChild>
+              <Link href="/api-docs" aria-label="Open API documentation">
+                <BookOpen className="h-4 w-4" />
+                API Docs
+              </Link>
+            </Button>
             {!isRestrictionLoading && !isRestricted && (
               <Button
                 variant="ghost"
