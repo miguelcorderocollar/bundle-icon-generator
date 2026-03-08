@@ -275,7 +275,7 @@ export default function Home() {
                         className="text-sm"
                       >
                         <a
-                          href="https://github.com/miguelcorderocollar/zdk.icon-generator"
+                          href="https://github.com/miguelcorderocollar/bundle-icon-generator"
                           target="_blank"
                           rel="noopener noreferrer"
                         >

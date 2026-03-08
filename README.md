@@ -99,7 +99,7 @@ npx skills add . --skill icon-bundle-generator --agent cursor
 Install from GitHub:
 
 ```bash
-npx skills add https://github.com/miguelcorderocollar/zdk.icon-generator --skill icon-bundle-generator --agent cursor
+npx skills add https://github.com/miguelcorderocollar/bundle-icon-generator --skill icon-bundle-generator --agent cursor
 ```
 
 Notes:
