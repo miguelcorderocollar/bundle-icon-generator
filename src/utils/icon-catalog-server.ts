@@ -144,13 +144,11 @@ export async function getIconPacksServer(): Promise<
 > {
   const catalog = await loadIconCatalogServer();
 
-  return (Object.keys(catalog.byPack) as IconPack[])
-    .sort()
-    .map((pack) => ({
-      id: pack,
-      count: catalog.byPack[pack]?.length ?? 0,
-      license: catalog.licenses[pack],
-    }));
+  return (Object.keys(catalog.byPack) as IconPack[]).sort().map((pack) => ({
+    id: pack,
+    count: catalog.byPack[pack]?.length ?? 0,
+    license: catalog.licenses[pack],
+  }));
 }
 
 export function clearIconCatalogServerCache(): void {
