@@ -11,6 +11,7 @@ import { AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { IconGeneratorState } from "../hooks/use-icon-generator";
 import type { ExportPreset, ExportVariantConfig } from "@/src/types/preset";
+import { SVG_SPECS } from "@/src/constants/app";
 import {
   renderPng,
   renderPngFromImage,
@@ -24,6 +25,7 @@ import {
   getColorOverride,
   getColorAnalysis,
 } from "../utils/image-color-analysis";
+import { isZendeskLocationSvgFile } from "../utils/zendesk-svg";
 
 export interface PresetPreviewProps {
   preset: ExportPreset;
@@ -131,13 +133,32 @@ export function PresetPreview({
             let url: string | null = null;
 
             if (variant.format === "svg" && icon) {
-              // SVG rendering
+              // Match export behavior so preset previews are faithful to output files.
+              const artboardSize = SVG_SPECS.PADDED_SIZE;
+              const minSize = 48;
+              const maxSize = 300;
+              const maxPadding = 6;
+              const minPadding = -6;
+              const svgSize = state.svgIconSize ?? state.iconSize;
+              const padding =
+                maxPadding -
+                ((svgSize - minSize) / (maxSize - minSize)) *
+                  (maxPadding - minPadding);
+
+              const requestedSize = Math.max(variant.width, variant.height);
+              const displaySize = Math.min(requestedSize, artboardSize);
+              const isZendeskLocationSvg = isZendeskLocationSvgFile(
+                variant.filename
+              );
+
               const svgString = renderSvg({
                 icon,
                 backgroundColor: state.backgroundColor,
                 iconColor: state.iconColor,
-                size: Math.min(variant.width, variant.height),
-                padding: 4,
+                size: artboardSize,
+                padding,
+                outputSize: displaySize,
+                zendeskLocationMode: isZendeskLocationSvg,
                 cornerRadius: state.cornerRadius,
                 borderEnabled: state.borderEnabled,
                 borderColor: state.borderColor,
@@ -232,7 +253,11 @@ export function PresetPreview({
             newPreviews.push({
               variant,
               url: null,
-              isSkipped: false,
+              isSkipped: true,
+              skipReason:
+                error instanceof Error
+                  ? error.message
+                  : "Failed to generate preview",
             });
           }
         }

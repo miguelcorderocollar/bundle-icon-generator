@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { PresetPreview } from "../PresetPreview";
 import type { IconGeneratorState } from "../../hooks/use-icon-generator";
 import type { ExportPreset } from "../../types/preset";
+import { SVG_SPECS } from "../../constants/app";
 
 vi.mock("@/components/ui/scroll-area", () => ({
   ScrollArea: ({ children }: { children: React.ReactNode }) => (
@@ -51,6 +52,21 @@ describe("PresetPreview", () => {
     ],
   };
 
+  const mockZendeskSvgPreset: ExportPreset = {
+    id: "zendesk-location-bundle",
+    name: "Zendesk Location Bundle",
+    description: "Zendesk SVG location files",
+    isBuiltIn: true,
+    variants: [
+      {
+        filename: "icon_top_bar.svg",
+        width: 30,
+        height: 30,
+        format: "svg",
+      },
+    ],
+  };
+
   const mockState: IconGeneratorState = {
     selectedLocations: [],
     selectedIconId: "test-icon",
@@ -70,7 +86,7 @@ describe("PresetPreview", () => {
     vi.clearAllMocks();
 
     const { getIconById } = await import("../../utils/icon-catalog");
-    const { renderPng } = await import("../../utils/renderer");
+    const { renderPng, renderSvg } = await import("../../utils/renderer");
 
     vi.mocked(getIconById).mockResolvedValue({
       id: "test-icon",
@@ -83,6 +99,9 @@ describe("PresetPreview", () => {
 
     vi.mocked(renderPng).mockResolvedValue(
       new Blob(["png-preview"], { type: "image/png" })
+    );
+    vi.mocked(renderSvg).mockReturnValue(
+      '<svg viewBox="0 0 30 30"><path fill="currentColor" d="M0 0"/></svg>'
     );
 
     vi.stubGlobal("URL", {
@@ -114,5 +133,27 @@ describe("PresetPreview", () => {
         iconColor: mockState.iconColor,
       })
     );
+  });
+
+  it("uses zendesk SVG export settings for zendesk location variants", async () => {
+    const { renderSvg } = await import("../../utils/renderer");
+
+    render(
+      <PresetPreview
+        preset={mockZendeskSvgPreset}
+        iconId="test-icon"
+        state={mockState}
+      />
+    );
+
+    await waitFor(() => {
+      expect(renderSvg).toHaveBeenCalledWith(
+        expect.objectContaining({
+          size: SVG_SPECS.PADDED_SIZE,
+          outputSize: 30,
+          zendeskLocationMode: true,
+        })
+      );
+    });
   });
 });

@@ -9,6 +9,7 @@ import type { IconMetadata } from "@/src/types/icon";
 import type { BackgroundValue } from "@/src/utils/gradients";
 import { gradientToSvgDef, isGradient } from "@/src/utils/gradients";
 import { applySvgColor } from "@/src/utils/renderer";
+import { toZendeskStaticSvgSource } from "@/src/utils/zendesk-svg";
 
 export interface ServerSvgRenderOptions {
   icon: IconMetadata;
@@ -142,6 +143,10 @@ export function renderSvgServer(options: ServerSvgRenderOptions): string {
     borderWidth = 0,
   } = options;
 
+  const svgSource = zendeskLocationMode
+    ? toZendeskStaticSvgSource(icon.svg)
+    : icon.svg;
+
   const {
     viewBox,
     content,
@@ -151,7 +156,7 @@ export function renderSvgServer(options: ServerSvgRenderOptions): string {
     inheritedStrokeLinecap,
     inheritedStrokeLinejoin,
     isRasterized,
-  } = parseSvg(icon.svg);
+  } = parseSvg(svgSource);
 
   const shouldSkipColorTransform =
     zendeskLocationMode ||

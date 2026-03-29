@@ -12,6 +12,10 @@ import {
   createCanvasGradient,
 } from "./gradients";
 import { compressToMaxSize } from "./image-compression";
+import {
+  isZendeskLocationSvgFile,
+  toZendeskStaticSvgSource,
+} from "./zendesk-svg";
 
 /**
  * Parse hex color to RGB components
@@ -450,6 +454,10 @@ export function renderSvg(options: SvgRenderOptions): string {
     borderWidth = 0,
   } = options;
 
+  const svgSource = zendeskLocationMode
+    ? toZendeskStaticSvgSource(icon.svg)
+    : icon.svg;
+
   const {
     viewBox,
     content,
@@ -459,7 +467,7 @@ export function renderSvg(options: SvgRenderOptions): string {
     inheritedStrokeLinecap,
     inheritedStrokeLinejoin,
     isRasterized,
-  } = parseSvg(icon.svg);
+  } = parseSvg(svgSource);
 
   // Skip color transformation for:
   // - Rasterized icons (emojis)
@@ -1296,16 +1304,6 @@ export async function renderPngFromImage(
 }
 
 /**
- * Zendesk location SVG filenames that require transparent backgrounds
- * and no hardcoded fill colors (uses currentColor for Zendesk CSS styling)
- */
-const ZENDESK_LOCATION_SVG_FILES = [
-  "icon_top_bar.svg",
-  "icon_ticket_editor.svg",
-  "icon_nav_bar.svg",
-];
-
-/**
  * Supported export format type
  */
 export type ExportFormatType = "png" | "jpeg" | "webp" | "svg" | "ico";
@@ -1334,7 +1332,7 @@ export async function generateExportAssets(
 ): Promise<Map<string, Blob>> {
   const assets = new Map<string, Blob>();
 
-  // Collect PNG blobs for ICO generation (16x16 and 32x32)
+  // Collect PNG blobs for ICO generation (16x16, 32x32, and 48x48)
   const icoPngBlobs: { variant: ExportVariantSpec; blob: Blob }[] = [];
 
   for (const variant of variants) {
@@ -1344,9 +1342,7 @@ export async function generateExportAssets(
 
       // Check if this is a Zendesk location SVG (top_bar, ticket_editor, nav_bar)
       // These require transparent backgrounds and no hardcoded fill colors
-      const isZendeskLocationSvg = ZENDESK_LOCATION_SVG_FILES.includes(
-        variant.filename
-      );
+      const isZendeskLocationSvg = isZendeskLocationSvgFile(variant.filename);
 
       // Use svgIconSize for SVG exports to control icon density within the artboard
       // Map svgIconSize (48-300px) to padding (6px to -6px range)
@@ -1380,8 +1376,8 @@ export async function generateExportAssets(
       assets.set(variant.filename, blob);
     } else if (variant.format === "ico") {
       // ICO rendering - collect PNG blobs first, generate ICO at the end
-      // For ICO, we need 16x16 and 32x32 PNGs
-      const sizes = [16, 32];
+      // For ICO, generate common browser favicon sizes
+      const sizes = [16, 32, 48];
       for (const size of sizes) {
         const blob = await renderRaster({
           icon,

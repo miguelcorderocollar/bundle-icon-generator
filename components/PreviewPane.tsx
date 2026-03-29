@@ -16,6 +16,7 @@ import {
   LayersPanel,
   LayerProperties,
   AddLayerModal,
+  ExportSecondaryActions,
 } from "@/src/components";
 import { ICON_PACKS } from "@/src/constants/app";
 import type { AppLocation } from "@/src/types/app-location";
@@ -428,6 +429,10 @@ export function PreviewPane({
             }
             canExport={canExport}
             onExport={() => setIsExportModalOpen(true)}
+            state={state}
+            selectedLocations={selectedLocations}
+            canvasState={canvasState}
+            selectedExportPreset={actualSelectedExportPreset}
           />
         </CardContent>
 
@@ -563,6 +568,9 @@ export function PreviewPane({
           }
           canExport={canExport && hasSelection}
           onExport={() => setIsExportModalOpen(true)}
+          state={state}
+          selectedLocations={selectedLocations}
+          selectedExportPreset={actualSelectedExportPreset}
         />
       </CardContent>
       {state && (
@@ -595,6 +603,10 @@ interface ExportControlsProps {
   warningText?: string;
   canExport: boolean;
   onExport: () => void;
+  state?: IconGeneratorState;
+  selectedLocations?: AppLocation[];
+  canvasState?: CanvasEditorState;
+  selectedExportPreset?: ExportPreset;
 }
 
 function ExportControls({
@@ -608,6 +620,10 @@ function ExportControls({
   warningText,
   canExport,
   onExport,
+  state,
+  selectedLocations = [],
+  canvasState,
+  selectedExportPreset,
 }: ExportControlsProps) {
   return (
     <div className="mt-3 flex-shrink-0 space-y-3 border-t pt-3">
@@ -632,15 +648,26 @@ function ExportControls({
         <div className="text-xs text-muted-foreground">{infoText}</div>
       ) : null}
 
-      <Button
-        className="w-full"
-        size="lg"
-        disabled={!canExport}
-        onClick={onExport}
-      >
-        <Download className="mr-2 size-4" />
-        Export
-      </Button>
+      <div className="flex w-full">
+        <Button
+          className={state ? "flex-1 rounded-r-none" : "w-full"}
+          size="lg"
+          disabled={!canExport}
+          onClick={onExport}
+        >
+          <Download className="mr-2 size-4" />
+          Export
+        </Button>
+        {state ? (
+          <ExportSecondaryActions
+            state={state}
+            selectedLocations={selectedLocations}
+            canvasState={canvasState}
+            selectedExportPreset={selectedExportPreset}
+            disabled={!canExport}
+          />
+        ) : null}
+      </div>
     </div>
   );
 }

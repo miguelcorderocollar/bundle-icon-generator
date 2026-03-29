@@ -15,8 +15,39 @@ vi.mock("../ExportModal", () => ({
     open ? <div data-testid="export-modal">Export Modal</div> : null,
 }));
 
+vi.mock("@/src/components", () => ({
+  CanvasEditor: () => <div>Canvas Editor</div>,
+  LayersPanel: () => <div>Layers Panel</div>,
+  LayerProperties: () => <div>Layer Properties</div>,
+  AddLayerModal: () => null,
+  ExportSecondaryActions: () => (
+    <button type="button" aria-label="Export secondary actions">
+      Secondary
+    </button>
+  ),
+}));
+
 vi.mock("../../hooks/use-icon-metadata", () => ({
   useIconMetadata: vi.fn().mockReturnValue(null),
+}));
+
+vi.mock("../../utils/icon-catalog", () => ({
+  getIconById: vi.fn().mockResolvedValue({
+    id: "test-icon",
+    name: "Test Icon",
+    pack: "feather",
+    svg: '<svg viewBox="0 0 24 24"></svg>',
+    keywords: [],
+  }),
+}));
+
+vi.mock("../../utils/renderer", () => ({
+  renderPng: vi
+    .fn()
+    .mockResolvedValue(new Blob(["png"], { type: "image/png" })),
+  renderPngFromImage: vi
+    .fn()
+    .mockResolvedValue(new Blob(["png"], { type: "image/png" })),
 }));
 
 // Mock the usePresets hook
@@ -113,9 +144,17 @@ describe("PreviewPane", () => {
   });
 
   it("shows Export button", () => {
-    render(<PreviewPane selectedIconId="test-icon" />);
+    render(
+      <PreviewPane
+        selectedIconId="test-icon"
+        state={createMockState({ selectedIconId: "test-icon" })}
+      />
+    );
     expect(
       screen.getByRole("button", { name: /^export$/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /export secondary actions/i })
     ).toBeInTheDocument();
   });
 
@@ -154,5 +193,33 @@ describe("PreviewPane", () => {
     );
     // Should mention export files
     expect(screen.getByText(/will export/i)).toBeInTheDocument();
+  });
+
+  it("renders secondary actions trigger in canvas mode", () => {
+    const state = createMockState({
+      selectedPack: "canvas",
+      selectedIconId: "canvas",
+    });
+    render(
+      <PreviewPane
+        selectedIconId="canvas"
+        selectedLocations={[]}
+        state={state}
+        canvasState={
+          {
+            layers: [{ id: "layer-1", type: "icon" }],
+            selectedLayerId: undefined,
+            backgroundColor: "#000000",
+          } as never
+        }
+      />
+    );
+
+    expect(
+      screen.getByRole("button", { name: /^export$/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /export secondary actions/i })
+    ).toBeInTheDocument();
   });
 });

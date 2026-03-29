@@ -11,7 +11,10 @@ import type { ExportPreset, ExportVariantConfig } from "../types/preset";
 import { getRequiredExportVariants } from "../types/export";
 import {
   generateExportAssets,
+  renderPng,
+  renderPngFromImage,
   renderRasterFromImage,
+  renderSvg,
   type ExportVariantSpec,
 } from "./renderer";
 import { generateCanvasExportAssets } from "./canvas-export";
@@ -60,6 +63,49 @@ export interface ExportOptions {
   useLegacyVariants?: boolean;
 }
 
+export interface DirectDownloadPayload {
+  blob: Blob;
+  filename: string;
+}
+
+export interface SecondaryExportCapabilities {
+  canDownloadStyledSvg: boolean;
+  canDownloadSourceSvg: boolean;
+  canCopyPng: boolean;
+}
+
+function getRasterVariants(variants: ExportVariantSpec[]): ExportVariantSpec[] {
+  return variants.filter(
+    (variant) =>
+      variant.format === "png" ||
+      variant.format === "jpeg" ||
+      variant.format === "webp"
+  );
+}
+
+function getClipboardTargetVariant(
+  variants: ExportVariantSpec[]
+): ExportVariantSpec | null {
+  const rasterVariants = getRasterVariants(variants);
+  if (rasterVariants.length === 0) {
+    return null;
+  }
+
+  const pngVariants = rasterVariants.filter(
+    (variant) => variant.format === "png"
+  );
+  const preferredVariants =
+    pngVariants.length > 0 ? pngVariants : rasterVariants;
+
+  return preferredVariants
+    .slice()
+    .sort(
+      (a, b) =>
+        b.width * b.height - a.width * a.height ||
+        a.filename.localeCompare(b.filename)
+    )[0];
+}
+
 function getZipDownloadFilename(options?: ExportOptions): string {
   if (options?.preset) {
     return `${options.preset.name.toLowerCase().replace(/\s+/g, "-")}-icons.zip`;
@@ -80,6 +126,211 @@ function toVariantSpec(config: ExportVariantConfig): ExportVariantSpec {
     description: config.description,
     maxSize: config.maxSize,
   };
+}
+
+function getEffectiveVariants(
+  selectedLocations: AppLocation[],
+  options?: ExportOptions
+): ExportVariantSpec[] {
+  if (options?.useLegacyVariants || !options?.preset) {
+    const legacyVariants = getRequiredExportVariants(selectedLocations);
+    return legacyVariants.map((v) => ({
+      filename: v.filename,
+      width: v.width,
+      height: v.height,
+      format: v.format,
+    }));
+  }
+
+  return options.preset.variants.map(toVariantSpec);
+}
+
+function filterExportableVariants(
+  variants: ExportVariantSpec[],
+  state: IconGeneratorState,
+  canvasState?: CanvasEditorState
+): ExportVariantSpec[] {
+  const isCanvasMode = state.selectedPack === ICON_PACKS.CANVAS;
+  const isCustomImage = isCustomImageIcon(state.selectedIconId);
+
+  if (isCanvasMode || canvasState) {
+    return variants.filter(
+      (v) => v.format === "png" || v.format === "jpeg" || v.format === "webp"
+    );
+  }
+
+  if (isCustomImage) {
+    return variants.filter(
+      (v) => v.format === "png" || v.format === "jpeg" || v.format === "webp"
+    );
+  }
+
+  return variants;
+}
+
+function sanitizeFilenamePart(value: string): string {
+  const sanitized = value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return sanitized || "icon-source";
+}
+
+async function resolveSelectedIcon(state: IconGeneratorState) {
+  if (!state.selectedIconId) {
+    throw new Error("No icon selected");
+  }
+
+  const icon = await getIconById(state.selectedIconId);
+  if (!icon) {
+    throw new Error(`Icon not found: ${state.selectedIconId}`);
+  }
+
+  return icon;
+}
+
+export function getSecondaryExportCapabilities(
+  state: IconGeneratorState,
+  selectedLocations: AppLocation[],
+  canvasState?: CanvasEditorState,
+  options?: ExportOptions
+): SecondaryExportCapabilities {
+  const isCanvasMode = state.selectedPack === ICON_PACKS.CANVAS;
+  const isCustomImage = isCustomImageIcon(state.selectedIconId);
+
+  const exportableVariants = filterExportableVariants(
+    getEffectiveVariants(selectedLocations, options),
+    state,
+    canvasState
+  );
+
+  return {
+    canDownloadStyledSvg:
+      !isCanvasMode && !isCustomImage && !!state.selectedIconId,
+    canDownloadSourceSvg:
+      !isCanvasMode && !isCustomImage && !!state.selectedIconId,
+    canCopyPng: getClipboardTargetVariant(exportableVariants) !== null,
+  };
+}
+
+export async function generateStyledSvgDownload(
+  state: IconGeneratorState
+): Promise<DirectDownloadPayload> {
+  const icon = await resolveSelectedIcon(state);
+
+  if (isCustomImageIcon(state.selectedIconId)) {
+    throw new Error("Custom images do not support SVG download");
+  }
+
+  const svgString = renderSvg({
+    icon,
+    backgroundColor: "transparent",
+    iconColor: state.iconColor,
+    size: 512,
+    padding: 4,
+  });
+
+  return {
+    blob: new Blob([svgString], { type: "image/svg+xml" }),
+    filename: "icon.svg",
+  };
+}
+
+export async function generateSourceSvgDownload(
+  state: IconGeneratorState
+): Promise<DirectDownloadPayload> {
+  const icon = await resolveSelectedIcon(state);
+
+  if (isCustomImageIcon(state.selectedIconId)) {
+    throw new Error("Custom images do not support SVG download");
+  }
+
+  if (!icon.svg) {
+    throw new Error("SVG source is not available for this icon");
+  }
+
+  return {
+    blob: new Blob([icon.svg], { type: "image/svg+xml" }),
+    filename: `${sanitizeFilenamePart(icon.name)}.svg`,
+  };
+}
+
+export async function generateClipboardPng(
+  state: IconGeneratorState,
+  selectedLocations: AppLocation[],
+  canvasState?: CanvasEditorState,
+  options?: ExportOptions
+): Promise<Blob> {
+  const exportableVariants = filterExportableVariants(
+    getEffectiveVariants(selectedLocations, options),
+    state,
+    canvasState
+  );
+  const variant = getClipboardTargetVariant(exportableVariants);
+
+  if (!variant) {
+    throw new Error(
+      "Clipboard copy requires at least one raster export variant"
+    );
+  }
+
+  if (state.selectedPack === ICON_PACKS.CANVAS) {
+    if (!canvasState || canvasState.layers.length === 0) {
+      throw new Error("No layers in canvas");
+    }
+
+    const assets = await generateCanvasExportAssets(canvasState, [
+      {
+        filename: "clipboard.png",
+        width: variant.width,
+        height: variant.height,
+        format: "png",
+      },
+    ]);
+
+    const blob = assets.get("clipboard.png");
+    if (!blob) {
+      throw new Error("Failed to generate clipboard PNG");
+    }
+    return blob;
+  }
+
+  if (isCustomImageIcon(state.selectedIconId)) {
+    const imageDataUrl =
+      typeof window !== "undefined"
+        ? sessionStorage.getItem(state.selectedIconId!)
+        : null;
+
+    if (!imageDataUrl) {
+      throw new Error("Custom image data not found");
+    }
+
+    const colorOverride = getColorOverride(state.selectedIconId!);
+    const colorAnalysis = getColorAnalysis(state.selectedIconId!);
+    const originalColor = colorAnalysis?.dominantColor;
+
+    return renderPngFromImage({
+      imageDataUrl,
+      backgroundColor: state.backgroundColor,
+      size: state.iconSize,
+      width: variant.width,
+      height: variant.height,
+      colorOverride,
+      originalColor,
+    });
+  }
+
+  const icon = await resolveSelectedIcon(state);
+  return renderPng({
+    icon,
+    backgroundColor: state.backgroundColor,
+    iconColor: state.iconColor,
+    size: state.iconSize,
+    width: variant.width,
+    height: variant.height,
+  });
 }
 
 /**
@@ -105,21 +356,7 @@ export async function generateExportZip(
   const isCustomImage = isCustomImageIcon(state.selectedIconId);
 
   // Determine which variants to use
-  let variants: ExportVariantSpec[];
-
-  if (options?.useLegacyVariants || !options?.preset) {
-    // Use legacy Zendesk location-based variants
-    const legacyVariants = getRequiredExportVariants(selectedLocations);
-    variants = legacyVariants.map((v) => ({
-      filename: v.filename,
-      width: v.width,
-      height: v.height,
-      format: v.format,
-    }));
-  } else {
-    // Use preset variants
-    variants = options.preset.variants.map(toVariantSpec);
-  }
+  let variants = getEffectiveVariants(selectedLocations, options);
 
   // For custom images, filter out SVG variants (they can only export raster)
   if (isCustomImage) {
