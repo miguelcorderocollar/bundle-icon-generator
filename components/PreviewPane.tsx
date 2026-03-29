@@ -16,6 +16,7 @@ import {
   LayersPanel,
   LayerProperties,
   AddLayerModal,
+  ExportSecondaryActions,
 } from "@/src/components";
 import { ICON_PACKS } from "@/src/constants/app";
 import type { AppLocation } from "@/src/types/app-location";
@@ -339,15 +340,26 @@ export function PreviewPane({
                 ? `Will export ${exportInfo.exportable} file${exportInfo.exportable !== 1 ? "s" : ""}${exportInfo.skipped > 0 ? ` (${exportInfo.skipped} skipped)` : ""}`
                 : "Add layers to enable export"}
             </div>
-            <Button
-              className="w-full"
-              size="lg"
-              disabled={!canExport}
-              onClick={() => setIsExportModalOpen(true)}
-            >
-              <Download className="mr-2 size-4" />
-              Export
-            </Button>
+            <div className="flex w-full">
+              <Button
+                className="flex-1 rounded-r-none"
+                size="lg"
+                disabled={!canExport}
+                onClick={() => setIsExportModalOpen(true)}
+              >
+                <Download className="mr-2 size-4" />
+                Export
+              </Button>
+              {state && (
+                <ExportSecondaryActions
+                  state={state}
+                  selectedLocations={selectedLocations}
+                  canvasState={canvasState}
+                  selectedExportPreset={actualSelectedExportPreset}
+                  disabled={!canExport}
+                />
+              )}
+            </div>
           </div>
         </CardContent>
 
@@ -453,15 +465,25 @@ export function PreviewPane({
               {exportInfo.skipped > 0 && ` (${exportInfo.skipped} skipped)`}
             </div>
           )}
-          <Button
-            className="w-full"
-            size="lg"
-            disabled={!canExport || !hasSelection}
-            onClick={() => setIsExportModalOpen(true)}
-          >
-            <Download className="mr-2 size-4" />
-            Export
-          </Button>
+          <div className="flex w-full">
+            <Button
+              className="flex-1 rounded-r-none"
+              size="lg"
+              disabled={!canExport || !hasSelection}
+              onClick={() => setIsExportModalOpen(true)}
+            >
+              <Download className="mr-2 size-4" />
+              Export
+            </Button>
+            {state && (
+              <ExportSecondaryActions
+                state={state}
+                selectedLocations={selectedLocations}
+                selectedExportPreset={actualSelectedExportPreset}
+                disabled={!canExport || !hasSelection}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
       {state && (
