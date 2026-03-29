@@ -126,6 +126,10 @@ export interface ExportMetadata {
     backgroundColor: BackgroundValue;
     iconColor: string;
     iconSize: number;
+    cornerRadius?: number;
+    borderEnabled?: boolean;
+    borderColor?: string;
+    borderWidth?: number;
   };
   locations: AppLocation[];
   variants: string[];

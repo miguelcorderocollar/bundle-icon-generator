@@ -16,13 +16,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { BackgroundControls } from "./BackgroundControls";
 import { ColorPicker } from "./ColorPicker";
 import { DebouncedColorInput } from "./DebouncedColorInput";
+import { EffectSlider } from "./EffectSlider";
 import type { StylePreset, ColorPaletteEntry } from "@/src/types/preset";
 import type { BackgroundValue } from "@/src/utils/gradients";
 import { KALE_COLORS } from "@/src/utils/gradients";
 import { generateColorPaletteEntryId } from "@/src/utils/preset-storage";
+import { DEFAULT_APPEARANCE } from "@/src/constants/app";
 
 /** Maximum number of colors in a palette */
 const MAX_PALETTE_COLORS = 8;
@@ -64,6 +67,18 @@ export function StylePresetEditor({
   const [iconColor, setIconColor] = React.useState(
     preset?.iconColor || DEFAULT_ICON_COLOR
   );
+  const [cornerRadius, setCornerRadius] = React.useState(
+    preset?.cornerRadius ?? DEFAULT_APPEARANCE.CORNER_RADIUS
+  );
+  const [borderEnabled, setBorderEnabled] = React.useState(
+    preset?.borderEnabled ?? DEFAULT_APPEARANCE.BORDER_ENABLED
+  );
+  const [borderColor, setBorderColor] = React.useState(
+    preset?.borderColor ?? DEFAULT_APPEARANCE.BORDER_COLOR
+  );
+  const [borderWidth, setBorderWidth] = React.useState(
+    preset?.borderWidth ?? DEFAULT_APPEARANCE.BORDER_WIDTH
+  );
   const [colorPalette, setColorPalette] = React.useState<ColorPaletteEntry[]>(
     preset?.colorPalette || []
   );
@@ -74,11 +89,21 @@ export function StylePresetEditor({
       setName(preset.name);
       setBackgroundColor(preset.backgroundColor);
       setIconColor(preset.iconColor);
+      setCornerRadius(preset.cornerRadius ?? DEFAULT_APPEARANCE.CORNER_RADIUS);
+      setBorderEnabled(
+        preset.borderEnabled ?? DEFAULT_APPEARANCE.BORDER_ENABLED
+      );
+      setBorderColor(preset.borderColor ?? DEFAULT_APPEARANCE.BORDER_COLOR);
+      setBorderWidth(preset.borderWidth ?? DEFAULT_APPEARANCE.BORDER_WIDTH);
       setColorPalette(preset.colorPalette || []);
     } else {
       setName("");
       setBackgroundColor(DEFAULT_BACKGROUND);
       setIconColor(DEFAULT_ICON_COLOR);
+      setCornerRadius(DEFAULT_APPEARANCE.CORNER_RADIUS);
+      setBorderEnabled(DEFAULT_APPEARANCE.BORDER_ENABLED);
+      setBorderColor(DEFAULT_APPEARANCE.BORDER_COLOR);
+      setBorderWidth(DEFAULT_APPEARANCE.BORDER_WIDTH);
       setColorPalette([]);
     }
   }, [preset, open]);
@@ -90,6 +115,10 @@ export function StylePresetEditor({
       name: name.trim(),
       backgroundColor,
       iconColor,
+      cornerRadius,
+      borderEnabled,
+      borderColor,
+      borderWidth,
       colorPalette: colorPalette.length > 0 ? colorPalette : undefined,
     });
 
@@ -165,6 +194,10 @@ export function StylePresetEditor({
               <StylePreview
                 backgroundColor={backgroundColor}
                 iconColor={iconColor}
+                cornerRadius={cornerRadius}
+                borderEnabled={borderEnabled}
+                borderColor={borderColor}
+                borderWidth={borderWidth}
               />
             </div>
 
@@ -186,6 +219,51 @@ export function StylePresetEditor({
               onChange={setIconColor}
               colorType="icon"
             />
+
+            <Separator />
+
+            <div className="space-y-4">
+              <Label>Appearance</Label>
+              <EffectSlider
+                id="style-corner-radius"
+                label="Corner Radius"
+                value={cornerRadius}
+                onChange={setCornerRadius}
+                min={0}
+                max={100}
+                step={1}
+                unit="%"
+              />
+              <div className="flex items-center justify-between">
+                <Label htmlFor="style-border-enabled">Border</Label>
+                <Switch
+                  id="style-border-enabled"
+                  checked={borderEnabled}
+                  onCheckedChange={setBorderEnabled}
+                />
+              </div>
+              {borderEnabled ? (
+                <>
+                  <EffectSlider
+                    id="style-border-width"
+                    label="Border Width"
+                    value={borderWidth}
+                    onChange={setBorderWidth}
+                    min={0}
+                    max={40}
+                    step={1}
+                    unit="px"
+                  />
+                  <ColorPicker
+                    id="style-border-color"
+                    label="Border Color"
+                    value={borderColor}
+                    onChange={setBorderColor}
+                    colorType="icon"
+                  />
+                </>
+              ) : null}
+            </div>
 
             <Separator />
 
@@ -264,9 +342,20 @@ export function StylePresetEditor({
 interface StylePreviewProps {
   backgroundColor: BackgroundValue;
   iconColor: string;
+  cornerRadius: number;
+  borderEnabled: boolean;
+  borderColor: string;
+  borderWidth: number;
 }
 
-function StylePreview({ backgroundColor, iconColor }: StylePreviewProps) {
+function StylePreview({
+  backgroundColor,
+  iconColor,
+  cornerRadius,
+  borderEnabled,
+  borderColor,
+  borderWidth,
+}: StylePreviewProps) {
   const getBackgroundStyle = (): React.CSSProperties => {
     if (typeof backgroundColor === "string") {
       return { backgroundColor };
@@ -293,7 +382,12 @@ function StylePreview({ backgroundColor, iconColor }: StylePreviewProps) {
   return (
     <div
       className="h-24 rounded-lg border flex items-center justify-center"
-      style={getBackgroundStyle()}
+      style={{
+        ...getBackgroundStyle(),
+        borderRadius: `${Math.max(0, Math.min(100, cornerRadius))}%`,
+        borderColor: borderEnabled ? borderColor : undefined,
+        borderWidth: borderEnabled ? Math.max(1, borderWidth / 4) : undefined,
+      }}
     >
       <svg
         viewBox="0 0 24 24"

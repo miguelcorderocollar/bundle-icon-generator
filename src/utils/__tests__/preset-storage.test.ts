@@ -122,6 +122,10 @@ describe("preset-storage", () => {
         name: "My Style",
         backgroundColor: "#ff0000",
         iconColor: "#ffffff",
+        cornerRadius: 0,
+        borderEnabled: false,
+        borderColor: "#ffffff",
+        borderWidth: 6,
       });
 
       expect(preset.id).toBeDefined();
@@ -137,6 +141,10 @@ describe("preset-storage", () => {
         name: "My Style With Palette",
         backgroundColor: "#ff0000",
         iconColor: "#ffffff",
+        cornerRadius: 12,
+        borderEnabled: true,
+        borderColor: "#00ff00",
+        borderWidth: 8,
         colorPalette: [
           { id: "color-1", name: "Primary", color: "#ffffff" },
           { id: "color-2", name: "Secondary", color: "#000000" },
@@ -157,6 +165,10 @@ describe("preset-storage", () => {
         name: "My Style",
         backgroundColor: "#ff0000",
         iconColor: "#ffffff",
+        cornerRadius: 0,
+        borderEnabled: false,
+        borderColor: "#ffffff",
+        borderWidth: 6,
       });
 
       const updated = updateStylePreset(preset.id, {
@@ -173,6 +185,10 @@ describe("preset-storage", () => {
         name: "My Style",
         backgroundColor: "#ff0000",
         iconColor: "#ffffff",
+        cornerRadius: 0,
+        borderEnabled: false,
+        borderColor: "#ffffff",
+        borderWidth: 6,
       });
 
       const deleted = deleteStylePreset(preset.id);
@@ -210,7 +226,7 @@ describe("preset-storage", () => {
   });
 
   describe("Import/Export", () => {
-    it("should export user presets as JSON with version 2", () => {
+    it("should export user presets as JSON with version 3", () => {
       addExportPreset({
         name: "Export Test",
         description: "Test",
@@ -221,13 +237,17 @@ describe("preset-storage", () => {
         name: "Style Test",
         backgroundColor: "#000000",
         iconColor: "#ffffff",
+        cornerRadius: 0,
+        borderEnabled: false,
+        borderColor: "#ffffff",
+        borderWidth: 6,
         colorPalette: [{ id: "color-1", name: "Primary", color: "#ffffff" }],
       });
 
       const json = exportUserPresets();
       const data = JSON.parse(json);
 
-      expect(data.version).toBe(2);
+      expect(data.version).toBe(3);
       expect(data.exportPresets).toHaveLength(1);
       expect(data.stylePresets).toHaveLength(1);
       expect(data.stylePresets[0].colorPalette).toHaveLength(1);
@@ -270,7 +290,7 @@ describe("preset-storage", () => {
 
     it("should import presets with colorPalette", () => {
       const importData = JSON.stringify({
-        version: 2,
+        version: 3,
         exportPresets: [],
         stylePresets: [
           {
@@ -325,6 +345,10 @@ describe("preset-storage", () => {
         name: "Test",
         backgroundColor: "#000",
         iconColor: "#fff",
+        cornerRadius: 0,
+        borderEnabled: false,
+        borderColor: "#ffffff",
+        borderWidth: 6,
       });
       setSelectedExportPresetId("test-id");
       setSelectedStylePresetId("test-id");

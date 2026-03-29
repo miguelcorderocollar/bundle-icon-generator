@@ -15,6 +15,10 @@ describe("export-controller", () => {
     selectedPack: "all",
     iconSize: 123,
     svgIconSize: 123,
+    cornerRadius: 0,
+    borderEnabled: false,
+    borderColor: "#ffffff",
+    borderWidth: 6,
     ...overrides,
   });
 

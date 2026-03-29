@@ -85,6 +85,10 @@ Request body:
   "iconColor": "#ffffff",
   "size": 128,
   "padding": 8,
+  "cornerRadius": 0,
+  "borderEnabled": false,
+  "borderColor": "#ffffff",
+  "borderWidth": 6,
   "outputSize": 128,
   "zendeskLocationMode": false,
   "filename": "logo.svg"
@@ -98,8 +102,17 @@ Rules:
 - `iconColor`: `#RRGGBB`
 - `size`: integer `48..300`
 - `padding`: optional `-200..200` (default `8`)
+- `cornerRadius`: optional number `0..100` (default `0`)
+- `borderEnabled`: optional boolean (default `false`)
+- `borderColor`: optional `#RRGGBB` (default `#ffffff`)
+- `borderWidth`: optional number `0..64` (default `6`)
 - `outputSize`: optional integer `16..4096`
 - `zendeskLocationMode`: optional boolean
+
+Notes:
+
+- Border and corner radius apply to opaque assets/backgrounds.
+- `zendeskLocationMode=true` keeps location SVGs transparent, ignoring background shape and border.
 
 Linear gradient background:
 

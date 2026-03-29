@@ -73,6 +73,10 @@ describe("preset types", () => {
         name: "Test",
         backgroundColor: "#000000",
         iconColor: "#ffffff",
+        cornerRadius: 0,
+        borderEnabled: false,
+        borderColor: "#ffffff",
+        borderWidth: 6,
         isBuiltIn: false,
       };
       expect(isStylePreset(preset)).toBe(true);
@@ -84,6 +88,10 @@ describe("preset types", () => {
         name: "Test",
         backgroundColor: "#000000",
         iconColor: "#ffffff",
+        cornerRadius: 12,
+        borderEnabled: true,
+        borderColor: "#ff0000",
+        borderWidth: 8,
         isBuiltIn: false,
         colorPalette: [
           { id: "color-1", name: "Primary", color: "#ffffff" },
@@ -99,6 +107,10 @@ describe("preset types", () => {
         name: "Test",
         backgroundColor: "#000000",
         iconColor: "#ffffff",
+        cornerRadius: 0,
+        borderEnabled: false,
+        borderColor: "#ffffff",
+        borderWidth: 6,
         isBuiltIn: false,
         colorPalette: [],
       };

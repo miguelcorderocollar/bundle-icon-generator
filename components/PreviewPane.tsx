@@ -24,11 +24,13 @@ import type { CanvasEditorState } from "@/src/types/canvas";
 import type { CanvasEditorActions } from "@/src/hooks/use-canvas-editor";
 import { useCanvasEditor } from "@/src/hooks/use-canvas-editor";
 import { usePresets } from "@/src/hooks/use-presets";
+import { ExportPresetSelector } from "@/src/components/ExportPresetSelector";
+import { ExportPresetEditor } from "@/src/components/ExportPresetEditor";
 import { ExportModal } from "@/src/components/ExportModal";
 import { useIconMetadata } from "@/src/hooks/use-icon-metadata";
 import { isCustomImageIcon } from "@/src/utils/locations";
 import { useRestriction } from "@/src/contexts/RestrictionContext";
-import type { ColorPaletteEntry } from "@/src/types/preset";
+import type { ColorPaletteEntry, ExportPreset } from "@/src/types/preset";
 import {
   getColorOverride,
   getColorAnalysis,
@@ -60,21 +62,48 @@ export function PreviewPane({
   const [editPreviewUrl, setEditPreviewUrl] = React.useState<string | null>(
     null
   );
+  const [showExportEditor, setShowExportEditor] = React.useState(false);
+  const [editingExportPreset, setEditingExportPreset] = React.useState<
+    ExportPreset | undefined
+  >();
   const iconMetadata = useIconMetadata(selectedIconId);
 
   // Presets hook
-  const { exportPresets, selectedExportPresetId, selectedStylePreset } =
-    usePresets();
+  const {
+    exportPresets,
+    selectedExportPresetId,
+    selectedStylePreset,
+    selectExportPreset,
+    createExportPreset,
+    updateExportPreset,
+    deleteExportPreset,
+  } = usePresets();
 
   // Restriction mode
-  const { isRestricted, allowedStyles, allowedExportPresets } =
-    useRestriction();
+  const {
+    isRestricted,
+    allowedStyles,
+    allowedExportPresets,
+    isLoading: isRestrictionLoading,
+  } = useRestriction();
 
   // Determine the effective export presets list and selected preset
   const effectiveExportPresets = allowedExportPresets ?? exportPresets;
   const actualSelectedExportPreset = React.useMemo(() => {
     return effectiveExportPresets.find((p) => p.id === selectedExportPresetId);
   }, [effectiveExportPresets, selectedExportPresetId]);
+  const hasSvgVariants = React.useMemo(() => {
+    if (!actualSelectedExportPreset) return false;
+    return actualSelectedExportPreset.variants.some(
+      (variant) => variant.format === "svg"
+    );
+  }, [actualSelectedExportPreset]);
+
+  React.useEffect(() => {
+    if (effectiveExportPresets.length === 0) return;
+    if (actualSelectedExportPreset) return;
+    selectExportPreset(effectiveExportPresets[0].id);
+  }, [actualSelectedExportPreset, effectiveExportPresets, selectExportPreset]);
 
   // Find the currently active restricted style based on background color
   const activeRestrictedStyle = React.useMemo(() => {
@@ -191,6 +220,10 @@ export function PreviewPane({
             height: 512,
             colorOverride,
             originalColor,
+            cornerRadius: state.cornerRadius,
+            borderEnabled: state.borderEnabled,
+            borderColor: state.borderColor,
+            borderWidth: state.borderWidth,
           });
           if (cancelled) return;
           currentUrl = URL.createObjectURL(blob);
@@ -206,6 +239,10 @@ export function PreviewPane({
             size: state.iconSize,
             width: 512,
             height: 512,
+            cornerRadius: state.cornerRadius,
+            borderEnabled: state.borderEnabled,
+            borderColor: state.borderColor,
+            borderWidth: state.borderWidth,
           });
           if (cancelled) return;
           currentUrl = URL.createObjectURL(blob);
@@ -234,6 +271,33 @@ export function PreviewPane({
       (typeof state?.iconColor === "string" ? state.iconColor : "#ffffff")
     );
   }, [selectedStylePreset?.iconColor, state?.iconColor]);
+
+  const handleCreateExportPreset = React.useCallback(() => {
+    setEditingExportPreset(undefined);
+    setShowExportEditor(true);
+  }, []);
+
+  const handleEditExportPreset = React.useCallback((preset: ExportPreset) => {
+    setEditingExportPreset(preset);
+    setShowExportEditor(true);
+  }, []);
+
+  const handleSaveExportPreset = React.useCallback(
+    (preset: Omit<ExportPreset, "id" | "isBuiltIn" | "createdAt">) => {
+      if (editingExportPreset) {
+        updateExportPreset(editingExportPreset.id, preset);
+      } else {
+        const newPreset = createExportPreset(preset);
+        selectExportPreset(newPreset.id);
+      }
+    },
+    [
+      createExportPreset,
+      editingExportPreset,
+      selectExportPreset,
+      updateExportPreset,
+    ]
+  );
 
   // Calculate export info from selected preset
   const exportInfo = React.useMemo(() => {
@@ -333,22 +397,38 @@ export function PreviewPane({
           </ScrollArea>
 
           {/* Export Button - sticky at bottom */}
-          <div className="flex-shrink-0 border-t pt-3 mt-3 space-y-2">
-            <div className="text-xs text-muted-foreground">
-              {canvasState.layers.length > 0
+          <ExportControls
+            exportPresets={effectiveExportPresets}
+            selectedExportPresetId={selectedExportPresetId}
+            onSelectExportPreset={selectExportPreset}
+            onCreatePreset={
+              !isRestrictionLoading && !isRestricted
+                ? handleCreateExportPreset
+                : undefined
+            }
+            onEditPreset={
+              !isRestrictionLoading && !isRestricted
+                ? handleEditExportPreset
+                : undefined
+            }
+            onDeletePreset={
+              !isRestrictionLoading && !isRestricted
+                ? deleteExportPreset
+                : undefined
+            }
+            infoText={
+              canvasState.layers.length > 0
                 ? `Will export ${exportInfo.exportable} file${exportInfo.exportable !== 1 ? "s" : ""}${exportInfo.skipped > 0 ? ` (${exportInfo.skipped} skipped)` : ""}`
-                : "Add layers to enable export"}
-            </div>
-            <Button
-              className="w-full"
-              size="lg"
-              disabled={!canExport}
-              onClick={() => setIsExportModalOpen(true)}
-            >
-              <Download className="mr-2 size-4" />
-              Export
-            </Button>
-          </div>
+                : "Add layers to enable export"
+            }
+            warningText={
+              hasSvgVariants
+                ? "Canvas mode only exports raster formats. SVG files in this preset will be skipped."
+                : undefined
+            }
+            canExport={canExport}
+            onExport={() => setIsExportModalOpen(true)}
+          />
         </CardContent>
 
         {/* Add Layer Modal */}
@@ -369,6 +449,13 @@ export function PreviewPane({
             canvasState={canvasState}
           />
         )}
+        <ExportPresetEditor
+          open={showExportEditor}
+          onOpenChange={setShowExportEditor}
+          preset={editingExportPreset}
+          onSave={handleSaveExportPreset}
+          mode={editingExportPreset ? "edit" : "create"}
+        />
       </Card>
     );
   }
@@ -445,24 +532,38 @@ export function PreviewPane({
         </Tabs>
 
         {/* Export Button - Sticky at bottom */}
-        <div className="flex-shrink-0 border-t pt-3 mt-3 space-y-2">
-          {canExport && hasSelection && (
-            <div className="text-xs text-muted-foreground">
-              Will export {exportInfo.exportable} file
-              {exportInfo.exportable !== 1 ? "s" : ""}
-              {exportInfo.skipped > 0 && ` (${exportInfo.skipped} skipped)`}
-            </div>
-          )}
-          <Button
-            className="w-full"
-            size="lg"
-            disabled={!canExport || !hasSelection}
-            onClick={() => setIsExportModalOpen(true)}
-          >
-            <Download className="mr-2 size-4" />
-            Export
-          </Button>
-        </div>
+        <ExportControls
+          exportPresets={effectiveExportPresets}
+          selectedExportPresetId={selectedExportPresetId}
+          onSelectExportPreset={selectExportPreset}
+          onCreatePreset={
+            !isRestrictionLoading && !isRestricted
+              ? handleCreateExportPreset
+              : undefined
+          }
+          onEditPreset={
+            !isRestrictionLoading && !isRestricted
+              ? handleEditExportPreset
+              : undefined
+          }
+          onDeletePreset={
+            !isRestrictionLoading && !isRestricted
+              ? deleteExportPreset
+              : undefined
+          }
+          infoText={
+            canExport && hasSelection
+              ? `Will export ${exportInfo.exportable} file${exportInfo.exportable !== 1 ? "s" : ""}${exportInfo.skipped > 0 ? ` (${exportInfo.skipped} skipped)` : ""}`
+              : undefined
+          }
+          warningText={
+            isCustomImage && exportInfo.skipped > 0
+              ? "Custom images cannot be exported as SVG. SVG files in this preset will be skipped during export."
+              : undefined
+          }
+          canExport={canExport && hasSelection}
+          onExport={() => setIsExportModalOpen(true)}
+        />
       </CardContent>
       {state && (
         <ExportModal
@@ -472,6 +573,74 @@ export function PreviewPane({
           selectedLocations={selectedLocations}
         />
       )}
+      <ExportPresetEditor
+        open={showExportEditor}
+        onOpenChange={setShowExportEditor}
+        preset={editingExportPreset}
+        onSave={handleSaveExportPreset}
+        mode={editingExportPreset ? "edit" : "create"}
+      />
     </Card>
+  );
+}
+
+interface ExportControlsProps {
+  exportPresets: ExportPreset[];
+  selectedExportPresetId: string;
+  onSelectExportPreset: (id: string) => void;
+  onCreatePreset?: () => void;
+  onEditPreset?: (preset: ExportPreset) => void;
+  onDeletePreset?: (id: string) => void;
+  infoText?: string;
+  warningText?: string;
+  canExport: boolean;
+  onExport: () => void;
+}
+
+function ExportControls({
+  exportPresets,
+  selectedExportPresetId,
+  onSelectExportPreset,
+  onCreatePreset,
+  onEditPreset,
+  onDeletePreset,
+  infoText,
+  warningText,
+  canExport,
+  onExport,
+}: ExportControlsProps) {
+  return (
+    <div className="mt-3 flex-shrink-0 space-y-3 border-t pt-3">
+      <ExportPresetSelector
+        presets={exportPresets}
+        selectedPresetId={selectedExportPresetId}
+        onSelectPreset={onSelectExportPreset}
+        onCreatePreset={onCreatePreset}
+        onEditPreset={onEditPreset}
+        onDeletePreset={onDeletePreset}
+        showLabel={true}
+        testId="preview-export-preset"
+      />
+
+      {warningText ? (
+        <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-muted-foreground">
+          {warningText}
+        </div>
+      ) : null}
+
+      {infoText ? (
+        <div className="text-xs text-muted-foreground">{infoText}</div>
+      ) : null}
+
+      <Button
+        className="w-full"
+        size="lg"
+        disabled={!canExport}
+        onClick={onExport}
+      >
+        <Download className="mr-2 size-4" />
+        Export
+      </Button>
+    </div>
   );
 }

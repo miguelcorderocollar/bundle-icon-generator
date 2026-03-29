@@ -95,6 +95,14 @@ export interface SvgRenderOptions {
    * This matches Zendesk requirements: https://developer.zendesk.com/documentation/apps/app-developer-guide/styling/
    */
   zendeskLocationMode?: boolean;
+  /** Corner radius percentage (0 = square, 100 = fully round) */
+  cornerRadius?: number;
+  /** Whether border is enabled */
+  borderEnabled?: boolean;
+  /** Border color */
+  borderColor?: string;
+  /** Border width in normalized artboard units */
+  borderWidth?: number;
 }
 
 /**
@@ -105,6 +113,69 @@ export interface PngRenderOptions extends SvgRenderOptions {
   width: number;
   /** Canvas height */
   height: number;
+}
+
+interface ShapeOptions {
+  cornerRadius?: number;
+  borderEnabled?: boolean;
+  borderColor?: string;
+  borderWidth?: number;
+}
+
+interface NormalizedShape {
+  radius: number;
+  borderEnabled: boolean;
+  borderColor: string;
+  borderWidth: number;
+}
+
+function normalizeShapeOptions(
+  options: ShapeOptions,
+  baseSize: number
+): NormalizedShape {
+  const sourceSize = 320;
+  const cornerRadius = Math.max(0, Math.min(100, options.cornerRadius ?? 0));
+  const radius = (cornerRadius / 100) * (baseSize / 2);
+
+  const borderEnabled = options.borderEnabled ?? false;
+  const rawBorderWidth = Math.max(0, options.borderWidth ?? 0);
+  const borderWidth = borderEnabled
+    ? Math.min(baseSize / 2, rawBorderWidth * (baseSize / sourceSize))
+    : 0;
+
+  return {
+    radius,
+    borderEnabled: borderEnabled && borderWidth > 0,
+    borderColor: options.borderColor ?? "#ffffff",
+    borderWidth,
+  };
+}
+
+function createRoundedRectPath(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number
+): void {
+  const safeRadius = Math.max(0, Math.min(radius, Math.min(width, height) / 2));
+  ctx.beginPath();
+  ctx.moveTo(x + safeRadius, y);
+  ctx.lineTo(x + width - safeRadius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + safeRadius);
+  ctx.lineTo(x + width, y + height - safeRadius);
+  ctx.quadraticCurveTo(
+    x + width,
+    y + height,
+    x + width - safeRadius,
+    y + height
+  );
+  ctx.lineTo(x + safeRadius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - safeRadius);
+  ctx.lineTo(x, y + safeRadius);
+  ctx.quadraticCurveTo(x, y, x + safeRadius, y);
+  ctx.closePath();
 }
 
 /**
@@ -373,6 +444,10 @@ export function renderSvg(options: SvgRenderOptions): string {
     padding = 0,
     outputSize,
     zendeskLocationMode = false,
+    cornerRadius = 0,
+    borderEnabled = false,
+    borderColor = "#ffffff",
+    borderWidth = 0,
   } = options;
 
   const {
@@ -408,19 +483,41 @@ export function renderSvg(options: SvgRenderOptions): string {
   const vbMinY = viewBoxParts[1] || 0;
   const vbWidth = viewBoxParts[2] || 24;
   const vbHeight = viewBoxParts[3] || 24;
+  const shape = normalizeShapeOptions(
+    { cornerRadius, borderEnabled, borderColor, borderWidth },
+    size
+  );
 
   // Render background (solid color or gradient)
   // In Zendesk location mode, skip background entirely for transparent SVG
-  let backgroundElement: string = "";
+  const bgElements: string[] = [];
   let gradientDef: string = "";
 
   if (!zendeskLocationMode) {
+    const fillValue = isGradient(backgroundColor)
+      ? `url(#bg-gradient-${Math.random().toString(36).substr(2, 9)})`
+      : backgroundColor;
+
     if (isGradient(backgroundColor)) {
-      const gradientId = `bg-gradient-${Math.random().toString(36).substr(2, 9)}`;
+      const gradientId = fillValue.slice(5, -1);
       gradientDef = gradientToSvgDef(backgroundColor, gradientId, size);
-      backgroundElement = `<rect width="${size}" height="${size}" fill="url(#${gradientId})"/>`;
-    } else {
-      backgroundElement = `<rect width="${size}" height="${size}" fill="${backgroundColor}"/>`;
+    }
+
+    const radiusAttr =
+      shape.radius > 0 ? ` rx="${shape.radius}" ry="${shape.radius}"` : "";
+    bgElements.push(
+      `<rect width="${size}" height="${size}"${radiusAttr} fill="${fillValue}"/>`
+    );
+
+    if (shape.borderEnabled) {
+      const inset = shape.borderWidth / 2;
+      const borderSize = Math.max(0, size - shape.borderWidth);
+      const borderRadius = Math.max(0, shape.radius - inset);
+      const borderRadiusAttr =
+        borderRadius > 0 ? ` rx="${borderRadius}" ry="${borderRadius}"` : "";
+      bgElements.push(
+        `<rect x="${inset}" y="${inset}" width="${borderSize}" height="${borderSize}"${borderRadiusAttr} fill="none" stroke="${shape.borderColor}" stroke-width="${shape.borderWidth}"/>`
+      );
     }
   }
 
@@ -451,8 +548,8 @@ export function renderSvg(options: SvgRenderOptions): string {
       const finalSize = outputSize ?? size;
 
       // Build background elements string (empty in Zendesk location mode)
-      const rasterBgElements = backgroundElement
-        ? `${gradientDef ? gradientDef + "\n" : ""}  ${backgroundElement}\n`
+      const rasterBgElements = bgElements.length
+        ? `${gradientDef ? gradientDef + "\n" : ""}  ${bgElements.join("\n  ")}\n`
         : "";
 
       return `<svg width="${finalSize}" height="${finalSize}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -565,12 +662,12 @@ ${rasterBgElements}  <image href="${href}" width="${scaledWidth}" height="${scal
   const finalSize = outputSize ?? size;
 
   // Build background elements string (empty in Zendesk location mode)
-  const bgElements = backgroundElement
-    ? `${gradientDef ? gradientDef + "\n" : ""}  ${backgroundElement}\n`
+  const backgroundElements = bgElements.length
+    ? `${gradientDef ? gradientDef + "\n" : ""}  ${bgElements.join("\n  ")}\n`
     : "";
 
   return `<svg width="${finalSize}" height="${finalSize}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
-${bgElements}  <g transform="${combinedTransform}"${groupAttrString}>
+${backgroundElements}  <g transform="${combinedTransform}"${groupAttrString}>
     ${adjustedContent}
   </g>
 </svg>`;
@@ -580,7 +677,18 @@ ${bgElements}  <g transform="${combinedTransform}"${groupAttrString}>
  * Create a canvas and render PNG
  */
 export async function renderPng(options: PngRenderOptions): Promise<Blob> {
-  const { icon, backgroundColor, iconColor, size, width, height } = options;
+  const {
+    icon,
+    backgroundColor,
+    iconColor,
+    size,
+    width,
+    height,
+    cornerRadius = 0,
+    borderEnabled = false,
+    borderColor = "#ffffff",
+    borderWidth = 0,
+  } = options;
 
   // Create canvas
   const canvas = document.createElement("canvas");
@@ -591,14 +699,36 @@ export async function renderPng(options: PngRenderOptions): Promise<Blob> {
     throw new Error("Failed to get canvas context");
   }
 
-  // Fill background (solid color or gradient)
+  // Fill background (solid color or gradient) and optional border
+  const shape = normalizeShapeOptions(
+    { cornerRadius, borderEnabled, borderColor, borderWidth },
+    Math.min(width, height)
+  );
   if (isGradient(backgroundColor)) {
     const gradient = createCanvasGradient(ctx, backgroundColor, width, height);
     ctx.fillStyle = gradient;
   } else {
     ctx.fillStyle = backgroundColor;
   }
-  ctx.fillRect(0, 0, width, height);
+  createRoundedRectPath(ctx, 0, 0, width, height, shape.radius);
+  ctx.fill();
+
+  if (shape.borderEnabled) {
+    const inset = shape.borderWidth / 2;
+    const borderWidthPx = Math.max(0, width - shape.borderWidth);
+    const borderHeightPx = Math.max(0, height - shape.borderWidth);
+    ctx.strokeStyle = shape.borderColor;
+    ctx.lineWidth = shape.borderWidth;
+    createRoundedRectPath(
+      ctx,
+      inset,
+      inset,
+      borderWidthPx,
+      borderHeightPx,
+      Math.max(0, shape.radius - inset)
+    );
+    ctx.stroke();
+  }
 
   // Render icon as SVG first, then draw to canvas
   // Use the size option to control icon size, but render at canvas size for quality
@@ -684,6 +814,10 @@ export async function renderRaster(
     format = "png",
     quality = 0.92,
     maxFileSize,
+    cornerRadius = 0,
+    borderEnabled = false,
+    borderColor = "#ffffff",
+    borderWidth = 0,
   } = options;
 
   // Create canvas
@@ -698,6 +832,10 @@ export async function renderRaster(
   // For JPEG, fill with background first since JPEG doesn't support transparency
   // For PNG/WebP with transparent background, clear to transparent
   if (format === "jpeg" || backgroundColor !== "transparent") {
+    const shape = normalizeShapeOptions(
+      { cornerRadius, borderEnabled, borderColor, borderWidth },
+      Math.min(width, height)
+    );
     if (isGradient(backgroundColor)) {
       const gradient = createCanvasGradient(
         ctx,
@@ -709,7 +847,25 @@ export async function renderRaster(
     } else {
       ctx.fillStyle = backgroundColor;
     }
-    ctx.fillRect(0, 0, width, height);
+    createRoundedRectPath(ctx, 0, 0, width, height, shape.radius);
+    ctx.fill();
+
+    if (shape.borderEnabled) {
+      const inset = shape.borderWidth / 2;
+      const borderWidthPx = Math.max(0, width - shape.borderWidth);
+      const borderHeightPx = Math.max(0, height - shape.borderWidth);
+      ctx.strokeStyle = shape.borderColor;
+      ctx.lineWidth = shape.borderWidth;
+      createRoundedRectPath(
+        ctx,
+        inset,
+        inset,
+        borderWidthPx,
+        borderHeightPx,
+        Math.max(0, shape.radius - inset)
+      );
+      ctx.stroke();
+    }
   }
 
   // Render icon as SVG first, then draw to canvas
@@ -818,6 +974,10 @@ export async function renderRasterFromImage(
     maxFileSize,
     colorOverride,
     originalColor,
+    cornerRadius = 0,
+    borderEnabled = false,
+    borderColor = "#ffffff",
+    borderWidth = 0,
   } = options;
 
   // Create canvas
@@ -830,13 +990,35 @@ export async function renderRasterFromImage(
   }
 
   // Fill background (solid color or gradient)
+  const shape = normalizeShapeOptions(
+    { cornerRadius, borderEnabled, borderColor, borderWidth },
+    Math.min(width, height)
+  );
   if (isGradient(backgroundColor)) {
     const gradient = createCanvasGradient(ctx, backgroundColor, width, height);
     ctx.fillStyle = gradient;
   } else {
     ctx.fillStyle = backgroundColor;
   }
-  ctx.fillRect(0, 0, width, height);
+  createRoundedRectPath(ctx, 0, 0, width, height, shape.radius);
+  ctx.fill();
+
+  if (shape.borderEnabled) {
+    const inset = shape.borderWidth / 2;
+    const borderWidthPx = Math.max(0, width - shape.borderWidth);
+    const borderHeightPx = Math.max(0, height - shape.borderWidth);
+    ctx.strokeStyle = shape.borderColor;
+    ctx.lineWidth = shape.borderWidth;
+    createRoundedRectPath(
+      ctx,
+      inset,
+      inset,
+      borderWidthPx,
+      borderHeightPx,
+      Math.max(0, shape.radius - inset)
+    );
+    ctx.stroke();
+  }
 
   // Load the image from data URL
   const img = await new Promise<HTMLImageElement>((resolve, reject) => {
@@ -960,6 +1142,14 @@ export interface ImageRenderOptions {
   colorOverride?: string | null;
   /** The detected dominant color from the original image (required if colorOverride is used) */
   originalColor?: string;
+  /** Corner radius percentage (0 = square, 100 = fully round) */
+  cornerRadius?: number;
+  /** Whether border is enabled */
+  borderEnabled?: boolean;
+  /** Border color */
+  borderColor?: string;
+  /** Border width in normalized artboard units */
+  borderWidth?: number;
 }
 
 /**
@@ -977,6 +1167,10 @@ export async function renderPngFromImage(
     height,
     colorOverride,
     originalColor,
+    cornerRadius = 0,
+    borderEnabled = false,
+    borderColor = "#ffffff",
+    borderWidth = 0,
   } = options;
 
   // Create canvas
@@ -989,13 +1183,35 @@ export async function renderPngFromImage(
   }
 
   // Fill background (solid color or gradient)
+  const shape = normalizeShapeOptions(
+    { cornerRadius, borderEnabled, borderColor, borderWidth },
+    Math.min(width, height)
+  );
   if (isGradient(backgroundColor)) {
     const gradient = createCanvasGradient(ctx, backgroundColor, width, height);
     ctx.fillStyle = gradient;
   } else {
     ctx.fillStyle = backgroundColor;
   }
-  ctx.fillRect(0, 0, width, height);
+  createRoundedRectPath(ctx, 0, 0, width, height, shape.radius);
+  ctx.fill();
+
+  if (shape.borderEnabled) {
+    const inset = shape.borderWidth / 2;
+    const borderWidthPx = Math.max(0, width - shape.borderWidth);
+    const borderHeightPx = Math.max(0, height - shape.borderWidth);
+    ctx.strokeStyle = shape.borderColor;
+    ctx.lineWidth = shape.borderWidth;
+    createRoundedRectPath(
+      ctx,
+      inset,
+      inset,
+      borderWidthPx,
+      borderHeightPx,
+      Math.max(0, shape.radius - inset)
+    );
+    ctx.stroke();
+  }
 
   // Load the image from data URL
   const img = await new Promise<HTMLImageElement>((resolve, reject) => {
@@ -1155,6 +1371,10 @@ export async function generateExportAssets(
         padding,
         outputSize: displaySize,
         zendeskLocationMode: isZendeskLocationSvg,
+        cornerRadius: state.cornerRadius,
+        borderEnabled: state.borderEnabled,
+        borderColor: state.borderColor,
+        borderWidth: state.borderWidth,
       });
       const blob = new Blob([svgString], { type: "image/svg+xml" });
       assets.set(variant.filename, blob);
@@ -1171,6 +1391,10 @@ export async function generateExportAssets(
           width: size,
           height: size,
           format: "png",
+          cornerRadius: state.cornerRadius,
+          borderEnabled: state.borderEnabled,
+          borderColor: state.borderColor,
+          borderWidth: state.borderWidth,
         });
         icoPngBlobs.push({ variant, blob });
       }
@@ -1186,6 +1410,10 @@ export async function generateExportAssets(
         format: variant.format,
         quality: variant.quality ? variant.quality / 100 : undefined,
         maxFileSize: variant.maxSize ? variant.maxSize * 1024 : undefined,
+        cornerRadius: state.cornerRadius,
+        borderEnabled: state.borderEnabled,
+        borderColor: state.borderColor,
+        borderWidth: state.borderWidth,
       });
       assets.set(variant.filename, blob);
     }

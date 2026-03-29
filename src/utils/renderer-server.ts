@@ -18,6 +18,45 @@ export interface ServerSvgRenderOptions {
   padding?: number;
   outputSize?: number;
   zendeskLocationMode?: boolean;
+  /** Corner radius percentage (0 = square, 100 = fully round) */
+  cornerRadius?: number;
+  borderEnabled?: boolean;
+  borderColor?: string;
+  borderWidth?: number;
+}
+
+interface ServerShapeOptions {
+  cornerRadius?: number;
+  borderEnabled?: boolean;
+  borderColor?: string;
+  borderWidth?: number;
+}
+
+function normalizeShapeOptions(
+  options: ServerShapeOptions,
+  baseSize: number
+): {
+  radius: number;
+  borderEnabled: boolean;
+  borderColor: string;
+  borderWidth: number;
+} {
+  const sourceSize = 320;
+  const cornerRadius = Math.max(0, Math.min(100, options.cornerRadius ?? 0));
+  const radius = (cornerRadius / 100) * (baseSize / 2);
+
+  const borderEnabled = options.borderEnabled ?? false;
+  const rawBorderWidth = Math.max(0, options.borderWidth ?? 0);
+  const borderWidth = borderEnabled
+    ? Math.min(baseSize / 2, rawBorderWidth * (baseSize / sourceSize))
+    : 0;
+
+  return {
+    radius,
+    borderEnabled: borderEnabled && borderWidth > 0,
+    borderColor: options.borderColor ?? "#ffffff",
+    borderWidth,
+  };
 }
 
 function isRasterizedSvg(content: string): boolean {
@@ -97,6 +136,10 @@ export function renderSvgServer(options: ServerSvgRenderOptions): string {
     padding = 0,
     outputSize,
     zendeskLocationMode = false,
+    cornerRadius = 0,
+    borderEnabled = false,
+    borderColor = "#ffffff",
+    borderWidth = 0,
   } = options;
 
   const {
@@ -126,17 +169,39 @@ export function renderSvgServer(options: ServerSvgRenderOptions): string {
   const vbMinY = viewBoxParts[1] || 0;
   const vbWidth = viewBoxParts[2] || 24;
   const vbHeight = viewBoxParts[3] || 24;
+  const shape = normalizeShapeOptions(
+    { cornerRadius, borderEnabled, borderColor, borderWidth },
+    size
+  );
 
-  let backgroundElement = "";
+  const bgElements: string[] = [];
   let gradientDef = "";
 
   if (!zendeskLocationMode) {
+    const fillValue = isGradient(backgroundColor)
+      ? `url(#bg-gradient-${Math.random().toString(36).slice(2, 11)})`
+      : backgroundColor;
+
     if (isGradient(backgroundColor)) {
-      const gradientId = `bg-gradient-${Math.random().toString(36).slice(2, 11)}`;
+      const gradientId = fillValue.slice(5, -1);
       gradientDef = gradientToSvgDef(backgroundColor, gradientId, size);
-      backgroundElement = `<rect width="${size}" height="${size}" fill="url(#${gradientId})"/>`;
-    } else {
-      backgroundElement = `<rect width="${size}" height="${size}" fill="${backgroundColor}"/>`;
+    }
+
+    const radiusAttr =
+      shape.radius > 0 ? ` rx="${shape.radius}" ry="${shape.radius}"` : "";
+    bgElements.push(
+      `<rect width="${size}" height="${size}"${radiusAttr} fill="${fillValue}"/>`
+    );
+
+    if (shape.borderEnabled) {
+      const inset = shape.borderWidth / 2;
+      const borderSize = Math.max(0, size - shape.borderWidth);
+      const borderRadius = Math.max(0, shape.radius - inset);
+      const borderRadiusAttr =
+        borderRadius > 0 ? ` rx="${borderRadius}" ry="${borderRadius}"` : "";
+      bgElements.push(
+        `<rect x="${inset}" y="${inset}" width="${borderSize}" height="${borderSize}"${borderRadiusAttr} fill="none" stroke="${shape.borderColor}" stroke-width="${shape.borderWidth}"/>`
+      );
     }
   }
 
@@ -161,8 +226,8 @@ export function renderSvgServer(options: ServerSvgRenderOptions): string {
       const iconY = effectivePadding + (iconSize - scaledHeight) / 2;
       const finalSize = outputSize ?? size;
 
-      const rasterBgElements = backgroundElement
-        ? `${gradientDef ? `${gradientDef}\n` : ""}  ${backgroundElement}\n`
+      const rasterBgElements = bgElements.length
+        ? `${gradientDef ? `${gradientDef}\n` : ""}  ${bgElements.join("\n  ")}\n`
         : "";
 
       return `<svg width="${finalSize}" height="${finalSize}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -221,12 +286,12 @@ ${rasterBgElements}  <image href="${href}" width="${scaledWidth}" height="${scal
   const combinedTransform = transformParts.join(" ");
 
   const finalSize = outputSize ?? size;
-  const bgElements = backgroundElement
-    ? `${gradientDef ? `${gradientDef}\n` : ""}  ${backgroundElement}\n`
+  const backgroundElements = bgElements.length
+    ? `${gradientDef ? `${gradientDef}\n` : ""}  ${bgElements.join("\n  ")}\n`
     : "";
 
   return `<svg width="${finalSize}" height="${finalSize}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
-${bgElements}  <g transform="${combinedTransform}"${groupAttrString}>
+${backgroundElements}  <g transform="${combinedTransform}"${groupAttrString}>
     ${coloredContent}
   </g>
 </svg>`;

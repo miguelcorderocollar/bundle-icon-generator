@@ -91,8 +91,8 @@ export function StyleEditorCard({
                   id="icon-color"
                   value={editingStyle.iconColor}
                   onChange={handleIconColorChange}
-                  colorInputClassName="h-10 w-20 cursor-pointer rounded-md border"
-                  textInputClassName="flex-1 font-mono"
+                  colorInputClassName="h-9 w-9 cursor-pointer rounded-md border border-input bg-background p-0"
+                  textInputClassName="h-9 flex-1 px-2.5 font-mono text-xs sm:text-sm"
                 />
               </div>
             </div>
@@ -130,8 +130,8 @@ export function StyleEditorCard({
                         onChange={(value) =>
                           onUpdatePaletteColor(colorIndex, { color: value })
                         }
-                        colorInputClassName="h-8 w-12 cursor-pointer rounded border flex-shrink-0"
-                        textInputClassName="w-24 font-mono text-xs"
+                        colorInputClassName="h-9 w-9 cursor-pointer rounded-md border border-input bg-background p-0 flex-shrink-0"
+                        textInputClassName="h-9 w-24 px-2.5 font-mono text-xs"
                       />
                       <Input
                         value={color.name}

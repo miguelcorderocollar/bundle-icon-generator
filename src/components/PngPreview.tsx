@@ -69,6 +69,10 @@ export function PngPreview({
             height: PNG_SPECS.LOGO.height,
             colorOverride,
             originalColor,
+            cornerRadius: state.cornerRadius,
+            borderEnabled: state.borderEnabled,
+            borderColor: state.borderColor,
+            borderWidth: state.borderWidth,
           });
 
           if (cancelled) return;
@@ -84,6 +88,10 @@ export function PngPreview({
             height: PNG_SPECS.LOGO_SMALL.height,
             colorOverride,
             originalColor,
+            cornerRadius: state.cornerRadius,
+            borderEnabled: state.borderEnabled,
+            borderColor: state.borderColor,
+            borderWidth: state.borderWidth,
           });
 
           if (cancelled) return;
@@ -102,6 +110,10 @@ export function PngPreview({
             size: state.iconSize,
             width: PNG_SPECS.LOGO.width,
             height: PNG_SPECS.LOGO.height,
+            cornerRadius: state.cornerRadius,
+            borderEnabled: state.borderEnabled,
+            borderColor: state.borderColor,
+            borderWidth: state.borderWidth,
           });
 
           if (cancelled) return;
@@ -116,6 +128,10 @@ export function PngPreview({
             size: state.iconSize,
             width: PNG_SPECS.LOGO_SMALL.width,
             height: PNG_SPECS.LOGO_SMALL.height,
+            cornerRadius: state.cornerRadius,
+            borderEnabled: state.borderEnabled,
+            borderColor: state.borderColor,
+            borderWidth: state.borderWidth,
           });
 
           if (cancelled) return;

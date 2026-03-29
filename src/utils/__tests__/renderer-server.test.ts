@@ -46,4 +46,25 @@ describe("renderer-server", () => {
     expect(output).toContain("currentColor");
     expect(output).not.toContain('fill="#ff0000"');
   });
+
+  it("renders rounded background and border", () => {
+    const icon = createIcon(
+      '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M0 0"/></svg>'
+    );
+
+    const output = renderSvgServer({
+      icon,
+      backgroundColor: "#000000",
+      iconColor: "#ffffff",
+      size: 320,
+      cornerRadius: 15,
+      borderEnabled: true,
+      borderColor: "#00ff00",
+      borderWidth: 12,
+    });
+
+    expect(output).toContain('rx="24"');
+    expect(output).toContain('stroke="#00ff00"');
+    expect(output).toContain('stroke-width="12"');
+  });
 });

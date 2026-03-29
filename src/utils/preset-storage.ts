@@ -8,6 +8,7 @@ import type {
   PresetExportData,
   PresetImportResult,
 } from "@/src/types/preset";
+import { DEFAULT_APPEARANCE } from "@/src/constants/app";
 import {
   isPresetExportData,
   isExportPreset,
@@ -33,8 +34,31 @@ const STORAGE_KEYS = {
 /**
  * Current preset export version
  * v2: Added optional colorPalette to StylePreset
+ * v3: Added cornerRadius, borderEnabled, borderColor, borderWidth
  */
-const PRESET_EXPORT_VERSION = 2;
+const PRESET_EXPORT_VERSION = 3;
+
+function normalizeStylePreset(preset: StylePreset): StylePreset {
+  return {
+    ...preset,
+    cornerRadius:
+      typeof preset.cornerRadius === "number"
+        ? preset.cornerRadius
+        : DEFAULT_APPEARANCE.CORNER_RADIUS,
+    borderEnabled:
+      typeof preset.borderEnabled === "boolean"
+        ? preset.borderEnabled
+        : DEFAULT_APPEARANCE.BORDER_ENABLED,
+    borderColor:
+      typeof preset.borderColor === "string"
+        ? preset.borderColor
+        : DEFAULT_APPEARANCE.BORDER_COLOR,
+    borderWidth:
+      typeof preset.borderWidth === "number"
+        ? preset.borderWidth
+        : DEFAULT_APPEARANCE.BORDER_WIDTH,
+  };
+}
 
 // ============================================================================
 // Export Presets
@@ -218,7 +242,7 @@ export function getCustomStylePresets(): StylePreset[] {
     const parsed = JSON.parse(stored);
     if (!Array.isArray(parsed)) return [];
 
-    return parsed.filter(isStylePreset);
+    return parsed.filter(isStylePreset).map(normalizeStylePreset);
   } catch (error) {
     console.error("Failed to load custom style presets:", error);
     return [];
@@ -271,10 +295,10 @@ export function addStylePreset(
   };
 
   const customPresets = getCustomStylePresets();
-  customPresets.push(newPreset);
+  customPresets.push(normalizeStylePreset(newPreset));
   saveCustomStylePresets(customPresets);
 
-  return newPreset;
+  return normalizeStylePreset(newPreset);
 }
 
 /**
@@ -298,7 +322,7 @@ export function updateStylePreset(
     updatedAt: new Date().toISOString(),
   };
 
-  customPresets[index] = updated;
+  customPresets[index] = normalizeStylePreset(updated);
   saveCustomStylePresets(customPresets);
 
   return updated;
@@ -485,11 +509,13 @@ export function importUserPresets(json: string): PresetImportResult {
             isBuiltIn: false,
             createdAt: new Date().toISOString(),
           };
-          existingCustom.push(newPreset);
+          existingCustom.push(normalizeStylePreset(newPreset));
           existingIds.add(newPreset.id);
           warnings.push(`Renamed duplicate style preset: ${preset.name}`);
         } else {
-          existingCustom.push({ ...preset, isBuiltIn: false });
+          existingCustom.push(
+            normalizeStylePreset({ ...preset, isBuiltIn: false })
+          );
           existingIds.add(preset.id);
         }
         stylePresetsImported++;

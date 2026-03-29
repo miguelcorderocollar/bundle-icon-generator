@@ -3,7 +3,7 @@
  */
 
 import * as React from "react";
-import { Palette, Plus, Trash2, Edit2 } from "lucide-react";
+import { Plus, Trash2, Edit2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {
@@ -71,8 +71,7 @@ export function StylePresetSelector({
   return (
     <div className={className}>
       {showLabel && (
-        <div className="mb-2 flex items-center gap-2">
-          <Palette className="h-4 w-4 text-muted-foreground" />
+        <div className="mb-2">
           <Label className="text-sm font-medium">Style Preset</Label>
         </div>
       )}

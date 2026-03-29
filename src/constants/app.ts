@@ -67,6 +67,16 @@ export const DEFAULT_COLORS = {
 } as const;
 
 /**
+ * Default appearance values
+ */
+export const DEFAULT_APPEARANCE = {
+  CORNER_RADIUS: 0,
+  BORDER_ENABLED: false,
+  BORDER_COLOR: "#ffffff",
+  BORDER_WIDTH: 6,
+} as const;
+
+/**
  * Layout breakpoints and sizing
  */
 export const LAYOUT = {

@@ -73,6 +73,14 @@ export interface StylePreset {
   backgroundColor: BackgroundValue;
   /** Icon/foreground color */
   iconColor: string;
+  /** Corner radius percentage (0 = square, 100 = fully round) */
+  cornerRadius: number;
+  /** Whether border is enabled */
+  borderEnabled: boolean;
+  /** Border color */
+  borderColor: string;
+  /** Border width in normalized artboard units */
+  borderWidth: number;
   /** Whether this is a built-in preset (cannot be deleted) */
   isBuiltIn: boolean;
   /** Optional color palette for easy brand color access */
@@ -162,6 +170,33 @@ export function isStylePreset(value: unknown): value is StylePreset {
 
   // Validate colorPalette if present
   const preset = value as StylePreset;
+
+  // Validate appearance fields if present (older preset payloads may omit them)
+  if (
+    preset.cornerRadius !== undefined &&
+    (typeof preset.cornerRadius !== "number" || preset.cornerRadius < 0)
+  ) {
+    return false;
+  }
+  if (
+    preset.borderEnabled !== undefined &&
+    typeof preset.borderEnabled !== "boolean"
+  ) {
+    return false;
+  }
+  if (
+    preset.borderColor !== undefined &&
+    typeof preset.borderColor !== "string"
+  ) {
+    return false;
+  }
+  if (
+    preset.borderWidth !== undefined &&
+    (typeof preset.borderWidth !== "number" || preset.borderWidth < 0)
+  ) {
+    return false;
+  }
+
   if (preset.colorPalette !== undefined) {
     if (!Array.isArray(preset.colorPalette)) {
       return false;

@@ -42,6 +42,10 @@ const generateRequestSchema = z.object({
   padding: z.number().min(-200).max(200).default(8),
   outputSize: z.number().int().min(16).max(4096).optional(),
   zendeskLocationMode: z.boolean().default(false),
+  cornerRadius: z.number().min(0).max(100).default(0),
+  borderEnabled: z.boolean().default(false),
+  borderColor: hexColorSchema.default("#ffffff"),
+  borderWidth: z.number().min(0).max(64).default(6),
   filename: z.string().min(1).max(120).optional(),
 });
 
@@ -99,6 +103,10 @@ export async function POST(request: NextRequest) {
       padding: payload.padding,
       outputSize: payload.outputSize,
       zendeskLocationMode: payload.zendeskLocationMode,
+      cornerRadius: payload.cornerRadius,
+      borderEnabled: payload.borderEnabled,
+      borderColor: payload.borderColor,
+      borderWidth: payload.borderWidth,
     });
 
     if (shouldReturnRawSvg(request)) {
@@ -125,6 +133,10 @@ export async function POST(request: NextRequest) {
         padding: payload.padding,
         outputSize: payload.outputSize ?? payload.size,
         zendeskLocationMode: payload.zendeskLocationMode,
+        cornerRadius: payload.cornerRadius,
+        borderEnabled: payload.borderEnabled,
+        borderColor: payload.borderColor,
+        borderWidth: payload.borderWidth,
       },
       svg,
     });

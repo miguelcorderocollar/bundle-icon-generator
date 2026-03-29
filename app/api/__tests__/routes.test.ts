@@ -90,9 +90,17 @@ describe("API routes", () => {
     expect(body.svg).toBe("<svg>rendered</svg>");
     expect(body.icon.id).toBe("feather-star");
     expect(body.settings.padding).toBe(8);
+    expect(body.settings.cornerRadius).toBe(0);
+    expect(body.settings.borderEnabled).toBe(false);
+    expect(body.settings.borderColor).toBe("#ffffff");
+    expect(body.settings.borderWidth).toBe(6);
     expect(renderSvgServer).toHaveBeenCalledWith(
       expect.objectContaining({
         padding: 8,
+        cornerRadius: 0,
+        borderEnabled: false,
+        borderColor: "#ffffff",
+        borderWidth: 6,
       })
     );
   });

@@ -44,6 +44,10 @@ describe("useIconGenerator", () => {
       expect(result.current.state.selectedPack).toBe("all");
       expect(result.current.state.iconSize).toBe(123);
       expect(result.current.state.svgIconSize).toBe(123);
+      expect(result.current.state.cornerRadius).toBe(0);
+      expect(result.current.state.borderEnabled).toBe(false);
+      expect(result.current.state.borderColor).toBe("#ffffff");
+      expect(result.current.state.borderWidth).toBe(6);
     });
 
     it("provides action functions", () => {
@@ -59,6 +63,10 @@ describe("useIconGenerator", () => {
       expect(typeof result.current.actions.setSelectedPack).toBe("function");
       expect(typeof result.current.actions.setIconSize).toBe("function");
       expect(typeof result.current.actions.setSvgIconSize).toBe("function");
+      expect(typeof result.current.actions.setCornerRadius).toBe("function");
+      expect(typeof result.current.actions.setBorderEnabled).toBe("function");
+      expect(typeof result.current.actions.setBorderColor).toBe("function");
+      expect(typeof result.current.actions.setBorderWidth).toBe("function");
     });
   });
 
@@ -164,6 +172,22 @@ describe("useIconGenerator", () => {
 
       expect(result.current.state.svgIconSize).toBe(100);
     });
+
+    it("updates border and corner controls", async () => {
+      const { result } = renderHook(() => useIconGenerator());
+
+      act(() => {
+        result.current.actions.setCornerRadius(24);
+        result.current.actions.setBorderEnabled(true);
+        result.current.actions.setBorderColor("#00ff00");
+        result.current.actions.setBorderWidth(10);
+      });
+
+      expect(result.current.state.cornerRadius).toBe(24);
+      expect(result.current.state.borderEnabled).toBe(true);
+      expect(result.current.state.borderColor).toBe("#00ff00");
+      expect(result.current.state.borderWidth).toBe(10);
+    });
   });
 
   describe("localStorage persistence", () => {
@@ -176,6 +200,10 @@ describe("useIconGenerator", () => {
         selectedPack: "feather",
         iconSize: 100,
         svgIconSize: 80,
+        cornerRadius: 12,
+        borderEnabled: true,
+        borderColor: "#ff0000",
+        borderWidth: 8,
       };
       localStorage.setItem(
         "zdk-icon-generator:generator-state",
@@ -195,6 +223,10 @@ describe("useIconGenerator", () => {
       expect(result.current.state.selectedPack).toBe("feather");
       expect(result.current.state.iconSize).toBe(100);
       expect(result.current.state.svgIconSize).toBe(80);
+      expect(result.current.state.cornerRadius).toBe(12);
+      expect(result.current.state.borderEnabled).toBe(true);
+      expect(result.current.state.borderColor).toBe("#ff0000");
+      expect(result.current.state.borderWidth).toBe(8);
     });
 
     it("does not persist searchQuery", async () => {
@@ -206,6 +238,10 @@ describe("useIconGenerator", () => {
         selectedPack: "all",
         iconSize: 123,
         svgIconSize: 123,
+        cornerRadius: 0,
+        borderEnabled: false,
+        borderColor: "#ffffff",
+        borderWidth: 6,
       };
       localStorage.setItem(
         "zdk-icon-generator:generator-state",
