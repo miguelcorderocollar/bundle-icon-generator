@@ -46,4 +46,37 @@ describe("renderer-server", () => {
     expect(output).toContain("currentColor");
     expect(output).not.toContain('fill="#ff0000"');
   });
+
+  it("normalizes zendesk mode output for garden, feather, and remixicon SVG shapes", () => {
+    const cases = [
+      {
+        svg: '<svg viewBox="0 0 24 24"><path fill="#17494D" d="M1 1h22v22H1z"/></svg>',
+        mustNotContain: "#17494D",
+      },
+      {
+        svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1h22v22H1z"/></svg>',
+        mustNotContain: "",
+      },
+      {
+        svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 1h22v22H1z"/></svg>',
+        mustNotContain: "",
+      },
+    ];
+
+    for (const testCase of cases) {
+      const output = renderSvgServer({
+        icon: createIcon(testCase.svg),
+        backgroundColor: "#000000",
+        iconColor: "#ffffff",
+        size: 30,
+        zendeskLocationMode: true,
+      });
+
+      expect(output).toContain("currentColor");
+      expect(output).not.toContain('fill="#000000"');
+      if (testCase.mustNotContain) {
+        expect(output).not.toContain(testCase.mustNotContain);
+      }
+    }
+  });
 });

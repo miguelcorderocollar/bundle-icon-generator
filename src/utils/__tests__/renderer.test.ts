@@ -215,6 +215,88 @@ describe("renderer", () => {
       expect(result).toContain("currentColor");
     });
 
+    it("normalizes hardcoded paint to currentColor in zendeskLocationMode", () => {
+      const icon = createMockIcon(
+        '<svg viewBox="0 0 24 24"><path fill="#123456" stroke="#654321" d="M0 0"/></svg>'
+      );
+      const options: SvgRenderOptions = {
+        icon,
+        backgroundColor: "#ff0000",
+        iconColor: "#ffffff",
+        size: 24,
+        zendeskLocationMode: true,
+      };
+
+      const result = renderSvg(options);
+
+      expect(result).toContain("currentColor");
+      expect(result).not.toContain("#123456");
+      expect(result).not.toContain("#654321");
+    });
+
+    it('uses <symbol id="default"> content in zendeskLocationMode', () => {
+      const icon = createMockIcon(
+        '<svg viewBox="0 0 24 24"><symbol id="default" viewBox="0 0 24 24"><path d="M1 1"/></symbol><symbol id="other" viewBox="0 0 24 24"><path d="M2 2"/></symbol></svg>'
+      );
+      const options: SvgRenderOptions = {
+        icon,
+        backgroundColor: "#000000",
+        iconColor: "#ffffff",
+        size: 24,
+        zendeskLocationMode: true,
+      };
+
+      const result = renderSvg(options);
+
+      expect(result).toContain("M1 1");
+      expect(result).not.toContain("M2 2");
+    });
+
+    it("keeps zendesk-mode output compatible across garden, feather, and remixicon SVG shapes", () => {
+      const cases = [
+        {
+          name: "zendesk-garden style (hardcoded fill)",
+          svg: '<svg viewBox="0 0 24 24"><path fill="#17494D" d="M1 1h22v22H1z"/></svg>',
+          mustNotContain: "#17494D",
+        },
+        {
+          name: "feather style (root stroke currentColor)",
+          svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1h22v22H1z"/></svg>',
+          mustNotContain: "",
+        },
+        {
+          name: "remixicon style (root fill currentColor)",
+          svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 1h22v22H1z"/></svg>',
+          mustNotContain: "",
+        },
+      ];
+
+      for (const testCase of cases) {
+        const icon = createMockIcon(testCase.svg);
+        const result = renderSvg({
+          icon,
+          backgroundColor: "#000000",
+          iconColor: "#ffffff",
+          size: 30,
+          zendeskLocationMode: true,
+        });
+
+        expect(result, `${testCase.name} should keep currentColor`).toContain(
+          "currentColor"
+        );
+        expect(
+          result,
+          `${testCase.name} should stay transparent (no background rect)`
+        ).not.toContain('fill="#000000"');
+        if (testCase.mustNotContain) {
+          expect(
+            result,
+            `${testCase.name} should not keep hardcoded paint`
+          ).not.toContain(testCase.mustNotContain);
+        }
+      }
+    });
+
     it("preserves stroke attributes from Feather-style icons", () => {
       const icon = createMockIcon(
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0"/></svg>'
