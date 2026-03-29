@@ -1,14 +1,36 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+import { Blob as NodeBlob } from "node:buffer";
 import {
   applySvgColor,
+  generateExportAssets,
   renderSvg,
   getVisualBoundingBox,
   type SvgRenderOptions,
   type ImageRenderOptions,
 } from "../renderer";
+import type { IconGeneratorState } from "../../hooks/use-icon-generator";
+import { ICON_PACKS } from "../../constants/app";
 import type { IconMetadata } from "../../types/icon";
 
 describe("renderer", () => {
+  const createMockIcon = (svg: string): IconMetadata => ({
+    id: "test-icon",
+    name: "Test Icon",
+    pack: "test",
+    tags: [],
+    svg,
+  });
+
+  const createFakePngBytes = (width: number, height: number): Uint8Array => {
+    // Minimal PNG-like byte array where IHDR width/height are at byte offsets 16/20.
+    const bytes = new Uint8Array(24);
+    bytes.set([137, 80, 78, 71, 13, 10, 26, 10], 0); // PNG signature
+    const view = new DataView(bytes.buffer);
+    view.setUint32(16, width, false);
+    view.setUint32(20, height, false);
+    return bytes;
+  };
+
   describe("applySvgColor", () => {
     it("replaces fill attributes with new color", () => {
       const input = '<path fill="#000000" d="M0 0"/>';
@@ -87,15 +109,118 @@ describe("renderer", () => {
     });
   });
 
-  describe("renderSvg", () => {
-    const createMockIcon = (svg: string): IconMetadata => ({
-      id: "test-icon",
-      name: "Test Icon",
-      pack: "test",
-      tags: [],
-      svg,
-    });
+  describe("generateExportAssets (ICO)", () => {
+    it("generates favicon.ico with 16x16, 32x32, and 48x48 entries", async () => {
+      const icon = createMockIcon(
+        '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M0 0"/></svg>'
+      );
+      const state: IconGeneratorState = {
+        selectedLocations: [],
+        selectedIconId: "test-icon",
+        backgroundColor: "#000000",
+        iconColor: "#ffffff",
+        searchQuery: "",
+        selectedPack: ICON_PACKS.ALL,
+        iconSize: 123,
+        svgIconSize: 123,
+      };
 
+      const contextMock = {
+        fillStyle: "",
+        fillRect: vi.fn(),
+        drawImage: vi.fn(),
+      } as unknown as CanvasRenderingContext2D;
+
+      const getContextSpy = vi
+        .spyOn(HTMLCanvasElement.prototype, "getContext")
+        .mockReturnValue(contextMock);
+      const toBlobSpy = vi
+        .spyOn(HTMLCanvasElement.prototype, "toBlob")
+        .mockImplementation(function (callback) {
+          const pngBytes = createFakePngBytes(this.width, this.height);
+          const fakeBlob = {
+            type: "image/png",
+            size: pngBytes.byteLength,
+            arrayBuffer: async () =>
+              pngBytes.buffer.slice(
+                pngBytes.byteOffset,
+                pngBytes.byteOffset + pngBytes.byteLength
+              ),
+          } as unknown as Blob;
+          callback?.(fakeBlob);
+          return undefined;
+        });
+      const createObjectURLSpy = vi
+        .spyOn(URL, "createObjectURL")
+        .mockReturnValue("blob:mock-svg");
+      const revokeObjectURLSpy = vi
+        .spyOn(URL, "revokeObjectURL")
+        .mockImplementation(() => undefined);
+
+      class MockImage {
+        onload: ((this: GlobalEventHandlers, ev: Event) => unknown) | null =
+          null;
+        onerror: OnErrorEventHandler | null = null;
+
+        set src(_value: string) {
+          this.onload?.call(
+            this as unknown as GlobalEventHandlers,
+            new Event("load")
+          );
+        }
+      }
+
+      vi.stubGlobal("Blob", NodeBlob);
+      vi.stubGlobal("Image", MockImage);
+
+      try {
+        const assets = await generateExportAssets(icon, state, [
+          {
+            filename: "favicon.ico",
+            width: 32,
+            height: 32,
+            format: "ico",
+          },
+        ]);
+
+        const icoBlob = assets.get("favicon.ico");
+        expect(icoBlob).toBeDefined();
+        expect(icoBlob?.type).toBe("image/x-icon");
+
+        if (!icoBlob) {
+          throw new Error("Expected favicon.ico to be generated");
+        }
+
+        const icoBuffer = await (
+          icoBlob as Blob & { arrayBuffer: () => Promise<ArrayBuffer> }
+        ).arrayBuffer();
+        const view = new DataView(icoBuffer);
+
+        // ICO header
+        expect(view.getUint16(0, true)).toBe(0);
+        expect(view.getUint16(2, true)).toBe(1);
+        expect(view.getUint16(4, true)).toBe(3);
+
+        // Directory entry width/height bytes (entries are 16 bytes each after 6-byte header)
+        const widths = [view.getUint8(6), view.getUint8(22), view.getUint8(38)];
+        const heights = [
+          view.getUint8(7),
+          view.getUint8(23),
+          view.getUint8(39),
+        ];
+        expect(widths).toEqual([16, 32, 48]);
+        expect(heights).toEqual([16, 32, 48]);
+      } finally {
+        getContextSpy.mockRestore();
+        toBlobSpy.mockRestore();
+        createObjectURLSpy.mockRestore();
+        revokeObjectURLSpy.mockRestore();
+        vi.unstubAllGlobals();
+      }
+    });
+  });
+
+  describe("renderSvg", () => {
     it("renders SVG with solid background", () => {
       const icon = createMockIcon(
         '<svg viewBox="0 0 24 24"><path d="M0 0"/></svg>'
@@ -400,14 +525,6 @@ describe("renderer", () => {
   });
 
   describe("renderSvg visual centering", () => {
-    const createMockIcon = (svg: string): IconMetadata => ({
-      id: "test-icon",
-      name: "Test Icon",
-      pack: "test",
-      tags: [],
-      svg,
-    });
-
     it("applies visual centering correction for off-center icons", () => {
       // Icon with content centered at (7.5, 8.5) instead of (8, 8) in 16x16 viewBox
       // This simulates Zendesk Garden alert-error-stroke-16

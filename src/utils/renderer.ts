@@ -1118,7 +1118,7 @@ export async function generateExportAssets(
 ): Promise<Map<string, Blob>> {
   const assets = new Map<string, Blob>();
 
-  // Collect PNG blobs for ICO generation (16x16 and 32x32)
+  // Collect PNG blobs for ICO generation (16x16, 32x32, and 48x48)
   const icoPngBlobs: { variant: ExportVariantSpec; blob: Blob }[] = [];
 
   for (const variant of variants) {
@@ -1160,8 +1160,8 @@ export async function generateExportAssets(
       assets.set(variant.filename, blob);
     } else if (variant.format === "ico") {
       // ICO rendering - collect PNG blobs first, generate ICO at the end
-      // For ICO, we need 16x16 and 32x32 PNGs
-      const sizes = [16, 32];
+      // For ICO, generate common browser favicon sizes
+      const sizes = [16, 32, 48];
       for (const size of sizes) {
         const blob = await renderRaster({
           icon,

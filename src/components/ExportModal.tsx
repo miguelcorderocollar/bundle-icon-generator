@@ -40,6 +40,8 @@ export interface ExportModalProps {
   canvasState?: CanvasEditorState;
 }
 
+const ICO_EMBEDDED_SIZES = [16, 32, 48] as const;
+
 export function ExportModal({
   open,
   onOpenChange,
@@ -148,6 +150,16 @@ export function ExportModal({
     };
   }, [variants]);
 
+  const getVariantSizeLabel = React.useCallback(
+    (variant: ExportVariantConfig): string => {
+      if (variant.format === "ico") {
+        return ICO_EMBEDDED_SIZES.map((size) => `${size}×${size}`).join(", ");
+      }
+      return `${variant.width}×${variant.height}`;
+    },
+    []
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] max-h-[85vh] flex flex-col overflow-hidden">
@@ -206,6 +218,16 @@ export function ExportModal({
                     <span className="font-medium">{formatCounts.ico}</span>
                   </div>
                 )}
+                {formatCounts.ico > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">ICO sizes:</span>
+                    <span className="font-medium">
+                      {ICO_EMBEDDED_SIZES.map((size) => `${size}×${size}`).join(
+                        ", "
+                      )}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -222,7 +244,7 @@ export function ExportModal({
                   >
                     <span>{variant.filename}</span>
                     <span className="text-xs text-muted-foreground">
-                      {variant.width}×{variant.height}{" "}
+                      {getVariantSizeLabel(variant)}{" "}
                       {variant.format.toUpperCase()}
                     </span>
                   </li>
