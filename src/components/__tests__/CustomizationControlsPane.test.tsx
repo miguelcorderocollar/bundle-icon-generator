@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { CustomizationControlsPane } from "../../../components/CustomizationControlsPane";
 import { usePresets } from "../../hooks/use-presets";
 import { useRestriction } from "../../contexts/RestrictionContext";
@@ -23,6 +23,40 @@ vi.mock("../StylePresetEditor", () => ({
 
 vi.mock("../PresetSettingsModal", () => ({
   PresetSettingsModal: () => null,
+}));
+
+vi.mock("../EffectSlider", () => ({
+  EffectSlider: ({
+    id,
+    label,
+    value,
+    onChange,
+    min,
+    max,
+    step,
+  }: {
+    id: string;
+    label: string;
+    value: number;
+    onChange: (value: number) => void;
+    min?: number;
+    max?: number;
+    step?: number;
+  }) => (
+    <label htmlFor={id}>
+      <span>{label}</span>
+      <input
+        id={id}
+        data-testid={`slider-${id}`}
+        type="range"
+        value={value}
+        min={min}
+        max={max}
+        step={step}
+        onChange={(event) => onChange(Number(event.target.value))}
+      />
+    </label>
+  ),
 }));
 
 const pngPreset: ExportPreset = {
@@ -135,5 +169,54 @@ describe("CustomizationControlsPane", () => {
 
     expect(screen.getByText("PNG Size")).toBeInTheDocument();
     expect(screen.getByText("SVG Size")).toBeInTheDocument();
+  });
+
+  it("debounces corner radius and border width slider updates", () => {
+    vi.useFakeTimers();
+
+    try {
+      mockPresets("svg-mixed");
+      const onCornerRadiusChange = vi.fn();
+      const onBorderWidthChange = vi.fn();
+
+      render(
+        <CustomizationControlsPane
+          cornerRadius={16}
+          onCornerRadiusChange={onCornerRadiusChange}
+          borderEnabled
+          onBorderEnabledChange={vi.fn()}
+          borderWidth={6}
+          onBorderWidthChange={onBorderWidthChange}
+        />
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /frame shape/i }));
+
+      fireEvent.change(screen.getByTestId("slider-corner-radius"), {
+        target: { value: "42" },
+      });
+      fireEvent.change(screen.getByTestId("slider-border-width"), {
+        target: { value: "10" },
+      });
+
+      expect(onCornerRadiusChange).not.toHaveBeenCalled();
+      expect(onBorderWidthChange).not.toHaveBeenCalled();
+
+      act(() => {
+        vi.advanceTimersByTime(299);
+      });
+      expect(onCornerRadiusChange).not.toHaveBeenCalled();
+      expect(onBorderWidthChange).not.toHaveBeenCalled();
+
+      act(() => {
+        vi.advanceTimersByTime(1);
+      });
+      expect(onCornerRadiusChange).toHaveBeenCalledTimes(1);
+      expect(onCornerRadiusChange).toHaveBeenCalledWith(42);
+      expect(onBorderWidthChange).toHaveBeenCalledTimes(1);
+      expect(onBorderWidthChange).toHaveBeenCalledWith(10);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

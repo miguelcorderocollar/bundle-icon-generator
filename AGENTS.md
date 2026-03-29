@@ -220,6 +220,12 @@ The following files are excluded from Next.js TypeScript compilation:
 - **Validates**: Icon selection, location requirements, color contrast
 - **Generates**: ZIP files with PNG and SVG assets
 
+### Debounced UI Inputs
+
+- **Rule**: Any high-frequency control (sliders, drag handles, rapid text inputs) that drives preview rendering or persisted generator state must use debounce.
+- **Pattern**: Keep immediate local UI state, debounce outbound updates (for example with `useDebouncedValue`), then commit to shared state/localStorage after the debounce delay.
+- **Coverage**: Apply this consistently to new customization controls (size, radius, border width, similar shape/effect values) to avoid jank and excessive re-renders.
+
 ## Zendesk-Specific Requirements
 
 ### Icon Sizes
