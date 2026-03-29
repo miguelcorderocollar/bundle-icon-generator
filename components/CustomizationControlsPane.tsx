@@ -93,6 +93,7 @@ export function CustomizationControlsPane({
   // Presets hook
   const {
     exportPresets,
+    selectedExportPresetId,
     createExportPreset,
     updateExportPreset,
     deleteExportPreset,
@@ -121,13 +122,20 @@ export function CustomizationControlsPane({
   // Check if current icon is a custom image
   const isCustomImage = isCustomImageIcon(selectedIconId);
 
-  // Check if the restricted export options include SVG variants
+  // Check whether the currently active export preset includes SVG variants
   const hasSvgVariants = React.useMemo(() => {
-    if (!allowedExportPresets) return true;
-    return allowedExportPresets.some((preset) =>
-      preset.variants.some((variant) => variant.format === "svg")
-    );
-  }, [allowedExportPresets]);
+    const effectiveExportPresets = allowedExportPresets ?? exportPresets;
+    const activePreset =
+      effectiveExportPresets.find(
+        (preset) => preset.id === selectedExportPresetId
+      ) ?? effectiveExportPresets[0];
+
+    if (!activePreset) {
+      return false;
+    }
+
+    return activePreset.variants.some((variant) => variant.format === "svg");
+  }, [allowedExportPresets, exportPresets, selectedExportPresetId]);
 
   // Get the selected style preset (for accessing color palette)
   const selectedStylePreset = React.useMemo(() => {
