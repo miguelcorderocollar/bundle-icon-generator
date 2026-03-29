@@ -110,6 +110,20 @@ test.describe("Export Flow", () => {
     await expect(fileCountText).toBeVisible();
   });
 
+  test("favicon bundle shows an ico preview thumbnail", async ({ page }) => {
+    const presetSelector = page.getByRole("combobox").nth(2);
+    await expect(presetSelector).toBeVisible();
+
+    await presetSelector.click();
+    await page.getByRole("option", { name: /favicon bundle/i }).click();
+
+    await page.getByRole("tab", { name: /^preview$/i }).click();
+
+    const icoPreview = page.getByAltText("favicon.ico");
+    await expect(icoPreview).toBeVisible();
+    await expect(icoPreview).toHaveAttribute("src", /blob:/);
+  });
+
   test("selecting locations increases file count", async ({ page }) => {
     // Get initial file count text
     const fileCountText = page.getByText(/will export/i);
