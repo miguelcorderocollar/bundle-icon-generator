@@ -6,7 +6,12 @@ import { CustomizationControlsPane } from "@/components/CustomizationControlsPan
 import { PreviewPane } from "@/components/PreviewPane";
 import { useIconGenerator } from "@/src/hooks/use-icon-generator";
 import { useCanvasEditor } from "@/src/hooks/use-canvas-editor";
-import { APP_NAME, APP_DESCRIPTION, ICON_PACKS } from "@/src/constants/app";
+import {
+  APP_NAME,
+  APP_DESCRIPTION,
+  DEFAULT_APPEARANCE,
+  ICON_PACKS,
+} from "@/src/constants/app";
 import {
   Dialog,
   DialogContent,
@@ -156,6 +161,10 @@ export default function Home() {
       const firstStyle = allowedStyles[0];
       actions.setBackgroundColor(firstStyle.backgroundColor);
       actions.setIconColor(firstStyle.iconColor);
+      actions.setCornerRadius(DEFAULT_APPEARANCE.CORNER_RADIUS);
+      actions.setBorderEnabled(DEFAULT_APPEARANCE.BORDER_ENABLED);
+      actions.setBorderColor(DEFAULT_APPEARANCE.BORDER_COLOR);
+      actions.setBorderWidth(DEFAULT_APPEARANCE.BORDER_WIDTH);
       hasSetRestrictedStyleRef.current = true;
     }
   }, [isRestrictionLoading, isRestricted, allowedStyles, actions]);
@@ -340,7 +349,7 @@ export default function Home() {
             <>
               {/* Canvas mode: 1/3 controls + 2/3 canvas editor */}
               {/* Left: Source selector + Background controls */}
-              <div className="flex flex-shrink-0 flex-col overflow-hidden md:h-full md:w-80">
+              <div className="flex flex-shrink-0 flex-col overflow-hidden md:h-full md:w-[28rem]">
                 <CanvasControlsPane
                   selectedPack={state.selectedPack}
                   onPackChange={actions.setSelectedPack}
@@ -383,6 +392,14 @@ export default function Home() {
                   onBackgroundColorChange={actions.setBackgroundColor}
                   iconColor={state.iconColor}
                   onIconColorChange={actions.setIconColor}
+                  cornerRadius={state.cornerRadius}
+                  onCornerRadiusChange={actions.setCornerRadius}
+                  borderEnabled={state.borderEnabled}
+                  onBorderEnabledChange={actions.setBorderEnabled}
+                  borderColor={state.borderColor}
+                  onBorderColorChange={actions.setBorderColor}
+                  borderWidth={state.borderWidth}
+                  onBorderWidthChange={actions.setBorderWidth}
                   iconSize={state.iconSize}
                   onIconSizeChange={actions.setIconSize}
                   svgIconSize={state.svgIconSize}

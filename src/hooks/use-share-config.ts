@@ -6,6 +6,7 @@
 
 import * as React from "react";
 import type { RestrictionConfig } from "@/src/types/restriction";
+import { DEFAULT_APPEARANCE } from "@/src/constants/app";
 import {
   createDefaultRestrictionConfig,
   isRestrictionConfig,
@@ -57,6 +58,10 @@ function generateShareUrl(config: RestrictionConfig, mode: ShareMode): string {
         name: style.name,
         backgroundColor: style.backgroundColor,
         iconColor: style.iconColor,
+        cornerRadius: DEFAULT_APPEARANCE.CORNER_RADIUS,
+        borderEnabled: DEFAULT_APPEARANCE.BORDER_ENABLED,
+        borderColor: DEFAULT_APPEARANCE.BORDER_COLOR,
+        borderWidth: DEFAULT_APPEARANCE.BORDER_WIDTH,
         isBuiltIn: false,
         colorPalette: style.colorPalette?.map((c, i) => ({
           id: `color-${i}`,
@@ -78,7 +83,7 @@ function generateShareUrl(config: RestrictionConfig, mode: ShareMode): string {
         }));
 
       const presetData = {
-        version: 2,
+        version: 3,
         exportPresets,
         stylePresets,
         exportedAt: new Date().toISOString(),

@@ -1,16 +1,22 @@
+import * as React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ColorPicker } from "../ColorPicker";
 
-// Mock the color-history module
-vi.mock("../../utils/color-history", () => ({
-  getRecentColors: vi.fn().mockReturnValue(["#ff0000", "#00ff00", "#0000ff"]),
-  addColorToHistory: vi.fn(),
+const { getRecentColorsMock, addColorToHistoryMock } = vi.hoisted(() => ({
+  getRecentColorsMock: vi
+    .fn()
+    .mockReturnValue(["#ff0000", "#00ff00", "#0000ff"]),
+  addColorToHistoryMock: vi.fn(),
 }));
 
-// Mock the debounce hook to return value immediately for testing
-vi.mock("../../hooks/use-debounced-value", () => ({
+vi.mock("@/src/utils/color-history", () => ({
+  getRecentColors: getRecentColorsMock,
+  addColorToHistory: addColorToHistoryMock,
+}));
+
+vi.mock("@/src/hooks/use-debounced-value", () => ({
   useDebouncedValue: vi.fn((value: string) => value),
 }));
 
@@ -22,37 +28,117 @@ describe("ColorPicker", () => {
     onChange: vi.fn(),
   };
 
+  const paletteColors = [
+    { id: "color-1", name: "Primary", color: "#ff0000" },
+    { id: "color-2", name: "Secondary", color: "#00ff00" },
+    { id: "color-3", name: "Tertiary", color: "#0000ff" },
+  ];
+
   beforeEach(() => {
     vi.clearAllMocks();
+    getRecentColorsMock.mockReturnValue(["#ff0000", "#00ff00", "#0000ff"]);
   });
 
-  it("renders label", () => {
+  it("renders label when provided", () => {
     render(<ColorPicker {...defaultProps} />);
     expect(screen.getByText("Test Color")).toBeInTheDocument();
   });
 
-  it("renders color input with correct value", () => {
-    render(<ColorPicker {...defaultProps} value="#ff0000" />);
-    const colorInput = screen.getByRole("textbox");
-    expect(colorInput).toHaveValue("#ff0000");
+  it("does not render label when omitted", () => {
+    render(
+      <ColorPicker id="no-label-color" value="#ffffff" onChange={vi.fn()} />
+    );
+    expect(screen.queryByText("Test Color")).not.toBeInTheDocument();
   });
 
-  it("renders native color picker", () => {
+  it("renders hex input with current value", () => {
+    render(<ColorPicker {...defaultProps} value="#ff0000" />);
+    expect(screen.getByRole("textbox")).toHaveValue("#ff0000");
+  });
+
+  it("renders native color input", () => {
     const { container } = render(<ColorPicker {...defaultProps} />);
-    const colorPicker = container.querySelector('input[type="color"]');
-    expect(colorPicker).toBeInTheDocument();
-    expect(colorPicker).toHaveValue("#ffffff");
+    const colorInput = container.querySelector('input[type="color"]');
+    expect(colorInput).toBeInTheDocument();
+    expect(colorInput).toHaveValue("#ffffff");
+  });
+
+  it("shows expand button when tray content exists", () => {
+    render(<ColorPicker {...defaultProps} colorType="background" />);
+    expect(
+      screen.getByRole("button", { name: "Show color swatches" })
+    ).toBeInTheDocument();
+  });
+
+  it("does not show expand button when no tray content exists", () => {
+    render(<ColorPicker {...defaultProps} />);
+    expect(
+      screen.queryByRole("button", { name: "Show color swatches" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("keeps tray collapsed by default", () => {
+    render(<ColorPicker {...defaultProps} colorType="background" />);
+    expect(screen.queryByText("Recent colors")).not.toBeInTheDocument();
+  });
+
+  it("expands tray and renders recent colors on toggle", async () => {
+    const user = userEvent.setup();
+    render(<ColorPicker {...defaultProps} colorType="background" />);
+
+    await user.click(
+      screen.getByRole("button", { name: "Show color swatches" })
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Select color #ff0000" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Hide color swatches" })
+    ).toBeInTheDocument();
+  });
+
+  it("renders both section labels when both preset and recent groups exist", async () => {
+    const user = userEvent.setup();
+    render(
+      <ColorPicker
+        {...defaultProps}
+        colorType="background"
+        paletteColors={paletteColors}
+      />
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: "Show color swatches" })
+    );
+
+    expect(screen.getByText("Preset colors")).toBeInTheDocument();
+    expect(screen.getByText("Recent colors")).toBeInTheDocument();
+  });
+
+  it("hides section label when only one swatch group exists", async () => {
+    const user = userEvent.setup();
+    render(<ColorPicker {...defaultProps} colorType="background" />);
+
+    await user.click(
+      screen.getByRole("button", { name: "Show color swatches" })
+    );
+
+    expect(screen.queryByText("Recent colors")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Select color #ff0000" })
+    ).toBeInTheDocument();
   });
 
   it("calls onChange when hex input changes", async () => {
     const onChange = vi.fn();
+    const user = userEvent.setup();
     render(<ColorPicker {...defaultProps} onChange={onChange} />);
 
     const hexInput = screen.getByRole("textbox");
-    await userEvent.clear(hexInput);
-    await userEvent.type(hexInput, "#abcdef");
+    await user.clear(hexInput);
+    await user.type(hexInput, "#abcdef");
 
-    // onChange is called for each character
     expect(onChange).toHaveBeenCalled();
   });
 
@@ -70,48 +156,78 @@ describe("ColorPicker", () => {
     expect(onChange).toHaveBeenCalledWith("#00ff00");
   });
 
-  it("renders recent colors when colorType is provided", () => {
-    render(<ColorPicker {...defaultProps} colorType="background" />);
-    expect(screen.getByText("Recent colors")).toBeInTheDocument();
-  });
-
-  it("does not render recent colors when colorType is not provided", () => {
-    render(<ColorPicker {...defaultProps} />);
-    expect(screen.queryByText("Recent colors")).not.toBeInTheDocument();
-  });
-
-  it("renders recent color buttons", () => {
+  it("keeps tray open after swatch click in uncontrolled mode", async () => {
+    const user = userEvent.setup();
     render(<ColorPicker {...defaultProps} colorType="background" />);
 
-    // Should have buttons for the mocked recent colors
-    const buttons = screen.getAllByRole("button");
-    expect(buttons.length).toBe(3); // 3 mocked recent colors
+    await user.click(
+      screen.getByRole("button", { name: "Show color swatches" })
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Select color #ff0000" })
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Hide color swatches" })
+    ).toBeInTheDocument();
   });
 
-  it("calls onChange when recent color is clicked", async () => {
-    const onChange = vi.fn();
+  it("supports controlled tray state with external expansion callback", async () => {
+    const onExpandedChange = vi.fn();
+    const user = userEvent.setup();
     render(
       <ColorPicker
         {...defaultProps}
-        onChange={onChange}
         colorType="background"
+        expanded={false}
+        onExpandedChange={onExpandedChange}
       />
     );
 
-    const recentColorButtons = screen.getAllByRole("button");
-    await userEvent.click(recentColorButtons[0]);
+    await user.click(
+      screen.getByRole("button", { name: "Show color swatches" })
+    );
 
-    expect(onChange).toHaveBeenCalledWith("#ff0000");
+    expect(onExpandedChange).toHaveBeenCalledWith(true);
+    expect(
+      screen.queryByRole("button", { name: "Select color #ff0000" })
+    ).not.toBeInTheDocument();
   });
 
-  it("shows info tooltip when isCustomSvg is true", () => {
+  it("lets parent close tray after swatch selection in controlled mode", async () => {
+    const user = userEvent.setup();
+
+    function ControlledPicker() {
+      const [expanded, setExpanded] = React.useState(true);
+      return (
+        <ColorPicker
+          {...defaultProps}
+          colorType="background"
+          expanded={expanded}
+          onExpandedChange={setExpanded}
+          onChange={() => setExpanded(false)}
+        />
+      );
+    }
+
+    render(<ControlledPicker />);
+
+    await user.click(
+      screen.getByRole("button", { name: "Select color #ff0000" })
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Hide color swatches" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows info tooltip icon when isCustomSvg is true", () => {
     render(<ColorPicker {...defaultProps} isCustomSvg />);
-    // The Info icon should be rendered
     const infoIcon = document.querySelector(".lucide-info");
     expect(infoIcon).toBeInTheDocument();
   });
 
-  it("does not show info tooltip when isCustomSvg is false", () => {
+  it("does not show info tooltip icon when isCustomSvg is false", () => {
     render(<ColorPicker {...defaultProps} isCustomSvg={false} />);
     const infoIcon = document.querySelector(".lucide-info");
     expect(infoIcon).not.toBeInTheDocument();
@@ -124,106 +240,65 @@ describe("ColorPicker", () => {
     expect(container.firstChild).toHaveClass("my-custom-class");
   });
 
-  it("validates hex input - rejects invalid characters", async () => {
+  it("validates hex input and rejects invalid characters", async () => {
     const onChange = vi.fn();
+    const user = userEvent.setup();
     render(<ColorPicker {...defaultProps} onChange={onChange} value="" />);
 
     const hexInput = screen.getByRole("textbox");
-    await userEvent.type(hexInput, "xyz");
+    await user.type(hexInput, "xyz");
 
-    // onChange should not be called for invalid characters
     expect(onChange).not.toHaveBeenCalledWith("xyz");
   });
 
-  it("allows valid hex input", async () => {
+  it("allows valid partial hex input", async () => {
     const onChange = vi.fn();
+    const user = userEvent.setup();
     render(<ColorPicker {...defaultProps} onChange={onChange} value="" />);
 
     const hexInput = screen.getByRole("textbox");
-    await userEvent.type(hexInput, "#");
+    await user.type(hexInput, "#");
 
     expect(onChange).toHaveBeenCalledWith("#");
   });
 
-  it("has proper accessibility labels for recent colors", () => {
+  it("records valid full hex colors in history", async () => {
+    const user = userEvent.setup();
     render(<ColorPicker {...defaultProps} colorType="background" />);
 
-    const buttons = screen.getAllByRole("button");
-    buttons.forEach((button) => {
-      expect(button).toHaveAttribute("aria-label");
-    });
+    const hexInput = screen.getByRole("textbox");
+    await user.clear(hexInput);
+    await user.type(hexInput, "#abcdef");
+
+    expect(addColorToHistoryMock).toHaveBeenCalledWith("background", "#abcdef");
   });
 
-  describe("paletteColors prop", () => {
-    const paletteColors = [
-      { id: "color-1", name: "Primary", color: "#ff0000" },
-      { id: "color-2", name: "Secondary", color: "#00ff00" },
-      { id: "color-3", name: "Tertiary", color: "#0000ff" },
-    ];
+  it("does not record non-full-hex values in history", async () => {
+    const user = userEvent.setup();
+    render(<ColorPicker {...defaultProps} colorType="background" />);
 
-    it("renders preset colors section when paletteColors is provided", () => {
-      render(<ColorPicker {...defaultProps} paletteColors={paletteColors} />);
-      expect(screen.getByText("Preset colors")).toBeInTheDocument();
-    });
+    const hexInput = screen.getByRole("textbox");
+    await user.clear(hexInput);
+    await user.type(hexInput, "#abc");
 
-    it("does not render preset colors section when paletteColors is empty", () => {
-      render(<ColorPicker {...defaultProps} paletteColors={[]} />);
-      expect(screen.queryByText("Preset colors")).not.toBeInTheDocument();
-    });
+    expect(addColorToHistoryMock).not.toHaveBeenCalledWith(
+      "background",
+      "#abc"
+    );
+  });
 
-    it("does not render preset colors section when paletteColors is undefined", () => {
-      render(<ColorPicker {...defaultProps} />);
-      expect(screen.queryByText("Preset colors")).not.toBeInTheDocument();
-    });
+  it("renders restricted mode with palette swatches only", () => {
+    render(
+      <ColorPicker
+        {...defaultProps}
+        paletteColors={paletteColors}
+        restrictedMode
+      />
+    );
 
-    it("renders palette color buttons", () => {
-      render(<ColorPicker {...defaultProps} paletteColors={paletteColors} />);
-
-      // Should have buttons for the palette colors
-      const buttons = screen.getAllByRole("button");
-      expect(buttons.length).toBe(3); // 3 palette colors
-    });
-
-    it("calls onChange when palette color is clicked", async () => {
-      const onChange = vi.fn();
-      render(
-        <ColorPicker
-          {...defaultProps}
-          onChange={onChange}
-          paletteColors={paletteColors}
-        />
-      );
-
-      const paletteButtons = screen.getAllByRole("button");
-      await userEvent.click(paletteButtons[0]);
-
-      expect(onChange).toHaveBeenCalledWith("#ff0000");
-    });
-
-    it("has proper accessibility labels for palette colors", () => {
-      render(<ColorPicker {...defaultProps} paletteColors={paletteColors} />);
-
-      const buttons = screen.getAllByRole("button");
-      buttons.forEach((button) => {
-        expect(button).toHaveAttribute("aria-label");
-      });
-    });
-
-    it("renders both palette colors and recent colors when both are provided", () => {
-      render(
-        <ColorPicker
-          {...defaultProps}
-          paletteColors={paletteColors}
-          colorType="background"
-        />
-      );
-
-      expect(screen.getByText("Preset colors")).toBeInTheDocument();
-      expect(screen.getByText("Recent colors")).toBeInTheDocument();
-
-      // Should have 3 palette + 3 recent = 6 color buttons
-      const buttons = screen.getAllByRole("button");
-      expect(buttons.length).toBe(6);
-    });
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Select Primary (#ff0000)" })
+    ).toBeInTheDocument();
   });
 });

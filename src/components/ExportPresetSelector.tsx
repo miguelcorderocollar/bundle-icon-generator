@@ -32,6 +32,7 @@ export interface ExportPresetSelectorProps {
   onDeletePreset?: (id: string) => void;
   showLabel?: boolean;
   className?: string;
+  testId?: string;
 }
 
 export function ExportPresetSelector({
@@ -43,15 +44,16 @@ export function ExportPresetSelector({
   onDeletePreset,
   showLabel = true,
   className,
+  testId,
 }: ExportPresetSelectorProps) {
   const selectedPreset = presets.find((p) => p.id === selectedPresetId);
   const builtInPresets = presets.filter((p) => p.isBuiltIn);
   const customPresets = presets.filter((p) => !p.isBuiltIn);
 
   return (
-    <div className={className}>
+    <div className={className} data-testid={testId}>
       {showLabel && (
-        <div className="flex items-center gap-2 mb-2">
+        <div className="mb-2 flex items-center gap-2">
           <Package className="h-4 w-4 text-muted-foreground" />
           <Label className="text-sm font-medium">Export Preset</Label>
         </div>
@@ -59,7 +61,7 @@ export function ExportPresetSelector({
 
       <div className="flex items-center gap-2">
         <Select value={selectedPresetId} onValueChange={onSelectPreset}>
-          <SelectTrigger className="flex-1">
+          <SelectTrigger className="h-11 flex-1 rounded-lg border-border/70 bg-background/70">
             <SelectValue placeholder="Select preset...">
               {selectedPreset?.name}
             </SelectValue>
@@ -115,7 +117,7 @@ export function ExportPresetSelector({
                   variant="outline"
                   size="icon"
                   onClick={onCreatePreset}
-                  className="h-9 w-9"
+                  className="h-11 w-11 rounded-lg"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
@@ -133,7 +135,7 @@ export function ExportPresetSelector({
                       variant="outline"
                       size="icon"
                       onClick={() => onEditPreset(selectedPreset)}
-                      className="h-9 w-9"
+                      className="h-11 w-11 rounded-lg"
                     >
                       <Edit2 className="h-4 w-4" />
                     </Button>
@@ -149,7 +151,7 @@ export function ExportPresetSelector({
                       variant="outline"
                       size="icon"
                       onClick={() => onDeletePreset(selectedPreset.id)}
-                      className="h-9 w-9 text-destructive hover:text-destructive"
+                      className="h-11 w-11 rounded-lg text-destructive hover:text-destructive"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -161,13 +163,6 @@ export function ExportPresetSelector({
           )}
         </div>
       </div>
-
-      {/* Preset description */}
-      {selectedPreset && (
-        <p className="mt-2 text-xs text-muted-foreground">
-          {selectedPreset.description}
-        </p>
-      )}
     </div>
   );
 }

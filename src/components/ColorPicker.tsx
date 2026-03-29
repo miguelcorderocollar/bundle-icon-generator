@@ -1,8 +1,9 @@
 /**
- * Reusable color picker component with hex input and recent colors
+ * Reusable compact color picker with optional swatch tray
  */
 
 import * as React from "react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -11,19 +12,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Info } from "lucide-react";
+import { ChevronDown, ChevronUp, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   getRecentColors,
   addColorToHistory,
   type ColorType,
 } from "@/src/utils/color-history";
-import { useDebouncedValue } from "@/src/hooks/use-debounced-value";
+import { useDebouncedColorState } from "@/src/hooks/use-debounced-color-state";
 import type { ColorPaletteEntry } from "@/src/types/preset";
+
+const FULL_HEX_PATTERN = /^#[0-9A-Fa-f]{6}$/;
 
 export interface ColorPickerProps {
   id: string;
-  label: string;
+  label?: string;
   value: string;
   onChange: (value: string) => void;
   className?: string;
@@ -36,6 +39,17 @@ export interface ColorPickerProps {
    * Used in restricted mode to limit color choices.
    */
   restrictedMode?: boolean;
+  /**
+   * Controlled expansion state for the swatch tray.
+   * If undefined, expansion is managed internally.
+   */
+  expanded?: boolean;
+  /** Controlled expansion callback for grouped contexts. */
+  onExpandedChange?: (expanded: boolean) => void;
+}
+
+function colorInputValue(value: string): string {
+  return FULL_HEX_PATTERN.test(value) ? value : "#000000";
 }
 
 export function ColorPicker({
@@ -48,90 +62,121 @@ export function ColorPicker({
   isCustomSvg = false,
   paletteColors,
   restrictedMode = false,
+  expanded,
+  onExpandedChange,
 }: ColorPickerProps) {
   const [recentColors, setRecentColors] = React.useState<string[]>([]);
+  const [internalExpanded, setInternalExpanded] = React.useState(false);
 
-  // Local state for immediate UI updates
-  const [localValue, setLocalValue] = React.useState(value);
-  const lastPropValueRef = React.useRef(value);
+  const {
+    localValue,
+    debouncedValue,
+    setColorValue,
+    setHexValue,
+    commitValue,
+  } = useDebouncedColorState({
+    value,
+    onChange,
+  });
 
-  // Debounce value changes to avoid excessive re-renders while typing/adjusting
-  const debouncedLocalValue = useDebouncedValue(localValue, 300);
-
-  // Load recent colors on mount and when colorType changes
   React.useEffect(() => {
     if (colorType) {
       setRecentColors(getRecentColors(colorType));
     }
   }, [colorType]);
 
-  // Update parent when debounced value changes (but only if it's different from prop)
   React.useEffect(() => {
-    if (debouncedLocalValue !== lastPropValueRef.current) {
-      lastPropValueRef.current = debouncedLocalValue;
-      onChange(debouncedLocalValue);
-    }
-  }, [debouncedLocalValue, onChange]);
-
-  // Sync local state when prop changes externally
-  React.useEffect(() => {
-    if (value !== lastPropValueRef.current) {
-      lastPropValueRef.current = value;
-      setLocalValue(value);
-    }
-  }, [value]);
-
-  // Save color to history when debounced value changes (only if it's a valid hex color)
-  React.useEffect(() => {
-    if (
-      colorType &&
-      debouncedLocalValue &&
-      /^#[0-9A-Fa-f]{6}$/.test(debouncedLocalValue)
-    ) {
-      addColorToHistory(colorType, debouncedLocalValue);
-      // Refresh recent colors to show the updated list
+    if (colorType && debouncedValue && FULL_HEX_PATTERN.test(debouncedValue)) {
+      addColorToHistory(colorType, debouncedValue);
       setRecentColors(getRecentColors(colorType));
     }
-  }, [debouncedLocalValue, colorType]);
+  }, [debouncedValue, colorType]);
 
-  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalValue(e.target.value);
-  };
+  const hasPresetColors = Boolean(paletteColors?.length);
+  const hasRecentColors = Boolean(colorType && recentColors.length > 0);
+  const hasTrayContent = hasPresetColors || hasRecentColors;
+  const showSectionLabels = hasPresetColors && hasRecentColors;
 
-  const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const hex = e.target.value;
-    // Basic validation - allow partial input
-    if (hex === "" || /^#[0-9A-Fa-f]{0,6}$/.test(hex)) {
-      setLocalValue(hex);
+  const isExpanded = expanded ?? internalExpanded;
+  const setExpanded = React.useCallback(
+    (nextExpanded: boolean) => {
+      if (expanded === undefined) {
+        setInternalExpanded(nextExpanded);
+      }
+      onExpandedChange?.(nextExpanded);
+    },
+    [expanded, onExpandedChange]
+  );
+
+  React.useEffect(() => {
+    if (!hasTrayContent && internalExpanded && expanded === undefined) {
+      setInternalExpanded(false);
     }
+  }, [expanded, hasTrayContent, internalExpanded]);
+
+  const handleSwatchSelect = (color: string) => {
+    commitValue(color);
   };
 
-  const handleRecentColorClick = (color: string) => {
-    setLocalValue(color);
+  const renderLabelRow = () => {
+    if (!label && !isCustomSvg) {
+      return null;
+    }
+
+    return (
+      <div className="flex items-center gap-2">
+        {label ? <Label htmlFor={id}>{label}</Label> : null}
+        {isCustomSvg ? (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="size-3.5 text-muted-foreground" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="max-w-xs">
+                  Color customization replaces all{" "}
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">
+                    fill
+                  </code>{" "}
+                  and{" "}
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">
+                    stroke
+                  </code>{" "}
+                  colors in the SVG, except for{" "}
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">
+                    none
+                  </code>
+                  ,{" "}
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">
+                    transparent
+                  </code>
+                  , and gradient/pattern references.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : null}
+      </div>
+    );
   };
 
-  // Restricted mode: only show palette color swatches
-  if (restrictedMode && paletteColors && paletteColors.length > 0) {
+  const swatchBaseClass =
+    "size-7 rounded-md border border-input transition-colors hover:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1";
+
+  if (restrictedMode && hasPresetColors) {
     return (
       <div className={cn("space-y-2", className)}>
-        <Label>{label}</Label>
+        {renderLabelRow()}
         <TooltipProvider>
-          <div className="flex gap-2 flex-wrap">
-            {paletteColors.map((entry) => (
+          <div className="flex flex-wrap gap-1.5">
+            {paletteColors!.map((entry) => (
               <Tooltip key={entry.id}>
                 <TooltipTrigger asChild>
                   <button
                     type="button"
-                    onClick={() => {
-                      setLocalValue(entry.color);
-                      // In restricted mode, update immediately
-                      lastPropValueRef.current = entry.color;
-                      onChange(entry.color);
-                    }}
+                    onClick={() => handleSwatchSelect(entry.color)}
                     className={cn(
-                      "h-8 w-8 rounded-md border-2 transition-all",
-                      "hover:scale-110 hover:ring-2 hover:ring-ring",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      swatchBaseClass,
                       localValue.toLowerCase() === entry.color.toLowerCase() &&
                         "ring-2 ring-primary ring-offset-1"
                     )}
@@ -141,7 +186,7 @@ export function ColorPicker({
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>{entry.name}</p>
-                  <p className="text-xs text-muted-foreground font-mono">
+                  <p className="font-mono text-xs text-muted-foreground">
                     {entry.color}
                   </p>
                 </TooltipContent>
@@ -155,115 +200,109 @@ export function ColorPicker({
 
   return (
     <div className={cn("space-y-2", className)}>
+      {renderLabelRow()}
+
       <div className="flex items-center gap-2">
-        <Label htmlFor={id}>{label}</Label>
-        {isCustomSvg && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info className="size-3.5 text-muted-foreground" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="max-w-xs">
-                  Color customization replaces all{" "}
-                  <code className="text-xs bg-muted px-1 py-0.5 rounded">
-                    fill
-                  </code>{" "}
-                  and{" "}
-                  <code className="text-xs bg-muted px-1 py-0.5 rounded">
-                    stroke
-                  </code>{" "}
-                  colors in the SVG, except for{" "}
-                  <code className="text-xs bg-muted px-1 py-0.5 rounded">
-                    none
-                  </code>
-                  ,{" "}
-                  <code className="text-xs bg-muted px-1 py-0.5 rounded">
-                    transparent
-                  </code>
-                  , and gradient/pattern references.
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
-      </div>
-      <div className="flex gap-2">
         <input
           id={id}
           type="color"
-          value={localValue}
-          onChange={handleColorChange}
-          className="h-10 w-20 cursor-pointer rounded-md border"
+          value={colorInputValue(localValue)}
+          onChange={(e) => setColorValue(e.target.value)}
+          className="h-9 w-9 cursor-pointer rounded-md border border-input bg-background p-0"
+          aria-label={label || "Pick a color"}
         />
         <Input
           id={`${id}-hex`}
           value={localValue}
-          onChange={handleHexChange}
-          className="flex-1 font-mono"
+          onChange={(e) => setHexValue(e.target.value)}
+          className="h-9 flex-1 px-2.5 font-mono text-xs sm:text-sm"
           placeholder="#ffffff"
           maxLength={7}
         />
+        {hasTrayContent ? (
+          <Button
+            type="button"
+            variant="outline"
+            size="icon-sm"
+            onClick={() => setExpanded(!isExpanded)}
+            aria-expanded={isExpanded}
+            aria-controls={`${id}-swatch-tray`}
+            aria-label={
+              isExpanded ? "Hide color swatches" : "Show color swatches"
+            }
+          >
+            {isExpanded ? <ChevronUp /> : <ChevronDown />}
+          </Button>
+        ) : null}
       </div>
-      {paletteColors && paletteColors.length > 0 && (
-        <div className="space-y-1.5">
-          <p className="text-xs text-muted-foreground">Preset colors</p>
-          <TooltipProvider>
-            <div className="flex gap-2 flex-wrap">
-              {paletteColors.map((entry) => (
-                <Tooltip key={entry.id}>
-                  <TooltipTrigger asChild>
-                    <button
-                      type="button"
-                      onClick={() => handleRecentColorClick(entry.color)}
-                      className={cn(
-                        "h-8 w-8 rounded-md border-2 transition-all",
-                        "hover:scale-110 hover:ring-2 hover:ring-ring",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                        localValue.toLowerCase() ===
-                          entry.color.toLowerCase() &&
-                          "ring-2 ring-primary ring-offset-1"
-                      )}
-                      style={{ backgroundColor: entry.color }}
-                      aria-label={`Select ${entry.name} (${entry.color})`}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{entry.name}</p>
-                    <p className="text-xs text-muted-foreground font-mono">
-                      {entry.color}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              ))}
+
+      {hasTrayContent && isExpanded ? (
+        <div
+          id={`${id}-swatch-tray`}
+          className="space-y-2 rounded-md border border-border/70 bg-muted/20 p-2"
+        >
+          {hasPresetColors ? (
+            <div className="space-y-1.5">
+              {showSectionLabels ? (
+                <p className="text-xs text-muted-foreground">Preset colors</p>
+              ) : null}
+              <TooltipProvider>
+                <div className="flex flex-wrap gap-1.5">
+                  {paletteColors!.map((entry) => (
+                    <Tooltip key={entry.id}>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          onClick={() => handleSwatchSelect(entry.color)}
+                          className={cn(
+                            swatchBaseClass,
+                            localValue.toLowerCase() ===
+                              entry.color.toLowerCase() &&
+                              "ring-2 ring-primary ring-offset-1"
+                          )}
+                          style={{ backgroundColor: entry.color }}
+                          aria-label={`Select ${entry.name} (${entry.color})`}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{entry.name}</p>
+                        <p className="font-mono text-xs text-muted-foreground">
+                          {entry.color}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ))}
+                </div>
+              </TooltipProvider>
             </div>
-          </TooltipProvider>
+          ) : null}
+
+          {hasRecentColors ? (
+            <div className="space-y-1.5">
+              {showSectionLabels ? (
+                <p className="text-xs text-muted-foreground">Recent colors</p>
+              ) : null}
+              <div className="flex flex-wrap gap-1.5">
+                {recentColors.map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={() => handleSwatchSelect(color)}
+                    className={cn(
+                      swatchBaseClass,
+                      localValue.toLowerCase() === color.toLowerCase() &&
+                        "ring-2 ring-primary ring-offset-1"
+                    )}
+                    style={{ backgroundColor: color }}
+                    aria-label={`Select color ${color}`}
+                    title={color}
+                  />
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
-      )}
-      {colorType && recentColors.length > 0 && (
-        <div className="space-y-1.5">
-          <p className="text-xs text-muted-foreground">Recent colors</p>
-          <div className="flex gap-2 flex-wrap">
-            {recentColors.map((color) => (
-              <button
-                key={color}
-                type="button"
-                onClick={() => handleRecentColorClick(color)}
-                className={cn(
-                  "h-8 w-8 rounded-md border-2 transition-all",
-                  "hover:scale-110 hover:ring-2 hover:ring-ring",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  localValue.toLowerCase() === color.toLowerCase() &&
-                    "ring-2 ring-primary ring-offset-1"
-                )}
-                style={{ backgroundColor: color }}
-                aria-label={`Select color ${color}`}
-                title={color}
-              />
-            ))}
-          </div>
-        </div>
-      )}
+      ) : null}
     </div>
   );
 }

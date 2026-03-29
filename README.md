@@ -18,6 +18,7 @@ App Icon Generator is a local-first tool for crafting icon bundles for any platf
   - **Custom Presets**: Create and save your own export presets
 - **Customization Controls**:
   - Customize background and icon colors with color picker
+  - Configure rounded corners and border (color/width) for opaque exports
   - Advanced background modes:
     - Solid color backgrounds
     - Linear gradients with customizable stops and angles

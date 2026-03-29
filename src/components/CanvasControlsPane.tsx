@@ -14,9 +14,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import {
   Library,
   Layers,
@@ -25,18 +29,17 @@ import {
   Image as ImageIcon,
   PenTool,
   Settings,
-  AlertTriangle,
+  Palette,
+  Sparkles,
 } from "lucide-react";
 import { BackgroundControls } from "./BackgroundControls";
-import { ExportPresetSelector } from "./ExportPresetSelector";
-import { ExportPresetEditor } from "./ExportPresetEditor";
 import { StylePresetSelector } from "./StylePresetSelector";
 import { StylePresetEditor } from "./StylePresetEditor";
 import { PresetSettingsModal } from "./PresetSettingsModal";
 import { usePresets } from "@/src/hooks/use-presets";
 import { ICON_PACKS, type IconPack } from "@/src/constants/app";
 import type { BackgroundValue } from "@/src/utils/gradients";
-import type { ExportPreset, StylePreset } from "@/src/types/preset";
+import type { StylePreset } from "@/src/types/preset";
 import { useRestriction } from "@/src/contexts/RestrictionContext";
 import { RestrictedStyleSelector } from "./RestrictedStyleSelector";
 import type { RestrictedStyle } from "@/src/types/restriction";
@@ -62,15 +65,12 @@ export function CanvasControlsPane({
     isRestricted,
     allowedStyles,
     isIconPackAllowed,
-    allowedExportPresets,
     isLoading: isRestrictionLoading,
   } = useRestriction();
 
   // Presets hook
   const {
     exportPresets,
-    selectedExportPresetId,
-    selectExportPreset,
     createExportPreset,
     updateExportPreset,
     deleteExportPreset,
@@ -87,50 +87,14 @@ export function CanvasControlsPane({
     hasCustomStylePresets,
   } = usePresets();
 
-  // Export preset editor state
-  const [showExportEditor, setShowExportEditor] = React.useState(false);
-  const [editingExportPreset, setEditingExportPreset] = React.useState<
-    ExportPreset | undefined
-  >();
-
   // Style preset editor state
   const [showStyleEditor, setShowStyleEditor] = React.useState(false);
   const [editingStylePreset, setEditingStylePreset] = React.useState<
     StylePreset | undefined
   >();
-
-  // Determine the effective presets list (restricted or all)
-  const effectiveExportPresets = allowedExportPresets ?? exportPresets;
-
-  // Determine the actual selected preset from the effective list
-  const actualSelectedExportPreset = React.useMemo(() => {
-    return effectiveExportPresets.find((p) => p.id === selectedExportPresetId);
-  }, [effectiveExportPresets, selectedExportPresetId]);
-
-  // Check if selected export preset has SVG variants (canvas doesn't support SVG)
-  const hasSvgVariants = React.useMemo(() => {
-    if (!actualSelectedExportPreset) return false;
-    return actualSelectedExportPreset.variants.some((v) => v.format === "svg");
-  }, [actualSelectedExportPreset]);
-
-  // Auto-select first allowed export preset if current is not allowed
-  React.useEffect(() => {
-    if (!isRestricted || !allowedExportPresets) return;
-
-    // Check if current preset is in the allowed list
-    const isCurrentAllowed = allowedExportPresets.some(
-      (p) => p.id === selectedExportPresetId
-    );
-
-    if (!isCurrentAllowed && allowedExportPresets.length > 0) {
-      selectExportPreset(allowedExportPresets[0].id);
-    }
-  }, [
-    isRestricted,
-    allowedExportPresets,
-    selectedExportPresetId,
-    selectExportPreset,
-  ]);
+  const [openSection, setOpenSection] = React.useState<string | undefined>(
+    "colors"
+  );
 
   // Handle applying a style preset
   const handleApplyStylePreset = React.useCallback(
@@ -156,28 +120,6 @@ export function CanvasControlsPane({
     [onBackgroundColorChange, onApplyIconColor]
   );
 
-  // Export preset handlers
-  const handleCreateExportPreset = () => {
-    setEditingExportPreset(undefined);
-    setShowExportEditor(true);
-  };
-
-  const handleEditExportPreset = (preset: ExportPreset) => {
-    setEditingExportPreset(preset);
-    setShowExportEditor(true);
-  };
-
-  const handleSaveExportPreset = (
-    preset: Omit<ExportPreset, "id" | "isBuiltIn" | "createdAt">
-  ) => {
-    if (editingExportPreset) {
-      updateExportPreset(editingExportPreset.id, preset);
-    } else {
-      const newPreset = createExportPreset(preset);
-      selectExportPreset(newPreset.id);
-    }
-  };
-
   // Style preset handlers
   const handleCreateStylePreset = () => {
     setEditingStylePreset(undefined);
@@ -194,6 +136,12 @@ export function CanvasControlsPane({
   ) => {
     if (editingStylePreset) {
       updateStylePreset(editingStylePreset.id, preset);
+      if (selectedStylePresetId === editingStylePreset.id) {
+        handleApplyStylePreset({
+          ...editingStylePreset,
+          ...preset,
+        });
+      }
     } else {
       const newPreset = createStylePreset(preset);
       selectStylePreset(newPreset.id);
@@ -232,168 +180,144 @@ export function CanvasControlsPane({
         ) : null}
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-4 overflow-y-auto">
-        {/* Source Selector */}
         <div className="space-y-2">
-          <Label htmlFor="source-select">Source</Label>
-          <Select value={selectedPack} onValueChange={handlePackChange}>
-            <SelectTrigger id="source-select" className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {isIconPackAllowed(ICON_PACKS.ALL) && (
-                <SelectItem value={ICON_PACKS.ALL}>
-                  <span className="flex items-center gap-2">
-                    <Layers className="size-4" />
-                    All Icons
-                  </span>
-                </SelectItem>
-              )}
-              {isIconPackAllowed(ICON_PACKS.GARDEN) && (
-                <SelectItem value={ICON_PACKS.GARDEN}>
-                  <span className="flex items-center gap-2">
-                    <Library className="size-4" />
-                    Garden
-                  </span>
-                </SelectItem>
-              )}
-              {isIconPackAllowed(ICON_PACKS.FEATHER) && (
-                <SelectItem value={ICON_PACKS.FEATHER}>
-                  <span className="flex items-center gap-2">
-                    <Library className="size-4" />
-                    Feather
-                  </span>
-                </SelectItem>
-              )}
-              {isIconPackAllowed(ICON_PACKS.REMIXICON) && (
-                <SelectItem value={ICON_PACKS.REMIXICON}>
-                  <span className="flex items-center gap-2">
-                    <Library className="size-4" />
-                    RemixIcon
-                  </span>
-                </SelectItem>
-              )}
-              {isIconPackAllowed(ICON_PACKS.EMOJI) && (
-                <SelectItem value={ICON_PACKS.EMOJI}>
-                  <span className="flex items-center gap-2">
-                    <Smile className="size-4" />
-                    Emoji
-                  </span>
-                </SelectItem>
-              )}
-              {isIconPackAllowed(ICON_PACKS.CUSTOM_SVG) && (
-                <SelectItem value={ICON_PACKS.CUSTOM_SVG}>
-                  <span className="flex items-center gap-2">
-                    <Upload className="size-4" />
-                    Custom SVG
-                  </span>
-                </SelectItem>
-              )}
-              {isIconPackAllowed(ICON_PACKS.CUSTOM_IMAGE) && (
-                <SelectItem value={ICON_PACKS.CUSTOM_IMAGE}>
-                  <span className="flex items-center gap-2">
-                    <ImageIcon className="size-4" />
-                    Custom Image
-                  </span>
-                </SelectItem>
-              )}
-              {isIconPackAllowed(ICON_PACKS.CANVAS) && (
-                <SelectItem value={ICON_PACKS.CANVAS}>
-                  <span className="flex items-center gap-2">
-                    <PenTool className="size-4" />
-                    Canvas Editor
-                  </span>
-                </SelectItem>
-              )}
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground">
-            Select a different source to exit canvas mode.
-          </p>
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg bg-accent/55 p-2 text-accent-foreground">
+              <Layers className="h-4 w-4" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-sm font-semibold">Source</div>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="source-select">Source</Label>
+            <Select value={selectedPack} onValueChange={handlePackChange}>
+              <SelectTrigger id="source-select" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {isIconPackAllowed(ICON_PACKS.ALL) && (
+                  <SelectItem value={ICON_PACKS.ALL}>
+                    <span className="flex items-center gap-2">
+                      <Layers className="size-4" />
+                      All Icons
+                    </span>
+                  </SelectItem>
+                )}
+                {isIconPackAllowed(ICON_PACKS.GARDEN) && (
+                  <SelectItem value={ICON_PACKS.GARDEN}>
+                    <span className="flex items-center gap-2">
+                      <Library className="size-4" />
+                      Garden
+                    </span>
+                  </SelectItem>
+                )}
+                {isIconPackAllowed(ICON_PACKS.FEATHER) && (
+                  <SelectItem value={ICON_PACKS.FEATHER}>
+                    <span className="flex items-center gap-2">
+                      <Library className="size-4" />
+                      Feather
+                    </span>
+                  </SelectItem>
+                )}
+                {isIconPackAllowed(ICON_PACKS.REMIXICON) && (
+                  <SelectItem value={ICON_PACKS.REMIXICON}>
+                    <span className="flex items-center gap-2">
+                      <Library className="size-4" />
+                      RemixIcon
+                    </span>
+                  </SelectItem>
+                )}
+                {isIconPackAllowed(ICON_PACKS.EMOJI) && (
+                  <SelectItem value={ICON_PACKS.EMOJI}>
+                    <span className="flex items-center gap-2">
+                      <Smile className="size-4" />
+                      Emoji
+                    </span>
+                  </SelectItem>
+                )}
+                {isIconPackAllowed(ICON_PACKS.CUSTOM_SVG) && (
+                  <SelectItem value={ICON_PACKS.CUSTOM_SVG}>
+                    <span className="flex items-center gap-2">
+                      <Upload className="size-4" />
+                      Custom SVG
+                    </span>
+                  </SelectItem>
+                )}
+                {isIconPackAllowed(ICON_PACKS.CUSTOM_IMAGE) && (
+                  <SelectItem value={ICON_PACKS.CUSTOM_IMAGE}>
+                    <span className="flex items-center gap-2">
+                      <ImageIcon className="size-4" />
+                      Custom Image
+                    </span>
+                  </SelectItem>
+                )}
+                {isIconPackAllowed(ICON_PACKS.CANVAS) && (
+                  <SelectItem value={ICON_PACKS.CANVAS}>
+                    <span className="flex items-center gap-2">
+                      <PenTool className="size-4" />
+                      Canvas Editor
+                    </span>
+                  </SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Select a different source to exit canvas mode.
+            </p>
+          </div>
         </div>
 
-        <Separator />
+        <Accordion
+          type="single"
+          collapsible
+          value={openSection}
+          onValueChange={setOpenSection}
+          className="space-y-3"
+        >
+          {!isRestrictionLoading && !isRestricted ? (
+            <AccordionItem value="style">
+              <AccordionTrigger>
+                <AccordionSectionHeader icon={Sparkles} title="Style Presets" />
+              </AccordionTrigger>
+              <AccordionContent>
+                <StylePresetSelector
+                  presets={stylePresets}
+                  selectedPresetId={selectedStylePresetId}
+                  onSelectPreset={selectStylePreset}
+                  onApplyPreset={handleApplyStylePreset}
+                  onCreatePreset={handleCreateStylePreset}
+                  onEditPreset={handleEditStylePreset}
+                  onDeletePreset={deleteStylePreset}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          ) : null}
 
-        {/* Export Preset Selection */}
-        <ExportPresetSelector
-          presets={effectiveExportPresets}
-          selectedPresetId={selectedExportPresetId}
-          onSelectPreset={selectExportPreset}
-          onCreatePreset={
-            !isRestrictionLoading && !isRestricted
-              ? handleCreateExportPreset
-              : undefined
-          }
-          onEditPreset={
-            !isRestrictionLoading && !isRestricted
-              ? handleEditExportPreset
-              : undefined
-          }
-          onDeletePreset={
-            !isRestrictionLoading && !isRestricted
-              ? deleteExportPreset
-              : undefined
-          }
-        />
-
-        {/* SVG Warning for Canvas Mode */}
-        {hasSvgVariants && (
-          <Alert
-            variant="default"
-            className="border-amber-500/50 bg-amber-500/10"
-          >
-            <AlertTriangle className="h-4 w-4 text-amber-500" />
-            <AlertDescription className="text-xs">
-              Canvas mode only exports raster formats. SVG files in this preset
-              will be skipped.
-            </AlertDescription>
-          </Alert>
-        )}
-
-        <Separator />
-
-        {/* Style Controls - different UI for restricted vs normal mode */}
-        {!isRestrictionLoading && isRestricted ? (
-          /* Restricted mode - show simplified style selector with color palette */
-          <RestrictedStyleSelector
-            styles={allowedStyles}
-            currentBackground={backgroundColor}
-            currentIconColor="#ffffff"
-            onStyleSelect={handleApplyRestrictedStyle}
-            showColorPalette={true}
-            onColorSelect={onApplyIconColor}
-          />
-        ) : (
-          <>
-            {/* Style Preset Selection */}
-            <StylePresetSelector
-              presets={stylePresets}
-              selectedPresetId={selectedStylePresetId}
-              onSelectPreset={selectStylePreset}
-              onApplyPreset={handleApplyStylePreset}
-              onCreatePreset={handleCreateStylePreset}
-              onEditPreset={handleEditStylePreset}
-              onDeletePreset={deleteStylePreset}
-            />
-
-            <Separator />
-
-            {/* Background Controls */}
-            <BackgroundControls
-              value={backgroundColor}
-              onChange={onBackgroundColorChange}
-            />
-          </>
-        )}
+          <AccordionItem value="colors">
+            <AccordionTrigger>
+              <AccordionSectionHeader icon={Palette} title="Canvas Colors" />
+            </AccordionTrigger>
+            <AccordionContent>
+              {!isRestrictionLoading && isRestricted ? (
+                <RestrictedStyleSelector
+                  styles={allowedStyles}
+                  currentBackground={backgroundColor}
+                  currentIconColor="#ffffff"
+                  onStyleSelect={handleApplyRestrictedStyle}
+                  showColorPalette={true}
+                  onColorSelect={onApplyIconColor}
+                />
+              ) : (
+                <BackgroundControls
+                  value={backgroundColor}
+                  onChange={onBackgroundColorChange}
+                />
+              )}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </CardContent>
-
-      {/* Export Preset Editor Modal */}
-      <ExportPresetEditor
-        open={showExportEditor}
-        onOpenChange={setShowExportEditor}
-        preset={editingExportPreset}
-        onSave={handleSaveExportPreset}
-        mode={editingExportPreset ? "edit" : "create"}
-      />
 
       {/* Style Preset Editor Modal */}
       <StylePresetEditor
@@ -404,5 +328,26 @@ export function CanvasControlsPane({
         mode={editingStylePreset ? "edit" : "create"}
       />
     </Card>
+  );
+}
+
+interface AccordionSectionHeaderProps {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+}
+
+function AccordionSectionHeader({
+  icon: Icon,
+  title,
+}: AccordionSectionHeaderProps) {
+  return (
+    <div className="flex min-w-0 items-start gap-3">
+      <div className="rounded-lg bg-accent/55 p-2 text-accent-foreground">
+        <Icon className="h-4 w-4" />
+      </div>
+      <div className="min-w-0">
+        <div className="text-sm font-semibold">{title}</div>
+      </div>
+    </div>
   );
 }

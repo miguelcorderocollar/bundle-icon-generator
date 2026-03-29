@@ -4,7 +4,11 @@
 
 import * as React from "react";
 import type { AppLocation } from "@/src/types/app-location";
-import { ICON_PACKS, type IconPack } from "@/src/constants/app";
+import {
+  DEFAULT_APPEARANCE,
+  ICON_PACKS,
+  type IconPack,
+} from "@/src/constants/app";
 import { loadIconCatalog } from "@/src/utils/icon-catalog";
 import { getUserEmojis } from "@/src/utils/emoji-catalog";
 import {
@@ -24,6 +28,14 @@ export interface IconGeneratorState {
   iconSize: number;
   /** Icon size for SVG exports (top_bar, ticket_editor, nav_bar) */
   svgIconSize: number;
+  /** Corner radius percentage (0 = square, 100 = fully round) */
+  cornerRadius: number;
+  /** Whether border is enabled */
+  borderEnabled: boolean;
+  /** Border color */
+  borderColor: string;
+  /** Border width in normalized artboard units */
+  borderWidth: number;
 }
 
 export interface IconGeneratorActions {
@@ -35,6 +47,10 @@ export interface IconGeneratorActions {
   setSelectedPack: (pack: IconPack) => void;
   setIconSize: (size: number) => void;
   setSvgIconSize: (size: number) => void;
+  setCornerRadius: (radius: number) => void;
+  setBorderEnabled: (enabled: boolean) => void;
+  setBorderColor: (color: string) => void;
+  setBorderWidth: (width: number) => void;
 }
 
 const DEFAULT_STATE: IconGeneratorState = {
@@ -46,6 +62,10 @@ const DEFAULT_STATE: IconGeneratorState = {
   selectedPack: ICON_PACKS.ALL,
   iconSize: 123,
   svgIconSize: 123,
+  cornerRadius: DEFAULT_APPEARANCE.CORNER_RADIUS,
+  borderEnabled: DEFAULT_APPEARANCE.BORDER_ENABLED,
+  borderColor: DEFAULT_APPEARANCE.BORDER_COLOR,
+  borderWidth: DEFAULT_APPEARANCE.BORDER_WIDTH,
 };
 
 export function useIconGenerator() {
@@ -95,6 +115,24 @@ export function useIconGenerator() {
             persistedState.svgIconSize > 0
               ? persistedState.svgIconSize
               : DEFAULT_STATE.svgIconSize,
+          cornerRadius:
+            typeof persistedState.cornerRadius === "number" &&
+            persistedState.cornerRadius >= 0
+              ? persistedState.cornerRadius
+              : DEFAULT_STATE.cornerRadius,
+          borderEnabled:
+            typeof persistedState.borderEnabled === "boolean"
+              ? persistedState.borderEnabled
+              : DEFAULT_STATE.borderEnabled,
+          borderColor:
+            typeof persistedState.borderColor === "string"
+              ? persistedState.borderColor
+              : DEFAULT_STATE.borderColor,
+          borderWidth:
+            typeof persistedState.borderWidth === "number" &&
+            persistedState.borderWidth >= 0
+              ? persistedState.borderWidth
+              : DEFAULT_STATE.borderWidth,
         };
         hasPersistedIcon = !!restoredState.selectedIconId;
         setState(restoredState);
@@ -140,6 +178,10 @@ export function useIconGenerator() {
       selectedPack: state.selectedPack,
       iconSize: state.iconSize,
       svgIconSize: state.svgIconSize,
+      cornerRadius: state.cornerRadius,
+      borderEnabled: state.borderEnabled,
+      borderColor: state.borderColor,
+      borderWidth: state.borderWidth,
     });
   }, [
     hasInitialized,
@@ -151,6 +193,10 @@ export function useIconGenerator() {
     state.selectedPack,
     state.iconSize,
     state.svgIconSize,
+    state.cornerRadius,
+    state.borderEnabled,
+    state.borderColor,
+    state.borderWidth,
   ]);
 
   const actions: IconGeneratorActions = React.useMemo(
@@ -170,6 +216,14 @@ export function useIconGenerator() {
       setIconSize: (size) => setState((prev) => ({ ...prev, iconSize: size })),
       setSvgIconSize: (size) =>
         setState((prev) => ({ ...prev, svgIconSize: size })),
+      setCornerRadius: (radius) =>
+        setState((prev) => ({ ...prev, cornerRadius: radius })),
+      setBorderEnabled: (enabled) =>
+        setState((prev) => ({ ...prev, borderEnabled: enabled })),
+      setBorderColor: (color) =>
+        setState((prev) => ({ ...prev, borderColor: color })),
+      setBorderWidth: (width) =>
+        setState((prev) => ({ ...prev, borderWidth: width })),
     }),
     []
   );

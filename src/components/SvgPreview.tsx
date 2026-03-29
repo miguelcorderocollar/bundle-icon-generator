@@ -78,6 +78,10 @@ export function SvgPreview({ svgFiles, iconId, state }: SvgPreviewProps) {
             padding,
             outputSize: previewSize, // Use 64px output for preview
             zendeskLocationMode: isZendeskLocationSvg,
+            cornerRadius: state.cornerRadius,
+            borderEnabled: state.borderEnabled,
+            borderColor: state.borderColor,
+            borderWidth: state.borderWidth,
           });
 
           const blob = new Blob([svgString], { type: "image/svg+xml" });

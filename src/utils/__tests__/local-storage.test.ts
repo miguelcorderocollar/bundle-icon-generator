@@ -171,6 +171,10 @@ describe("local-storage", () => {
       selectedPack: "zendesk",
       iconSize: 100,
       svgIconSize: 80,
+      cornerRadius: 12,
+      borderEnabled: true,
+      borderColor: "#00ff00",
+      borderWidth: 8,
     };
 
     describe("saveGeneratorState", () => {

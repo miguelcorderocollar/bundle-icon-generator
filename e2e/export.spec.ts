@@ -111,7 +111,10 @@ test.describe("Export Flow", () => {
   });
 
   test("favicon bundle shows an ico preview thumbnail", async ({ page }) => {
-    const presetSelector = page.getByRole("combobox").nth(2);
+    const presetSelector = page
+      .getByTestId("preview-export-preset")
+      .getByRole("combobox")
+      .first();
     await expect(presetSelector).toBeVisible();
 
     await presetSelector.click();

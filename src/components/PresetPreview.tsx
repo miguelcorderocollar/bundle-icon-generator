@@ -159,6 +159,10 @@ export function PresetPreview({
                 padding,
                 outputSize: displaySize,
                 zendeskLocationMode: isZendeskLocationSvg,
+                cornerRadius: state.cornerRadius,
+                borderEnabled: state.borderEnabled,
+                borderColor: state.borderColor,
+                borderWidth: state.borderWidth,
               });
               const blob = new Blob([svgString], { type: "image/svg+xml" });
               url = URL.createObjectURL(blob);
@@ -171,6 +175,10 @@ export function PresetPreview({
                 size: state.iconSize,
                 width: variant.width,
                 height: variant.height,
+                cornerRadius: state.cornerRadius,
+                borderEnabled: state.borderEnabled,
+                borderColor: state.borderColor,
+                borderWidth: state.borderWidth,
               });
               url = URL.createObjectURL(blob);
             } else if (isCustomImg && imageDataUrl && iconId) {
@@ -188,6 +196,10 @@ export function PresetPreview({
                 height: variant.height,
                 colorOverride,
                 originalColor,
+                cornerRadius: state.cornerRadius,
+                borderEnabled: state.borderEnabled,
+                borderColor: state.borderColor,
+                borderWidth: state.borderWidth,
               });
               url = URL.createObjectURL(blob);
             } else if (icon) {
@@ -200,6 +212,10 @@ export function PresetPreview({
                   size: state.iconSize,
                   width: variant.width,
                   height: variant.height,
+                  cornerRadius: state.cornerRadius,
+                  borderEnabled: state.borderEnabled,
+                  borderColor: state.borderColor,
+                  borderWidth: state.borderWidth,
                 });
                 url = URL.createObjectURL(blob);
               } else if (
@@ -215,6 +231,10 @@ export function PresetPreview({
                   height: variant.height,
                   format: variant.format,
                   quality: variant.quality,
+                  cornerRadius: state.cornerRadius,
+                  borderEnabled: state.borderEnabled,
+                  borderColor: state.borderColor,
+                  borderWidth: state.borderWidth,
                 });
                 url = URL.createObjectURL(blob);
               }

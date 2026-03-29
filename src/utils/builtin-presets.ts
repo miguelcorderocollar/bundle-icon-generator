@@ -3,11 +3,19 @@
  */
 
 import type { ExportPreset, StylePreset } from "@/src/types/preset";
+import { DEFAULT_APPEARANCE } from "@/src/constants/app";
 import {
   GRADIENT_PRESETS,
   KALE_COLORS,
   createDefaultLinearGradient,
 } from "./gradients";
+
+const DEFAULT_STYLE_APPEARANCE = {
+  cornerRadius: DEFAULT_APPEARANCE.CORNER_RADIUS,
+  borderEnabled: DEFAULT_APPEARANCE.BORDER_ENABLED,
+  borderColor: DEFAULT_APPEARANCE.BORDER_COLOR,
+  borderWidth: DEFAULT_APPEARANCE.BORDER_WIDTH,
+} as const;
 
 /**
  * Built-in export presets for various platforms
@@ -334,6 +342,7 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     name: "Zendesk Kale",
     backgroundColor: KALE_COLORS["900"],
     iconColor: "#ffffff",
+    ...DEFAULT_STYLE_APPEARANCE,
     isBuiltIn: true,
     colorPalette: [
       { id: "kale-primary", name: "Primary", color: "#ffffff" },
@@ -347,6 +356,7 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     name: "Dark Mode",
     backgroundColor: "#1e1e1e",
     iconColor: "#ffffff",
+    ...DEFAULT_STYLE_APPEARANCE,
     isBuiltIn: true,
     colorPalette: [
       { id: "dark-primary", name: "Primary", color: "#ffffff" },
@@ -360,6 +370,7 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     name: "Light Mode",
     backgroundColor: "#ffffff",
     iconColor: "#000000",
+    ...DEFAULT_STYLE_APPEARANCE,
     isBuiltIn: true,
     colorPalette: [
       { id: "light-primary", name: "Primary", color: "#000000" },
@@ -373,6 +384,7 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     name: "Ocean Gradient",
     backgroundColor: GRADIENT_PRESETS["ocean-blue"],
     iconColor: "#ffffff",
+    ...DEFAULT_STYLE_APPEARANCE,
     isBuiltIn: true,
     colorPalette: [
       { id: "ocean-primary", name: "Primary", color: "#ffffff" },
@@ -386,6 +398,7 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     name: "Sunset Gradient",
     backgroundColor: GRADIENT_PRESETS["warm-sunset"],
     iconColor: "#ffffff",
+    ...DEFAULT_STYLE_APPEARANCE,
     isBuiltIn: true,
     colorPalette: [
       { id: "sunset-primary", name: "Primary", color: "#ffffff" },
@@ -399,6 +412,7 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     name: "Forest Gradient",
     backgroundColor: GRADIENT_PRESETS["forest-green"],
     iconColor: "#ffffff",
+    ...DEFAULT_STYLE_APPEARANCE,
     isBuiltIn: true,
     colorPalette: [
       { id: "forest-primary", name: "Primary", color: "#ffffff" },
@@ -412,6 +426,7 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     name: "Purple Dream",
     backgroundColor: GRADIENT_PRESETS["purple-dream"],
     iconColor: "#ffffff",
+    ...DEFAULT_STYLE_APPEARANCE,
     isBuiltIn: true,
     colorPalette: [
       { id: "purple-primary", name: "Primary", color: "#ffffff" },
@@ -425,6 +440,7 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     name: "Rose Pink",
     backgroundColor: GRADIENT_PRESETS["rose-pink"],
     iconColor: "#ffffff",
+    ...DEFAULT_STYLE_APPEARANCE,
     isBuiltIn: true,
     colorPalette: [
       { id: "rose-primary", name: "Primary", color: "#ffffff" },
@@ -438,6 +454,7 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     name: "Kale Gradient",
     backgroundColor: createDefaultLinearGradient(),
     iconColor: "#ffffff",
+    ...DEFAULT_STYLE_APPEARANCE,
     isBuiltIn: true,
     colorPalette: [
       { id: "kaleg-primary", name: "Primary", color: "#ffffff" },
@@ -451,6 +468,7 @@ export const BUILTIN_STYLE_PRESETS: StylePreset[] = [
     name: "Midnight",
     backgroundColor: GRADIENT_PRESETS["dark-night"],
     iconColor: "#ffffff",
+    ...DEFAULT_STYLE_APPEARANCE,
     isBuiltIn: true,
     colorPalette: [
       { id: "midnight-primary", name: "Primary", color: "#ffffff" },

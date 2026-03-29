@@ -91,13 +91,18 @@ function getClipboardTargetVariant(
     return null;
   }
 
-  const pngVariants = rasterVariants.filter((variant) => variant.format === "png");
-  const preferredVariants = pngVariants.length > 0 ? pngVariants : rasterVariants;
+  const pngVariants = rasterVariants.filter(
+    (variant) => variant.format === "png"
+  );
+  const preferredVariants =
+    pngVariants.length > 0 ? pngVariants : rasterVariants;
 
   return preferredVariants
     .slice()
     .sort(
-      (a, b) => b.width * b.height - a.width * a.height || a.filename.localeCompare(b.filename)
+      (a, b) =>
+        b.width * b.height - a.width * a.height ||
+        a.filename.localeCompare(b.filename)
     )[0];
 }
 
@@ -266,7 +271,9 @@ export async function generateClipboardPng(
   const variant = getClipboardTargetVariant(exportableVariants);
 
   if (!variant) {
-    throw new Error("Clipboard copy requires at least one raster export variant");
+    throw new Error(
+      "Clipboard copy requires at least one raster export variant"
+    );
   }
 
   if (state.selectedPack === ICON_PACKS.CANVAS) {
@@ -396,6 +403,10 @@ export async function generateExportZip(
         maxFileSize: variant.maxSize ? variant.maxSize * 1024 : undefined,
         colorOverride,
         originalColor,
+        cornerRadius: state.cornerRadius,
+        borderEnabled: state.borderEnabled,
+        borderColor: state.borderColor,
+        borderWidth: state.borderWidth,
       });
       zip.file(variant.filename, blob);
       filenames.push(variant.filename);
@@ -410,6 +421,10 @@ export async function generateExportZip(
         backgroundColor: state.backgroundColor,
         iconColor: state.iconColor,
         iconSize: state.iconSize,
+        cornerRadius: state.cornerRadius,
+        borderEnabled: state.borderEnabled,
+        borderColor: state.borderColor,
+        borderWidth: state.borderWidth,
       },
       locations: selectedLocations,
       variants: filenames,
@@ -452,6 +467,10 @@ export async function generateExportZip(
       backgroundColor: state.backgroundColor,
       iconColor: state.iconColor,
       iconSize: state.iconSize,
+      cornerRadius: state.cornerRadius,
+      borderEnabled: state.borderEnabled,
+      borderColor: state.borderColor,
+      borderWidth: state.borderWidth,
     },
     locations: selectedLocations,
     variants: filenames,

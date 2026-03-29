@@ -22,6 +22,9 @@ export function LinearGradientEditor({
 }: LinearGradientEditorProps) {
   // Local state for immediate UI updates
   const [localGradient, setLocalGradient] = React.useState(gradient);
+  const [expandedPickerId, setExpandedPickerId] = React.useState<string | null>(
+    null
+  );
   const lastPropGradientRef = React.useRef(gradient);
 
   // Debounce gradient changes to avoid excessive re-renders while adjusting
@@ -83,26 +86,34 @@ export function LinearGradientEditor({
 
         <div className="space-y-3">
           <Label className="text-xs">Colors</Label>
-          {localGradient.stops.map((stop, index) => (
-            <div key={index} className="space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground min-w-[60px]">
-                  {index === 0
-                    ? "From"
-                    : index === localGradient.stops.length - 1
-                      ? "To"
-                      : `Stop ${index + 1}`}
-                </span>
-                <ColorPicker
-                  id={`gradient-stop-${index}`}
-                  label=""
-                  value={stop.color}
-                  onChange={(color) => handleStopColorChange(index, color)}
-                  colorType="background"
-                />
+          {localGradient.stops.map((stop, index) => {
+            const pickerId = `gradient-stop-${index}`;
+
+            return (
+              <div key={index} className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground min-w-[60px]">
+                    {index === 0
+                      ? "From"
+                      : index === localGradient.stops.length - 1
+                        ? "To"
+                        : `Stop ${index + 1}`}
+                  </span>
+                  <ColorPicker
+                    id={pickerId}
+                    value={stop.color}
+                    onChange={(color) => handleStopColorChange(index, color)}
+                    colorType="background"
+                    className="flex-1"
+                    expanded={expandedPickerId === pickerId}
+                    onExpandedChange={(expanded) => {
+                      setExpandedPickerId(expanded ? pickerId : null);
+                    }}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

@@ -128,6 +128,15 @@ describe("renderer", () => {
       const contextMock = {
         fillStyle: "",
         fillRect: vi.fn(),
+        beginPath: vi.fn(),
+        moveTo: vi.fn(),
+        lineTo: vi.fn(),
+        quadraticCurveTo: vi.fn(),
+        closePath: vi.fn(),
+        fill: vi.fn(),
+        stroke: vi.fn(),
+        lineWidth: 0,
+        strokeStyle: "",
         drawImage: vi.fn(),
       } as unknown as CanvasRenderingContext2D;
 
@@ -338,6 +347,53 @@ describe("renderer", () => {
       expect(result).not.toContain('fill="#ff0000"');
       // Should preserve currentColor
       expect(result).toContain("currentColor");
+    });
+
+    it("renders rounded background and inset border", () => {
+      const icon = createMockIcon(
+        '<svg viewBox="0 0 24 24"><path d="M0 0"/></svg>'
+      );
+      const options: SvgRenderOptions = {
+        icon,
+        backgroundColor: "#000000",
+        iconColor: "#ffffff",
+        size: 320,
+        cornerRadius: 20,
+        borderEnabled: true,
+        borderColor: "#ff0000",
+        borderWidth: 10,
+      };
+
+      const result = renderSvg(options);
+
+      expect(result).toContain('rx="32"');
+      expect(result).toContain('stroke="#ff0000"');
+      expect(result).toContain('stroke-width="10"');
+      expect(result).toContain('x="5"');
+      expect(result).toContain('width="310"');
+    });
+
+    it("suppresses border and rounding in zendeskLocationMode", () => {
+      const icon = createMockIcon(
+        '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M0 0"/></svg>'
+      );
+      const options: SvgRenderOptions = {
+        icon,
+        backgroundColor: "#000000",
+        iconColor: "#ffffff",
+        size: 320,
+        zendeskLocationMode: true,
+        cornerRadius: 100,
+        borderEnabled: true,
+        borderColor: "#ff0000",
+        borderWidth: 8,
+      };
+
+      const result = renderSvg(options);
+
+      expect(result).toContain("currentColor");
+      expect(result).not.toContain('stroke="#ff0000"');
+      expect(result).not.toContain('rx="30"');
     });
 
     it("normalizes hardcoded paint to currentColor in zendeskLocationMode", () => {
