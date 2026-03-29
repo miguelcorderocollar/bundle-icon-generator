@@ -21,6 +21,8 @@ Use this skill to generate icon assets from the service and convert generated SV
   - `backgroundColor` (hex or gradient object).
   - `iconColor` (hex).
   - Optional sizing: `size`, `padding`, `outputSize`.
+  - Optional shape controls: `cornerRadius`, `borderEnabled`, `borderColor`, `borderWidth`.
+  - Optional mode flag: `zendeskLocationMode` (location SVG mode ignores background shape/border).
 
 ## Workflow
 
@@ -83,7 +85,11 @@ curl -X POST "https://bundle-icon-generator.vercel.app/api/generate?format=svg" 
     "iconId":"feather-star",
     "backgroundColor":"#1a1a2e",
     "iconColor":"#eaf6ff",
-    "size":128
+    "size":128,
+    "cornerRadius":20,
+    "borderEnabled":true,
+    "borderColor":"#ffffff",
+    "borderWidth":6
   }'
 ```
 

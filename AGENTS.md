@@ -25,6 +25,11 @@ This document provides essential context and guidelines for AI coding assistants
 
 **Before committing or considering work complete, you MUST run:**
 
+Exception for text-only documentation changes (for example `.md` files with no code/config changes):
+
+- You can skip `build`, `lint`, `test:run`, and `test:e2e`
+- Still run `bun run format` to keep docs formatting consistent
+
 ```bash
 # 1. Build the application to catch TypeScript and compilation errors
 bun run build
@@ -61,6 +66,17 @@ bun run verify
 # Or manually:
 bun run build && bun run lint && bun run test:run
 ```
+
+### Generation API/Docs Sync Checklist
+
+When a change affects generation behavior or payload fields (for example: color, gradient, size, padding, corner radius, border, location mode), update all relevant API and documentation surfaces in the same PR:
+
+- `app/api/generate/route.ts` (request validation + response shape)
+- `app/api/__tests__/routes.test.ts` (route contract assertions)
+- `docs/api-reference.md` (canonical API docs)
+- `app/api-docs.md/route.ts` and `app/api-docs/page.tsx` (served docs surfaces, if behavior/wording changes)
+- `.agents/skills/icon-bundle-generator/SKILL.md` and `.agents/skills/icon-bundle-generator/references/api-reference.md` (agent skill parity)
+- Any other user-facing docs that mention generation inputs/outputs (for example `README.md`)
 
 ## Development Environment Setup
 
