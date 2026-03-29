@@ -141,6 +141,17 @@ export function PresetPreview({
               });
               const blob = new Blob([svgString], { type: "image/svg+xml" });
               url = URL.createObjectURL(blob);
+            } else if (variant.format === "ico" && icon) {
+              // ICO files are multi-size containers; use a PNG thumbnail for preview.
+              const blob = await renderPng({
+                icon,
+                backgroundColor: state.backgroundColor,
+                iconColor: state.iconColor,
+                size: state.iconSize,
+                width: variant.width,
+                height: variant.height,
+              });
+              url = URL.createObjectURL(blob);
             } else if (isCustomImg && imageDataUrl && iconId) {
               // Get color override if available
               const colorOverride = getColorOverride(iconId);
