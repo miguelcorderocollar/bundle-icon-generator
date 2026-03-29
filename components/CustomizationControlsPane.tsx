@@ -37,6 +37,8 @@ import { RestrictedStyleSelector } from "@/src/components/RestrictedStyleSelecto
 import type { RestrictedStyle } from "@/src/types/restriction";
 import { CustomImageColorOverride } from "@/src/components/CustomImageColorOverride";
 
+const SLIDER_DEBOUNCE_DELAY_MS = 300;
+
 export interface CustomizationControlsPaneProps {
   backgroundColor?: BackgroundValue;
   onBackgroundColorChange?: (color: BackgroundValue) => void;
@@ -219,13 +221,36 @@ export function CustomizationControlsPane({
 
   // Debounce icon size changes to prevent lag while dragging slider
   const [localIconSize, setLocalIconSize] = React.useState(iconSize);
-  const debouncedIconSize = useDebouncedValue(localIconSize, 300);
+  const debouncedIconSize = useDebouncedValue(
+    localIconSize,
+    SLIDER_DEBOUNCE_DELAY_MS
+  );
   const lastPropSizeRef = React.useRef(iconSize);
 
   // Debounce SVG icon size changes
   const [localSvgIconSize, setLocalSvgIconSize] = React.useState(svgIconSize);
-  const debouncedSvgIconSize = useDebouncedValue(localSvgIconSize, 300);
+  const debouncedSvgIconSize = useDebouncedValue(
+    localSvgIconSize,
+    SLIDER_DEBOUNCE_DELAY_MS
+  );
   const lastPropSvgSizeRef = React.useRef(svgIconSize);
+
+  // Debounce corner radius changes
+  const [localCornerRadius, setLocalCornerRadius] =
+    React.useState(cornerRadius);
+  const debouncedCornerRadius = useDebouncedValue(
+    localCornerRadius,
+    SLIDER_DEBOUNCE_DELAY_MS
+  );
+  const lastPropCornerRadiusRef = React.useRef(cornerRadius);
+
+  // Debounce border width changes
+  const [localBorderWidth, setLocalBorderWidth] = React.useState(borderWidth);
+  const debouncedBorderWidth = useDebouncedValue(
+    localBorderWidth,
+    SLIDER_DEBOUNCE_DELAY_MS
+  );
+  const lastPropBorderWidthRef = React.useRef(borderWidth);
 
   // Update parent when debounced value changes
   React.useEffect(() => {
@@ -245,6 +270,26 @@ export function CustomizationControlsPane({
     }
   }, [debouncedSvgIconSize, onSvgIconSizeChange]);
 
+  React.useEffect(() => {
+    if (
+      onCornerRadiusChange &&
+      debouncedCornerRadius !== lastPropCornerRadiusRef.current
+    ) {
+      lastPropCornerRadiusRef.current = debouncedCornerRadius;
+      onCornerRadiusChange(debouncedCornerRadius);
+    }
+  }, [debouncedCornerRadius, onCornerRadiusChange]);
+
+  React.useEffect(() => {
+    if (
+      onBorderWidthChange &&
+      debouncedBorderWidth !== lastPropBorderWidthRef.current
+    ) {
+      lastPropBorderWidthRef.current = debouncedBorderWidth;
+      onBorderWidthChange(debouncedBorderWidth);
+    }
+  }, [debouncedBorderWidth, onBorderWidthChange]);
+
   // Sync local state when prop changes externally
   React.useEffect(() => {
     if (iconSize !== lastPropSizeRef.current) {
@@ -260,12 +305,34 @@ export function CustomizationControlsPane({
     }
   }, [svgIconSize]);
 
+  React.useEffect(() => {
+    if (cornerRadius !== lastPropCornerRadiusRef.current) {
+      lastPropCornerRadiusRef.current = cornerRadius;
+      setLocalCornerRadius(cornerRadius);
+    }
+  }, [cornerRadius]);
+
+  React.useEffect(() => {
+    if (borderWidth !== lastPropBorderWidthRef.current) {
+      lastPropBorderWidthRef.current = borderWidth;
+      setLocalBorderWidth(borderWidth);
+    }
+  }, [borderWidth]);
+
   const handleIconSizeChange = (value: number) => {
     setLocalIconSize(value);
   };
 
   const handleSvgIconSizeChange = (value: number) => {
     setLocalSvgIconSize(value);
+  };
+
+  const handleCornerRadiusChange = (value: number) => {
+    setLocalCornerRadius(value);
+  };
+
+  const handleBorderWidthChange = (value: number) => {
+    setLocalBorderWidth(value);
   };
 
   return (
@@ -383,8 +450,8 @@ export function CustomizationControlsPane({
                   <EffectSlider
                     id="corner-radius"
                     label="Corner Radius"
-                    value={cornerRadius}
-                    onChange={onCornerRadiusChange}
+                    value={localCornerRadius}
+                    onChange={handleCornerRadiusChange}
                     min={0}
                     max={100}
                     step={1}
@@ -409,8 +476,8 @@ export function CustomizationControlsPane({
                     <EffectSlider
                       id="border-width"
                       label="Border Width"
-                      value={borderWidth}
-                      onChange={onBorderWidthChange}
+                      value={localBorderWidth}
+                      onChange={handleBorderWidthChange}
                       min={0}
                       max={40}
                       step={1}
