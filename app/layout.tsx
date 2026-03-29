@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/src/components/ThemeProvider";
 import { RestrictionProvider } from "@/src/contexts/RestrictionContext";
+import { resolveBaseUrl } from "@/src/utils/base-url";
 import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
@@ -14,6 +15,8 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+const baseUrl = resolveBaseUrl();
 
 export const metadata: Metadata = {
   title: {
@@ -41,11 +44,9 @@ export const metadata: Metadata = {
   ],
   creator: "Miguel Cordero Collar",
   publisher: "Miguel Cordero Collar",
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-  ),
+  metadataBase: new URL(baseUrl),
   alternates: {
-    canonical: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
+    canonical: baseUrl,
   },
   formatDetection: {
     telephone: false,
@@ -57,7 +58,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
+    url: baseUrl,
     title: "App Icon Generator",
     description:
       "Generate icon bundles for any platform. A local-first tool for crafting app icons with customizable colors, effects, and one-click export.",
@@ -142,8 +143,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",

@@ -18,6 +18,7 @@ import {
   CONFIG_URL_PARAM,
 } from "@/src/utils/restriction-codec";
 import type { StylePreset, ExportPreset } from "@/src/types/preset";
+import { resolveBaseUrl } from "@/src/utils/base-url";
 
 export type ShareMode = "restricted" | "import";
 
@@ -43,11 +44,7 @@ export interface UseShareConfigReturn {
  */
 function generateShareUrl(config: RestrictionConfig, mode: ShareMode): string {
   try {
-    const baseUrl =
-      typeof window !== "undefined"
-        ? window.location.origin
-        : "http://localhost:3000";
-    const url = new URL(baseUrl);
+    const url = new URL(resolveBaseUrl());
 
     if (mode === "restricted") {
       // Restricted mode: encode full restriction config
