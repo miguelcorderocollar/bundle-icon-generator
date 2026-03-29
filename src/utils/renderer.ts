@@ -12,6 +12,10 @@ import {
   createCanvasGradient,
 } from "./gradients";
 import { compressToMaxSize } from "./image-compression";
+import {
+  isZendeskLocationSvgFile,
+  toZendeskStaticSvgSource,
+} from "./zendesk-svg";
 
 /**
  * Parse hex color to RGB components
@@ -375,6 +379,10 @@ export function renderSvg(options: SvgRenderOptions): string {
     zendeskLocationMode = false,
   } = options;
 
+  const svgSource = zendeskLocationMode
+    ? toZendeskStaticSvgSource(icon.svg)
+    : icon.svg;
+
   const {
     viewBox,
     content,
@@ -384,7 +392,7 @@ export function renderSvg(options: SvgRenderOptions): string {
     inheritedStrokeLinecap,
     inheritedStrokeLinejoin,
     isRasterized,
-  } = parseSvg(icon.svg);
+  } = parseSvg(svgSource);
 
   // Skip color transformation for:
   // - Rasterized icons (emojis)
@@ -1080,16 +1088,6 @@ export async function renderPngFromImage(
 }
 
 /**
- * Zendesk location SVG filenames that require transparent backgrounds
- * and no hardcoded fill colors (uses currentColor for Zendesk CSS styling)
- */
-const ZENDESK_LOCATION_SVG_FILES = [
-  "icon_top_bar.svg",
-  "icon_ticket_editor.svg",
-  "icon_nav_bar.svg",
-];
-
-/**
  * Supported export format type
  */
 export type ExportFormatType = "png" | "jpeg" | "webp" | "svg" | "ico";
@@ -1128,9 +1126,7 @@ export async function generateExportAssets(
 
       // Check if this is a Zendesk location SVG (top_bar, ticket_editor, nav_bar)
       // These require transparent backgrounds and no hardcoded fill colors
-      const isZendeskLocationSvg = ZENDESK_LOCATION_SVG_FILES.includes(
-        variant.filename
-      );
+      const isZendeskLocationSvg = isZendeskLocationSvgFile(variant.filename);
 
       // Use svgIconSize for SVG exports to control icon density within the artboard
       // Map svgIconSize (48-300px) to padding (6px to -6px range)
