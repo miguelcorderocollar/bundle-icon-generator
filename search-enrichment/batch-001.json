@@ -1,0 +1,1002 @@
+[
+  {
+    "id": "zendesk-garden-123-fill-16",
+    "description": "Filled digits one two three icon.",
+    "synonyms": ["123", "numbers", "numeric"]
+  },
+  {
+    "id": "zendesk-garden-123-stroke-16",
+    "description": "Outline digits one two three icon.",
+    "synonyms": ["123", "numbers", "numeric"]
+  },
+  {
+    "id": "zendesk-garden-adjust-fill-16",
+    "description": "Filled adjustment sliders control icon.",
+    "synonyms": ["adjust", "sliders", "settings"]
+  },
+  {
+    "id": "zendesk-garden-adjust-stroke-16",
+    "description": "Outline adjustment sliders control icon.",
+    "synonyms": ["adjust", "sliders", "settings"]
+  },
+  {
+    "id": "zendesk-garden-alert-error-fill-16",
+    "description": "Filled alert error circle icon.",
+    "synonyms": ["alert error", "error", "warning circle"]
+  },
+  {
+    "id": "zendesk-garden-alert-error-stroke-16",
+    "description": "Outline alert error circle icon.",
+    "synonyms": ["alert error", "error", "warning circle"]
+  },
+  {
+    "id": "zendesk-garden-alert-warning-fill-16",
+    "description": "Filled alert warning circle icon.",
+    "synonyms": ["alert warning", "warning", "alert circle"]
+  },
+  {
+    "id": "zendesk-garden-alert-warning-stroke-16",
+    "description": "Outline alert warning circle icon.",
+    "synonyms": ["alert warning", "warning", "alert circle"]
+  },
+  {
+    "id": "zendesk-garden-align-center-fill-16",
+    "description": "Filled center-aligned text lines icon.",
+    "synonyms": ["align center", "center align", "text alignment"]
+  },
+  {
+    "id": "zendesk-garden-align-center-stroke-16",
+    "description": "Outline center-aligned text lines icon.",
+    "synonyms": ["align center", "center align", "text alignment"]
+  },
+  {
+    "id": "zendesk-garden-align-justify-fill-16",
+    "description": "Filled justified text lines icon.",
+    "synonyms": ["align justify", "justify text", "text alignment"]
+  },
+  {
+    "id": "zendesk-garden-align-justify-stroke-16",
+    "description": "Outline justified text lines icon.",
+    "synonyms": ["align justify", "justify text", "text alignment"]
+  },
+  {
+    "id": "zendesk-garden-align-left-fill-16",
+    "description": "Filled left-aligned text lines icon.",
+    "synonyms": ["align left", "left align", "text alignment"]
+  },
+  {
+    "id": "zendesk-garden-align-left-stroke-16",
+    "description": "Outline left-aligned text lines icon.",
+    "synonyms": ["align left", "left align", "text alignment"]
+  },
+  {
+    "id": "zendesk-garden-align-right-fill-16",
+    "description": "Filled right-aligned text lines icon.",
+    "synonyms": ["align right", "right align", "text alignment"]
+  },
+  {
+    "id": "zendesk-garden-align-right-stroke-16",
+    "description": "Outline right-aligned text lines icon.",
+    "synonyms": ["align right", "right align", "text alignment"]
+  },
+  {
+    "id": "zendesk-garden-alt-text-fill-16",
+    "description": "Filled alt text label icon.",
+    "synonyms": ["alt text", "image alt", "accessibility text"]
+  },
+  {
+    "id": "zendesk-garden-alt-text-stroke-16",
+    "description": "Outline alt text label icon.",
+    "synonyms": ["alt text", "image alt", "accessibility text"]
+  },
+  {
+    "id": "zendesk-garden-arrow-left-fill-16",
+    "description": "Filled left arrow icon for navigation.",
+    "synonyms": ["left arrow", "back", "previous"]
+  },
+  {
+    "id": "zendesk-garden-arrow-left-sm-fill-16",
+    "description": "Filled small left arrow icon for navigation.",
+    "synonyms": ["small left arrow", "back", "previous"]
+  },
+  {
+    "id": "zendesk-garden-arrow-left-sm-stroke-16",
+    "description": "Outline small left arrow icon for navigation.",
+    "synonyms": ["small left arrow", "back", "previous"]
+  },
+  {
+    "id": "zendesk-garden-arrow-left-stroke-16",
+    "description": "Outline left arrow icon for navigation.",
+    "synonyms": ["left arrow", "back", "previous"]
+  },
+  {
+    "id": "zendesk-garden-arrow-left-up-fill-16",
+    "description": "Filled left-up arrow icon for diagonal movement.",
+    "synonyms": ["left up arrow", "diagonal arrow", "up-left"]
+  },
+  {
+    "id": "zendesk-garden-arrow-left-up-stroke-16",
+    "description": "Outline left-up arrow icon for diagonal movement.",
+    "synonyms": ["left up arrow", "diagonal arrow", "up-left"]
+  },
+  {
+    "id": "zendesk-garden-arrow-retweet-fill-16",
+    "description": "Filled retweet loop arrow icon.",
+    "synonyms": ["retweet", "loop arrow", "repeat"]
+  },
+  {
+    "id": "zendesk-garden-arrow-retweet-stroke-16",
+    "description": "Outline retweet loop arrow icon.",
+    "synonyms": ["retweet", "loop arrow", "repeat"]
+  },
+  {
+    "id": "zendesk-garden-arrow-reverse-fill-16",
+    "description": "Filled reverse arrow icon for switching direction.",
+    "synonyms": ["reverse arrow", "swap direction", "turn around"]
+  },
+  {
+    "id": "zendesk-garden-arrow-reverse-stroke-16",
+    "description": "Outline reverse arrow icon for switching direction.",
+    "synonyms": ["reverse arrow", "swap direction", "turn around"]
+  },
+  {
+    "id": "zendesk-garden-arrow-trending-fill-16",
+    "description": "Filled trending arrow icon pointing upward.",
+    "synonyms": ["trending arrow", "upward trend", "growth"]
+  },
+  {
+    "id": "zendesk-garden-arrow-trending-stroke-16",
+    "description": "Outline trending arrow icon pointing upward.",
+    "synonyms": ["trending arrow", "upward trend", "growth"]
+  },
+  {
+    "id": "zendesk-garden-asterisk-fill-16",
+    "description": "Filled asterisk symbol mark icon.",
+    "synonyms": ["asterisk", "star mark", "symbol"]
+  },
+  {
+    "id": "zendesk-garden-asterisk-stroke-16",
+    "description": "Outline asterisk symbol mark icon.",
+    "synonyms": ["asterisk", "star mark", "symbol"]
+  },
+  {
+    "id": "zendesk-garden-at-fill-16",
+    "description": "Filled at symbol mark icon.",
+    "synonyms": ["at symbol", "at sign", "email at"]
+  },
+  {
+    "id": "zendesk-garden-at-stroke-16",
+    "description": "Outline at symbol mark icon.",
+    "synonyms": ["at symbol", "at sign", "email at"]
+  },
+  {
+    "id": "zendesk-garden-bar-chart-fill-16",
+    "description": "Filled bar chart icon with vertical columns.",
+    "synonyms": ["bar chart", "bars", "chart"]
+  },
+  {
+    "id": "zendesk-garden-bar-chart-stroke-16",
+    "description": "Outline bar chart icon with vertical columns.",
+    "synonyms": ["bar chart", "bars", "chart"]
+  },
+  {
+    "id": "zendesk-garden-basketball-fill-16",
+    "description": "Filled basketball icon with court lines.",
+    "synonyms": ["basketball", "sports ball", "basketball ball"]
+  },
+  {
+    "id": "zendesk-garden-basketball-stroke-16",
+    "description": "Outline basketball icon with court lines.",
+    "synonyms": ["basketball", "sports ball", "basketball ball"]
+  },
+  {
+    "id": "zendesk-garden-bold-fill-16",
+    "description": "Filled bold text formatting icon.",
+    "synonyms": ["bold", "text bold", "formatting"]
+  },
+  {
+    "id": "zendesk-garden-bold-stroke-16",
+    "description": "Outline bold text formatting icon.",
+    "synonyms": ["bold", "text bold", "formatting"]
+  },
+  {
+    "id": "zendesk-garden-book-closed-fill-16",
+    "description": "Filled closed book icon with spine.",
+    "synonyms": ["closed book", "book", "reading"]
+  },
+  {
+    "id": "zendesk-garden-book-closed-stroke-16",
+    "description": "Outline closed book icon with spine.",
+    "synonyms": ["closed book", "book", "reading"]
+  },
+  {
+    "id": "zendesk-garden-book-open-fill-16",
+    "description": "Filled open book icon with pages.",
+    "synonyms": ["open book", "book", "reading"]
+  },
+  {
+    "id": "zendesk-garden-book-open-stroke-16",
+    "description": "Outline open book icon with pages.",
+    "synonyms": ["open book", "book", "reading"]
+  },
+  {
+    "id": "zendesk-garden-bookmark-fill-16",
+    "description": "Filled bookmark ribbon save icon.",
+    "synonyms": ["bookmark", "save", "ribbon"]
+  },
+  {
+    "id": "zendesk-garden-bookmark-stroke-16",
+    "description": "Outline bookmark ribbon save icon.",
+    "synonyms": ["bookmark", "save", "ribbon"]
+  },
+  {
+    "id": "zendesk-garden-bot-sparkle-fill-16",
+    "description": "Filled robot face icon with sparkle.",
+    "synonyms": ["bot sparkle", "robot", "ai"]
+  },
+  {
+    "id": "zendesk-garden-bot-sparkle-stroke-16",
+    "description": "Outline robot face icon with sparkle.",
+    "synonyms": ["bot sparkle", "robot", "ai"]
+  },
+  {
+    "id": "zendesk-garden-box-3d-fill-16",
+    "description": "Filled 3d box icon with depth lines.",
+    "synonyms": ["3d box", "box", "cube"]
+  },
+  {
+    "id": "zendesk-garden-box-3d-stroke-16",
+    "description": "Outline 3d box icon with depth lines.",
+    "synonyms": ["3d box", "box", "cube"]
+  },
+  {
+    "id": "zendesk-garden-building-fill-16",
+    "description": "Filled building icon with windows.",
+    "synonyms": ["building", "office", "house"]
+  },
+  {
+    "id": "zendesk-garden-building-stroke-16",
+    "description": "Outline building icon with windows.",
+    "synonyms": ["building", "office", "house"]
+  },
+  {
+    "id": "zendesk-garden-calendar-fill-16",
+    "description": "Filled calendar page icon with date grid.",
+    "synonyms": ["calendar", "date", "schedule"]
+  },
+  {
+    "id": "zendesk-garden-calendar-stroke-16",
+    "description": "Outline calendar page icon with date grid.",
+    "synonyms": ["calendar", "date", "schedule"]
+  },
+  {
+    "id": "zendesk-garden-camera-fill-16",
+    "description": "Filled camera icon with lens circle.",
+    "synonyms": ["camera", "photo", "lens"]
+  },
+  {
+    "id": "zendesk-garden-camera-stroke-16",
+    "description": "Outline camera icon with lens circle.",
+    "synonyms": ["camera", "photo", "lens"]
+  },
+  {
+    "id": "zendesk-garden-car-fill-16",
+    "description": "Filled car icon in side view.",
+    "synonyms": ["car", "vehicle", "auto"]
+  },
+  {
+    "id": "zendesk-garden-car-stroke-16",
+    "description": "Outline car icon in side view.",
+    "synonyms": ["car", "vehicle", "auto"]
+  },
+  {
+    "id": "zendesk-garden-center-fill-16",
+    "description": "Filled center point icon with surrounding lines.",
+    "synonyms": ["center", "middle", "center point"]
+  },
+  {
+    "id": "zendesk-garden-center-stroke-16",
+    "description": "Outline center point icon with surrounding lines.",
+    "synonyms": ["center", "middle", "center point"]
+  },
+  {
+    "id": "zendesk-garden-check-badge-fill-16",
+    "description": "Filled check badge icon with approval mark.",
+    "synonyms": ["check badge", "verified", "approval"]
+  },
+  {
+    "id": "zendesk-garden-check-badge-stroke-16",
+    "description": "Outline check badge icon with approval mark.",
+    "synonyms": ["check badge", "verified", "approval"]
+  },
+  {
+    "id": "zendesk-garden-check-box-double-fill-16",
+    "description": "Filled double check box icon.",
+    "synonyms": ["double checkbox", "double check box", "multi select"]
+  },
+  {
+    "id": "zendesk-garden-check-box-double-stroke-16",
+    "description": "Outline double check box icon.",
+    "synonyms": ["double checkbox", "double check box", "multi select"]
+  },
+  {
+    "id": "zendesk-garden-check-box-fill-16",
+    "description": "Filled check box control icon.",
+    "synonyms": ["checkbox", "check box", "selection"]
+  },
+  {
+    "id": "zendesk-garden-check-box-stroke-16",
+    "description": "Outline check box control icon.",
+    "synonyms": ["checkbox", "check box", "selection"]
+  },
+  {
+    "id": "zendesk-garden-check-circle-fill-16",
+    "description": "Filled check circle mark icon.",
+    "synonyms": ["check circle", "checkmark", "success"]
+  },
+  {
+    "id": "zendesk-garden-check-circle-stroke-16",
+    "description": "Outline check circle mark icon.",
+    "synonyms": ["check circle", "checkmark", "success"]
+  },
+  {
+    "id": "zendesk-garden-check-double-fill-16",
+    "description": "Filled double check mark icon.",
+    "synonyms": ["double check", "two checks", "confirmed"]
+  },
+  {
+    "id": "zendesk-garden-check-double-stroke-16",
+    "description": "Outline double check mark icon.",
+    "synonyms": ["double check", "two checks", "confirmed"]
+  },
+  {
+    "id": "zendesk-garden-check-lg-fill-16",
+    "description": "Filled large check mark icon.",
+    "synonyms": ["large check", "big checkmark", "check large"]
+  },
+  {
+    "id": "zendesk-garden-check-lg-stroke-16",
+    "description": "Outline large check mark icon.",
+    "synonyms": ["large check", "big checkmark", "check large"]
+  },
+  {
+    "id": "zendesk-garden-check-sm-fill-16",
+    "description": "Filled small check mark icon.",
+    "synonyms": ["small check", "small checkmark", "check small"]
+  },
+  {
+    "id": "zendesk-garden-check-sm-stroke-16",
+    "description": "Outline small check mark icon.",
+    "synonyms": ["small check", "small checkmark", "check small"]
+  },
+  {
+    "id": "zendesk-garden-chevron-box-fill-16",
+    "description": "Filled chevron inside a box icon.",
+    "synonyms": ["chevron box", "boxed chevron", "expand"]
+  },
+  {
+    "id": "zendesk-garden-chevron-box-stroke-16",
+    "description": "Outline chevron inside a box icon.",
+    "synonyms": ["chevron box", "boxed chevron", "expand"]
+  },
+  {
+    "id": "zendesk-garden-chevron-double-down-fill-16",
+    "description": "Filled double down chevron icon.",
+    "synonyms": ["double down chevron", "down chevron", "collapse"]
+  },
+  {
+    "id": "zendesk-garden-chevron-double-down-stroke-16",
+    "description": "Outline double down chevron icon.",
+    "synonyms": ["double down chevron", "down chevron", "collapse"]
+  },
+  {
+    "id": "zendesk-garden-chevron-double-left-fill-16",
+    "description": "Filled double left chevron icon.",
+    "synonyms": ["double left chevron", "left chevron", "rewind"]
+  },
+  {
+    "id": "zendesk-garden-chevron-double-left-stroke-16",
+    "description": "Outline double left chevron icon.",
+    "synonyms": ["double left chevron", "left chevron", "rewind"]
+  },
+  {
+    "id": "zendesk-garden-chevron-double-right-fill-16",
+    "description": "Filled double right chevron icon.",
+    "synonyms": ["double right chevron", "right chevron", "fast forward"]
+  },
+  {
+    "id": "zendesk-garden-chevron-double-right-stroke-16",
+    "description": "Outline double right chevron icon.",
+    "synonyms": ["double right chevron", "right chevron", "fast forward"]
+  },
+  {
+    "id": "zendesk-garden-chevron-double-up-fill-16",
+    "description": "Filled double up chevron icon.",
+    "synonyms": ["double up chevron", "up chevron", "expand"]
+  },
+  {
+    "id": "zendesk-garden-chevron-double-up-stroke-16",
+    "description": "Outline double up chevron icon.",
+    "synonyms": ["double up chevron", "up chevron", "expand"]
+  },
+  {
+    "id": "zendesk-garden-chevron-down-fill-16",
+    "description": "Filled downward chevron navigation icon.",
+    "synonyms": ["down chevron", "chevron down", "collapse"]
+  },
+  {
+    "id": "zendesk-garden-chevron-down-stroke-16",
+    "description": "Outline downward chevron navigation icon.",
+    "synonyms": ["down chevron", "chevron down", "collapse"]
+  },
+  {
+    "id": "zendesk-garden-chevron-left-fill-16",
+    "description": "Filled left chevron navigation icon.",
+    "synonyms": ["left chevron", "chevron left", "back"]
+  },
+  {
+    "id": "zendesk-garden-chevron-left-stroke-16",
+    "description": "Outline left chevron navigation icon.",
+    "synonyms": ["left chevron", "chevron left", "back"]
+  },
+  {
+    "id": "zendesk-garden-chevron-right-fill-16",
+    "description": "Filled right chevron navigation icon.",
+    "synonyms": ["right chevron", "chevron right", "forward"]
+  },
+  {
+    "id": "zendesk-garden-chevron-right-stroke-16",
+    "description": "Outline right chevron navigation icon.",
+    "synonyms": ["right chevron", "chevron right", "forward"]
+  },
+  {
+    "id": "zendesk-garden-chevron-up-fill-16",
+    "description": "Filled upward chevron navigation icon.",
+    "synonyms": ["up chevron", "chevron up", "expand"]
+  },
+  {
+    "id": "zendesk-garden-chevron-up-stroke-16",
+    "description": "Outline upward chevron navigation icon.",
+    "synonyms": ["up chevron", "chevron up", "expand"]
+  },
+  {
+    "id": "zendesk-garden-circle-fill-16",
+    "description": "Filled simple circle icon shape.",
+    "synonyms": ["circle", "dot", "round shape"]
+  },
+  {
+    "id": "zendesk-garden-circle-full-fill-16",
+    "description": "Filled solid circle icon shape.",
+    "synonyms": ["solid circle", "filled circle", "dot"]
+  },
+  {
+    "id": "zendesk-garden-circle-full-stroke-16",
+    "description": "Outline solid circle icon shape.",
+    "synonyms": ["solid circle", "outlined circle", "ring"]
+  },
+  {
+    "id": "zendesk-garden-circle-line-fill-16",
+    "description": "Filled circle outline ring icon.",
+    "synonyms": ["circle outline", "ring", "outlined circle"]
+  },
+  {
+    "id": "zendesk-garden-circle-line-stroke-16",
+    "description": "Outline circle ring shape icon.",
+    "synonyms": ["circle outline", "ring", "outlined circle"]
+  },
+  {
+    "id": "zendesk-garden-circle-sm-fill-16",
+    "description": "Filled small circle icon shape.",
+    "synonyms": ["small circle", "tiny dot", "circle small"]
+  },
+  {
+    "id": "zendesk-garden-circle-sm-stroke-16",
+    "description": "Outline small circle icon shape.",
+    "synonyms": ["small circle", "tiny dot", "circle small"]
+  },
+  {
+    "id": "zendesk-garden-circle-stroke-16",
+    "description": "Outline simple circle icon shape.",
+    "synonyms": ["circle", "dot", "round shape"]
+  },
+  {
+    "id": "zendesk-garden-clipboard-blank-fill-16",
+    "description": "Filled blank clipboard sheet icon.",
+    "synonyms": ["blank clipboard", "clipboard", "sheet"]
+  },
+  {
+    "id": "zendesk-garden-clipboard-blank-stroke-16",
+    "description": "Outline blank clipboard sheet icon.",
+    "synonyms": ["blank clipboard", "clipboard", "sheet"]
+  },
+  {
+    "id": "zendesk-garden-clipboard-check-fill-16",
+    "description": "Filled clipboard with check mark.",
+    "synonyms": ["clipboard check", "approved clipboard", "task complete"]
+  },
+  {
+    "id": "zendesk-garden-clipboard-check-stroke-16",
+    "description": "Outline clipboard with check mark.",
+    "synonyms": ["clipboard check", "approved clipboard", "task complete"]
+  },
+  {
+    "id": "zendesk-garden-clipboard-list-fill-16",
+    "description": "Filled clipboard with list lines.",
+    "synonyms": ["clipboard list", "list clipboard", "notes"]
+  },
+  {
+    "id": "zendesk-garden-clipboard-list-stroke-16",
+    "description": "Outline clipboard with list lines.",
+    "synonyms": ["clipboard list", "list clipboard", "notes"]
+  },
+  {
+    "id": "zendesk-garden-clock-cycle-fill-16",
+    "description": "Filled clock cycle arrow icon.",
+    "synonyms": ["clock cycle", "refresh clock", "repeat"]
+  },
+  {
+    "id": "zendesk-garden-clock-cycle-stroke-16",
+    "description": "Outline clock cycle arrow icon.",
+    "synonyms": ["clock cycle", "refresh clock", "repeat"]
+  },
+  {
+    "id": "zendesk-garden-clock-fill-16",
+    "description": "Filled clock face icon for time.",
+    "synonyms": ["clock", "time", "watch"]
+  },
+  {
+    "id": "zendesk-garden-clock-in-fill-16",
+    "description": "Filled clock with inward arrow.",
+    "synonyms": ["clock in", "in time", "start work"]
+  },
+  {
+    "id": "zendesk-garden-clock-in-stroke-16",
+    "description": "Outline clock with inward arrow.",
+    "synonyms": ["clock in", "in time", "start work"]
+  },
+  {
+    "id": "zendesk-garden-clock-out-fill-16",
+    "description": "Filled clock with outward arrow.",
+    "synonyms": ["clock out", "out time", "end work"]
+  },
+  {
+    "id": "zendesk-garden-clock-out-stroke-16",
+    "description": "Outline clock with outward arrow.",
+    "synonyms": ["clock out", "out time", "end work"]
+  },
+  {
+    "id": "zendesk-garden-clock-stroke-16",
+    "description": "Outline clock face icon for time.",
+    "synonyms": ["clock", "time", "watch"]
+  },
+  {
+    "id": "zendesk-garden-copy-fill-16",
+    "description": "Filled copy documents duplicate icon.",
+    "synonyms": ["copy", "duplicate", "documents"]
+  },
+  {
+    "id": "zendesk-garden-copy-stroke-16",
+    "description": "Outline copy documents duplicate icon.",
+    "synonyms": ["copy", "duplicate", "documents"]
+  },
+  {
+    "id": "zendesk-garden-credit-card-fill-16",
+    "description": "Filled credit card icon with stripe.",
+    "synonyms": ["credit card", "payment card", "card"]
+  },
+  {
+    "id": "zendesk-garden-credit-card-stroke-16",
+    "description": "Outline credit card icon with stripe.",
+    "synonyms": ["credit card", "payment card", "card"]
+  },
+  {
+    "id": "zendesk-garden-css-fill-16",
+    "description": "Filled CSS label stylesheet icon.",
+    "synonyms": ["css", "stylesheet", "web code"]
+  },
+  {
+    "id": "zendesk-garden-css-stroke-16",
+    "description": "Outline CSS label stylesheet icon.",
+    "synonyms": ["css", "stylesheet", "web code"]
+  },
+  {
+    "id": "zendesk-garden-cursor-arrow-fill-16",
+    "description": "Filled cursor arrow pointer icon.",
+    "synonyms": ["cursor arrow", "pointer", "mouse cursor"]
+  },
+  {
+    "id": "zendesk-garden-cursor-arrow-stroke-16",
+    "description": "Outline cursor arrow pointer icon.",
+    "synonyms": ["cursor arrow", "pointer", "mouse cursor"]
+  },
+  {
+    "id": "zendesk-garden-cutlery-fill-16",
+    "description": "Filled cutlery icon with fork and knife.",
+    "synonyms": ["cutlery", "fork", "knife"]
+  },
+  {
+    "id": "zendesk-garden-cutlery-stroke-16",
+    "description": "Outline cutlery icon with fork and knife.",
+    "synonyms": ["cutlery", "fork", "knife"]
+  },
+  {
+    "id": "zendesk-garden-dash-fill-16",
+    "description": "Filled dash symbol minus icon.",
+    "synonyms": ["dash", "minus", "line"]
+  },
+  {
+    "id": "zendesk-garden-dash-stroke-16",
+    "description": "Outline dash symbol minus icon.",
+    "synonyms": ["dash", "minus", "line"]
+  },
+  {
+    "id": "zendesk-garden-database-fill-16",
+    "description": "Filled database stack storage icon.",
+    "synonyms": ["database", "data store", "storage"]
+  },
+  {
+    "id": "zendesk-garden-database-stroke-16",
+    "description": "Outline database stack storage icon.",
+    "synonyms": ["database", "data store", "storage"]
+  },
+  {
+    "id": "zendesk-garden-decimal-fill-16",
+    "description": "Filled decimal point number icon.",
+    "synonyms": ["decimal", "decimal point", "number"]
+  },
+  {
+    "id": "zendesk-garden-decimal-stroke-16",
+    "description": "Outline decimal point number icon.",
+    "synonyms": ["decimal", "decimal point", "number"]
+  },
+  {
+    "id": "zendesk-garden-direction-ltr-fill-16",
+    "description": "Filled left-to-right text direction icon.",
+    "synonyms": ["ltr", "left to right", "text direction"]
+  },
+  {
+    "id": "zendesk-garden-direction-ltr-stroke-16",
+    "description": "Outline left-to-right text direction icon.",
+    "synonyms": ["ltr", "left to right", "text direction"]
+  },
+  {
+    "id": "zendesk-garden-direction-rtl-fill-16",
+    "description": "Filled right-to-left text direction icon.",
+    "synonyms": ["rtl", "right to left", "text direction"]
+  },
+  {
+    "id": "zendesk-garden-direction-rtl-stroke-16",
+    "description": "Outline right-to-left text direction icon.",
+    "synonyms": ["rtl", "right to left", "text direction"]
+  },
+  {
+    "id": "zendesk-garden-document-search-fill-16",
+    "description": "Filled document icon with search magnifier.",
+    "synonyms": ["document search", "search document", "find in file"]
+  },
+  {
+    "id": "zendesk-garden-document-search-stroke-16",
+    "description": "Outline document icon with search magnifier.",
+    "synonyms": ["document search", "search document", "find in file"]
+  },
+  {
+    "id": "zendesk-garden-download-fill-16",
+    "description": "Filled download arrow save icon.",
+    "synonyms": ["download", "save", "down arrow"]
+  },
+  {
+    "id": "zendesk-garden-download-stroke-16",
+    "description": "Outline download arrow save icon.",
+    "synonyms": ["download", "save", "down arrow"]
+  },
+  {
+    "id": "zendesk-garden-duplicate-fill-16",
+    "description": "Filled duplicate documents copy icon.",
+    "synonyms": ["duplicate", "copy", "two documents"]
+  },
+  {
+    "id": "zendesk-garden-duplicate-stroke-16",
+    "description": "Outline duplicate documents copy icon.",
+    "synonyms": ["duplicate", "copy", "two documents"]
+  },
+  {
+    "id": "zendesk-garden-edit-redo-fill-16",
+    "description": "Filled redo arrow icon for editing.",
+    "synonyms": ["redo", "edit redo", "repeat"]
+  },
+  {
+    "id": "zendesk-garden-edit-redo-stroke-16",
+    "description": "Outline redo arrow icon for editing.",
+    "synonyms": ["redo", "edit redo", "repeat"]
+  },
+  {
+    "id": "zendesk-garden-edit-undo-fill-16",
+    "description": "Filled undo arrow icon for editing.",
+    "synonyms": ["undo", "edit undo", "reverse"]
+  },
+  {
+    "id": "zendesk-garden-edit-undo-stroke-16",
+    "description": "Outline undo arrow icon for editing.",
+    "synonyms": ["undo", "edit undo", "reverse"]
+  },
+  {
+    "id": "zendesk-garden-email-fill-16",
+    "description": "Filled email envelope message icon.",
+    "synonyms": ["email", "envelope", "mail"]
+  },
+  {
+    "id": "zendesk-garden-email-stroke-16",
+    "description": "Outline email envelope message icon.",
+    "synonyms": ["email", "envelope", "mail"]
+  },
+  {
+    "id": "zendesk-garden-eraser-fill-16",
+    "description": "Filled eraser icon with angled block.",
+    "synonyms": ["eraser", "delete tool", "rubber"]
+  },
+  {
+    "id": "zendesk-garden-eraser-stroke-16",
+    "description": "Outline eraser icon with angled block.",
+    "synonyms": ["eraser", "delete tool", "rubber"]
+  },
+  {
+    "id": "zendesk-garden-exit-fill-16",
+    "description": "Filled exit door icon with arrow.",
+    "synonyms": ["exit", "logout", "leave"]
+  },
+  {
+    "id": "zendesk-garden-exit-stroke-16",
+    "description": "Outline exit door icon with arrow.",
+    "synonyms": ["exit", "logout", "leave"]
+  },
+  {
+    "id": "zendesk-garden-eye-fill-16",
+    "description": "Filled eye icon with open pupil.",
+    "synonyms": ["eye", "view", "visibility"]
+  },
+  {
+    "id": "zendesk-garden-eye-hide-fill-16",
+    "description": "Filled eye icon with slash.",
+    "synonyms": ["hide eye", "eye off", "visibility off"]
+  },
+  {
+    "id": "zendesk-garden-eye-hide-stroke-16",
+    "description": "Outline eye icon with slash.",
+    "synonyms": ["hide eye", "eye off", "visibility off"]
+  },
+  {
+    "id": "zendesk-garden-eye-stroke-16",
+    "description": "Outline eye icon with open pupil.",
+    "synonyms": ["eye", "view", "visibility"]
+  },
+  {
+    "id": "zendesk-garden-face-neutral-fill-16",
+    "description": "Filled neutral face icon with flat mouth.",
+    "synonyms": ["neutral face", "neutral mood", "emoji"]
+  },
+  {
+    "id": "zendesk-garden-face-neutral-stroke-16",
+    "description": "Outline neutral face icon with flat mouth.",
+    "synonyms": ["neutral face", "neutral mood", "emoji"]
+  },
+  {
+    "id": "zendesk-garden-face-sad-fill-16",
+    "description": "Filled sad face icon with frown.",
+    "synonyms": ["sad face", "sad mood", "emoji"]
+  },
+  {
+    "id": "zendesk-garden-face-sad-stroke-16",
+    "description": "Outline sad face icon with frown.",
+    "synonyms": ["sad face", "sad mood", "emoji"]
+  },
+  {
+    "id": "zendesk-garden-face-very-happy-fill-16",
+    "description": "Filled very happy face icon with smile.",
+    "synonyms": ["very happy face", "happy mood", "emoji"]
+  },
+  {
+    "id": "zendesk-garden-face-very-happy-stroke-16",
+    "description": "Outline very happy face icon with smile.",
+    "synonyms": ["very happy face", "happy mood", "emoji"]
+  },
+  {
+    "id": "zendesk-garden-face-very-sad-fill-16",
+    "description": "Filled very sad face icon with frown.",
+    "synonyms": ["very sad face", "sad mood", "emoji"]
+  },
+  {
+    "id": "zendesk-garden-face-very-sad-stroke-16",
+    "description": "Outline very sad face icon with frown.",
+    "synonyms": ["very sad face", "sad mood", "emoji"]
+  },
+  {
+    "id": "zendesk-garden-facebook-fill-16",
+    "description": "Filled Facebook logo mark icon.",
+    "synonyms": ["facebook", "social logo", "fb"]
+  },
+  {
+    "id": "zendesk-garden-facebook-stroke-16",
+    "description": "Outline Facebook logo mark icon.",
+    "synonyms": ["facebook", "social logo", "fb"]
+  },
+  {
+    "id": "zendesk-garden-file-document-fill-16",
+    "description": "Filled document file page icon.",
+    "synonyms": ["file document", "document file", "page"]
+  },
+  {
+    "id": "zendesk-garden-file-document-stroke-16",
+    "description": "Outline document file page icon.",
+    "synonyms": ["file document", "document file", "page"]
+  },
+  {
+    "id": "zendesk-garden-file-error-fill-16",
+    "description": "Filled error file warning icon.",
+    "synonyms": ["file error", "error file", "warning file"]
+  },
+  {
+    "id": "zendesk-garden-file-error-stroke-16",
+    "description": "Outline error file warning icon.",
+    "synonyms": ["file error", "error file", "warning file"]
+  },
+  {
+    "id": "zendesk-garden-file-generic-fill-16",
+    "description": "Filled generic file document icon.",
+    "synonyms": ["file generic", "generic file", "document"]
+  },
+  {
+    "id": "zendesk-garden-file-generic-stroke-16",
+    "description": "Outline generic file document icon.",
+    "synonyms": ["file generic", "generic file", "document"]
+  },
+  {
+    "id": "zendesk-garden-file-image-fill-16",
+    "description": "Filled image file picture icon.",
+    "synonyms": ["file image", "image file", "picture file"]
+  },
+  {
+    "id": "zendesk-garden-file-image-stroke-16",
+    "description": "Outline image file picture icon.",
+    "synonyms": ["file image", "image file", "picture file"]
+  },
+  {
+    "id": "zendesk-garden-file-pdf-fill-16",
+    "description": "Filled PDF file document icon.",
+    "synonyms": ["file pdf", "pdf file", "document"]
+  },
+  {
+    "id": "zendesk-garden-file-pdf-stroke-16",
+    "description": "Outline PDF file document icon.",
+    "synonyms": ["file pdf", "pdf file", "document"]
+  },
+  {
+    "id": "zendesk-garden-file-presentation-fill-16",
+    "description": "Filled presentation file slides icon.",
+    "synonyms": ["file presentation", "presentation file", "slides"]
+  },
+  {
+    "id": "zendesk-garden-file-presentation-stroke-16",
+    "description": "Outline presentation file slides icon.",
+    "synonyms": ["file presentation", "presentation file", "slides"]
+  },
+  {
+    "id": "zendesk-garden-file-spreadsheet-fill-16",
+    "description": "Filled spreadsheet file sheet icon.",
+    "synonyms": ["file spreadsheet", "spreadsheet file", "sheet"]
+  },
+  {
+    "id": "zendesk-garden-file-spreadsheet-stroke-16",
+    "description": "Outline spreadsheet file sheet icon.",
+    "synonyms": ["file spreadsheet", "spreadsheet file", "sheet"]
+  },
+  {
+    "id": "zendesk-garden-file-zip-fill-16",
+    "description": "Filled zipped file archive icon.",
+    "synonyms": ["file zip", "zip file", "archive"]
+  },
+  {
+    "id": "zendesk-garden-file-zip-stroke-16",
+    "description": "Outline zipped file archive icon.",
+    "synonyms": ["file zip", "zip file", "archive"]
+  },
+  {
+    "id": "zendesk-garden-filter-fill-16",
+    "description": "Filled filter funnel sorting icon.",
+    "synonyms": ["filter", "funnel", "sort"]
+  },
+  {
+    "id": "zendesk-garden-filter-stroke-16",
+    "description": "Outline filter funnel sorting icon.",
+    "synonyms": ["filter", "funnel", "sort"]
+  },
+  {
+    "id": "zendesk-garden-flag-fill-16",
+    "description": "Filled flag icon on a pole.",
+    "synonyms": ["flag", "banner", "marker"]
+  },
+  {
+    "id": "zendesk-garden-flag-stroke-16",
+    "description": "Outline flag icon on a pole.",
+    "synonyms": ["flag", "banner", "marker"]
+  },
+  {
+    "id": "zendesk-garden-folder-closed-fill-16",
+    "description": "Filled closed folder directory icon.",
+    "synonyms": ["folder closed", "folder", "directory"]
+  },
+  {
+    "id": "zendesk-garden-folder-closed-stroke-16",
+    "description": "Outline closed folder directory icon.",
+    "synonyms": ["folder closed", "folder", "directory"]
+  },
+  {
+    "id": "zendesk-garden-folder-open-fill-16",
+    "description": "Filled open folder directory icon.",
+    "synonyms": ["folder open", "folder", "directory"]
+  },
+  {
+    "id": "zendesk-garden-folder-open-stroke-16",
+    "description": "Outline open folder directory icon.",
+    "synonyms": ["folder open", "folder", "directory"]
+  },
+  {
+    "id": "zendesk-garden-full-width-fill-16",
+    "description": "Filled full-width layout expansion icon.",
+    "synonyms": ["full width", "wide layout", "expand"]
+  },
+  {
+    "id": "zendesk-garden-full-width-stroke-16",
+    "description": "Outline full-width layout expansion icon.",
+    "synonyms": ["full width", "wide layout", "expand"]
+  },
+  {
+    "id": "zendesk-garden-gear-fill-16",
+    "description": "Filled gear settings cog icon.",
+    "synonyms": ["gear", "settings", "cog"]
+  },
+  {
+    "id": "zendesk-garden-gear-stroke-16",
+    "description": "Outline gear settings cog icon.",
+    "synonyms": ["gear", "settings", "cog"]
+  },
+  {
+    "id": "zendesk-garden-github-fill-16",
+    "description": "Filled GitHub logo mark icon.",
+    "synonyms": ["github", "social logo", "code hosting"]
+  },
+  {
+    "id": "zendesk-garden-github-stroke-16",
+    "description": "Outline GitHub logo mark icon.",
+    "synonyms": ["github", "social logo", "code hosting"]
+  },
+  {
+    "id": "zendesk-garden-globe-fill-16",
+    "description": "Filled globe icon with latitude lines.",
+    "synonyms": ["globe", "world", "earth"]
+  },
+  {
+    "id": "zendesk-garden-globe-stroke-16",
+    "description": "Outline globe icon with latitude lines.",
+    "synonyms": ["globe", "world", "earth"]
+  },
+  {
+    "id": "zendesk-garden-grid-2x2-fill-16",
+    "description": "Filled grid icon with four cells.",
+    "synonyms": ["2x2 grid", "grid", "four cells"]
+  },
+  {
+    "id": "zendesk-garden-grid-2x2-stroke-16",
+    "description": "Outline grid icon with four cells.",
+    "synonyms": ["2x2 grid", "grid", "four cells"]
+  },
+  {
+    "id": "zendesk-garden-grid-3x3-fill-16",
+    "description": "Filled grid icon with nine cells.",
+    "synonyms": ["3x3 grid", "grid", "nine cells"]
+  },
+  {
+    "id": "zendesk-garden-grid-3x3-stroke-16",
+    "description": "Outline grid icon with nine cells.",
+    "synonyms": ["3x3 grid", "grid", "nine cells"]
+  }
+]

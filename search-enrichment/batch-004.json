@@ -1,0 +1,1002 @@
+[
+  {
+    "id": "feather-compass",
+    "description": "circular compass with directional needle",
+    "synonyms": ["compass", "direction finder", "navigation needle"]
+  },
+  {
+    "id": "feather-copy",
+    "description": "two overlapping document pages with folded corners",
+    "synonyms": ["copy", "duplicate", "stacked documents"]
+  },
+  {
+    "id": "feather-corner-down-left",
+    "description": "arrow turning down left at a corner",
+    "synonyms": ["corner arrow", "down left", "turn corner"]
+  },
+  {
+    "id": "feather-corner-down-right",
+    "description": "arrow turning down right at a corner",
+    "synonyms": ["corner arrow", "down right", "turn corner"]
+  },
+  {
+    "id": "feather-corner-left-down",
+    "description": "arrow turning left then down sharply",
+    "synonyms": ["corner arrow", "left down", "turn corner"]
+  },
+  {
+    "id": "feather-corner-left-up",
+    "description": "arrow turning left then up sharply",
+    "synonyms": ["corner arrow", "left up", "turn corner"]
+  },
+  {
+    "id": "feather-corner-right-down",
+    "description": "arrow turning right then down sharply",
+    "synonyms": ["corner arrow", "right down", "turn corner"]
+  },
+  {
+    "id": "feather-corner-right-up",
+    "description": "arrow turning right then up sharply",
+    "synonyms": ["corner arrow", "right up", "turn corner"]
+  },
+  {
+    "id": "feather-corner-up-left",
+    "description": "arrow turning up left at a corner",
+    "synonyms": ["corner arrow", "up left", "turn corner"]
+  },
+  {
+    "id": "feather-corner-up-right",
+    "description": "arrow turning up right at a corner",
+    "synonyms": ["corner arrow", "up right", "turn corner"]
+  },
+  {
+    "id": "feather-cpu",
+    "description": "square processor chip with tiny pins",
+    "synonyms": ["cpu", "processor", "microchip"]
+  },
+  {
+    "id": "feather-credit-card",
+    "description": "rectangular card with a magnetic stripe",
+    "synonyms": ["credit card", "payment card", "bank card"]
+  },
+  {
+    "id": "feather-crop",
+    "description": "crop frame with corner handles",
+    "synonyms": ["crop", "crop tool", "trim image"]
+  },
+  {
+    "id": "feather-crosshair",
+    "description": "crosshair target with centered dot",
+    "synonyms": ["crosshair", "target", "aim marker"]
+  },
+  {
+    "id": "feather-database",
+    "description": "stacked database cylinders with rounded top",
+    "synonyms": ["database", "data storage", "server data"]
+  },
+  {
+    "id": "feather-delete",
+    "description": "remove x inside a rounded square",
+    "synonyms": ["delete", "remove", "erase"]
+  },
+  {
+    "id": "feather-disc",
+    "description": "round compact disc with center hole",
+    "synonyms": ["disc", "cd", "optical disk"]
+  },
+  {
+    "id": "feather-divide-circle",
+    "description": "divide symbol inside a circle",
+    "synonyms": ["divide circle", "division", "math icon"]
+  },
+  {
+    "id": "feather-divide-square",
+    "description": "divide symbol inside a square",
+    "synonyms": ["divide square", "division", "math icon"]
+  },
+  {
+    "id": "feather-divide",
+    "description": "division slash with dots above below",
+    "synonyms": ["divide", "division sign", "math operator"]
+  },
+  {
+    "id": "feather-dollar-sign",
+    "description": "dollar sign with vertical stroke",
+    "synonyms": ["dollar", "currency", "money sign"]
+  },
+  {
+    "id": "feather-download-cloud",
+    "description": "down arrow entering a cloud outline",
+    "synonyms": ["download cloud", "cloud download", "save from cloud"]
+  },
+  {
+    "id": "feather-download",
+    "description": "down arrow into a tray",
+    "synonyms": ["download", "save file", "down arrow"]
+  },
+  {
+    "id": "feather-dribbble",
+    "description": "dribbble basketball logo inside a circle",
+    "synonyms": ["dribbble", "basketball logo", "designer social"]
+  },
+  {
+    "id": "feather-droplet",
+    "description": "single water drop outline",
+    "synonyms": ["droplet", "water drop", "liquid"]
+  },
+  {
+    "id": "feather-edit-2",
+    "description": "pencil over a lined sheet",
+    "synonyms": ["edit", "pencil", "edit document"]
+  },
+  {
+    "id": "feather-edit-3",
+    "description": "pencil over a page corner",
+    "synonyms": ["edit", "pencil", "edit page"]
+  },
+  {
+    "id": "feather-edit",
+    "description": "simple pencil editing icon",
+    "synonyms": ["edit", "pencil", "modify"]
+  },
+  {
+    "id": "feather-external-link",
+    "description": "arrow leaving a square frame",
+    "synonyms": ["external link", "open in new", "outbound link"]
+  },
+  {
+    "id": "feather-eye-off",
+    "description": "crossed eye outline with slash",
+    "synonyms": ["hide", "eye off", "visibility off"]
+  },
+  {
+    "id": "feather-eye",
+    "description": "open eye outline with pupil",
+    "synonyms": ["view", "eye", "visibility on"]
+  },
+  {
+    "id": "feather-facebook",
+    "description": "facebook f logo in a square",
+    "synonyms": ["facebook", "social media", "f logo"]
+  },
+  {
+    "id": "feather-fast-forward",
+    "description": "double right triangles beside a bar",
+    "synonyms": ["fast forward", "skip ahead", "next track"]
+  },
+  {
+    "id": "feather-feather",
+    "description": "single feather quill outline",
+    "synonyms": ["feather", "quill", "bird plume"]
+  },
+  {
+    "id": "feather-figma",
+    "description": "figma logo with stacked rounded shapes",
+    "synonyms": ["figma", "design tool", "product design"]
+  },
+  {
+    "id": "feather-file-minus",
+    "description": "document with a minus sign",
+    "synonyms": ["file minus", "remove file", "document delete"]
+  },
+  {
+    "id": "feather-file-plus",
+    "description": "document with a plus sign",
+    "synonyms": ["file plus", "add file", "new document"]
+  },
+  {
+    "id": "feather-file-text",
+    "description": "document page with text lines",
+    "synonyms": ["file text", "document text", "text file"]
+  },
+  {
+    "id": "feather-file",
+    "description": "single document page outline",
+    "synonyms": ["file", "document", "page"]
+  },
+  {
+    "id": "feather-film",
+    "description": "movie frame with side sprockets",
+    "synonyms": ["film", "movie", "video frame"]
+  },
+  {
+    "id": "feather-filter",
+    "description": "funnel shape for sorting results",
+    "synonyms": ["filter", "funnel", "sort results"]
+  },
+  {
+    "id": "feather-flag",
+    "description": "small flag on a pole",
+    "synonyms": ["flag", "marker", "bookmark flag"]
+  },
+  {
+    "id": "feather-folder-minus",
+    "description": "folder tab with a minus sign",
+    "synonyms": ["folder minus", "remove folder", "delete folder"]
+  },
+  {
+    "id": "feather-folder-plus",
+    "description": "folder tab with a plus sign",
+    "synonyms": ["folder plus", "add folder", "new folder"]
+  },
+  {
+    "id": "feather-folder",
+    "description": "open folder tab outline",
+    "synonyms": ["folder", "directory", "files"]
+  },
+  {
+    "id": "feather-framer",
+    "description": "framer logo with stacked ribbon shapes",
+    "synonyms": ["framer", "design software", "ui tool"]
+  },
+  {
+    "id": "feather-frown",
+    "description": "sad face with downturned mouth",
+    "synonyms": ["frown", "sad face", "unhappy"]
+  },
+  {
+    "id": "feather-gift",
+    "description": "wrapped present box with ribbon",
+    "synonyms": ["gift", "present", "package box"]
+  },
+  {
+    "id": "feather-git-branch",
+    "description": "branching line with three connected nodes",
+    "synonyms": ["git branch", "branch", "version control"]
+  },
+  {
+    "id": "feather-git-commit",
+    "description": "commit node with connecting branch lines",
+    "synonyms": ["git commit", "commit", "version control"]
+  },
+  {
+    "id": "feather-git-merge",
+    "description": "merged branch lines joining one path",
+    "synonyms": ["git merge", "merge", "version control"]
+  },
+  {
+    "id": "feather-git-pull-request",
+    "description": "branch lines pointing into a merge arrow",
+    "synonyms": ["pull request", "git pr", "code review"]
+  },
+  {
+    "id": "feather-github",
+    "description": "github octocat logo inside a circle",
+    "synonyms": ["github", "octocat", "code hosting"]
+  },
+  {
+    "id": "feather-gitlab",
+    "description": "gitlab fox head logo mark",
+    "synonyms": ["gitlab", "fox logo", "code hosting"]
+  },
+  {
+    "id": "feather-globe",
+    "description": "wireframe globe with meridian lines",
+    "synonyms": ["globe", "world", "internet"]
+  },
+  {
+    "id": "feather-grid",
+    "description": "four square grid outline",
+    "synonyms": ["grid", "tiles", "dashboard layout"]
+  },
+  {
+    "id": "feather-hard-drive",
+    "description": "rectangular drive with a small indicator",
+    "synonyms": ["hard drive", "storage", "disk"]
+  },
+  {
+    "id": "feather-hash",
+    "description": "hash symbol with two crossing lines",
+    "synonyms": ["hash", "number sign", "pound symbol"]
+  },
+  {
+    "id": "feather-headphones",
+    "description": "over-ear headphones with curved band",
+    "synonyms": ["headphones", "audio", "listen"]
+  },
+  {
+    "id": "feather-heart",
+    "description": "simple heart outline icon",
+    "synonyms": ["heart", "love", "favorite"]
+  },
+  {
+    "id": "feather-help-circle",
+    "description": "question mark inside a circle",
+    "synonyms": ["help", "question mark", "support"]
+  },
+  {
+    "id": "feather-hexagon",
+    "description": "six sided geometric outline",
+    "synonyms": ["hexagon", "six sided", "shape"]
+  },
+  {
+    "id": "feather-home",
+    "description": "house outline with peaked roof",
+    "synonyms": ["home", "house", "dashboard"]
+  },
+  {
+    "id": "feather-image",
+    "description": "mountains and sun inside a frame",
+    "synonyms": ["image", "photo", "picture"]
+  },
+  {
+    "id": "feather-inbox",
+    "description": "tray box with downward opening slot",
+    "synonyms": ["inbox", "mail tray", "incoming"]
+  },
+  {
+    "id": "feather-info",
+    "description": "lowercase i inside a circle",
+    "synonyms": ["info", "information", "details"]
+  },
+  {
+    "id": "feather-instagram",
+    "description": "instagram camera logo with rounded square",
+    "synonyms": ["instagram", "camera logo", "social media"]
+  },
+  {
+    "id": "feather-italic",
+    "description": "slanted serif text style icon",
+    "synonyms": ["italic", "text style", "formatting"]
+  },
+  {
+    "id": "feather-key",
+    "description": "simple key with round bow",
+    "synonyms": ["key", "password", "access"]
+  },
+  {
+    "id": "feather-layers",
+    "description": "stacked layered sheets with offset corners",
+    "synonyms": ["layers", "stacked sheets", "depth"]
+  },
+  {
+    "id": "feather-layout",
+    "description": "page layout grid with panels",
+    "synonyms": ["layout", "page layout", "panels"]
+  },
+  {
+    "id": "feather-life-buoy",
+    "description": "lifebuoy ring with four handles",
+    "synonyms": ["life buoy", "lifebuoy", "support"]
+  },
+  {
+    "id": "feather-link-2",
+    "description": "chain link with stronger outlined rings",
+    "synonyms": ["link", "chain link", "attachment"]
+  },
+  {
+    "id": "feather-link",
+    "description": "two interlocked chain links",
+    "synonyms": ["link", "chain link", "attachment"]
+  },
+  {
+    "id": "feather-linkedin",
+    "description": "linkedin logo with lowercase in",
+    "synonyms": ["linkedin", "professional network", "in logo"]
+  },
+  {
+    "id": "feather-list",
+    "description": "stacked horizontal lines with bullets",
+    "synonyms": ["list", "menu list", "bullets"]
+  },
+  {
+    "id": "feather-loader",
+    "description": "circular spinning progress ring",
+    "synonyms": ["loader", "loading", "spinner"]
+  },
+  {
+    "id": "feather-lock",
+    "description": "closed padlock with rounded shackle",
+    "synonyms": ["lock", "secure", "private"]
+  },
+  {
+    "id": "feather-log-in",
+    "description": "arrow entering a door frame",
+    "synonyms": ["log in", "sign in", "enter"]
+  },
+  {
+    "id": "feather-log-out",
+    "description": "arrow leaving a door frame",
+    "synonyms": ["log out", "sign out", "exit"]
+  },
+  {
+    "id": "feather-mail",
+    "description": "envelope outline with folded flap",
+    "synonyms": ["mail", "email", "message"]
+  },
+  {
+    "id": "feather-map-pin",
+    "description": "teardrop pin with centered dot",
+    "synonyms": ["map pin", "location pin", "place marker"]
+  },
+  {
+    "id": "feather-map",
+    "description": "folded map panels with creases",
+    "synonyms": ["map", "location", "navigation"]
+  },
+  {
+    "id": "feather-maximize-2",
+    "description": "outward arrows expanding from a corner",
+    "synonyms": ["maximize", "expand", "fullscreen"]
+  },
+  {
+    "id": "feather-maximize",
+    "description": "square corners expanding to full size",
+    "synonyms": ["maximize", "expand", "fullscreen"]
+  },
+  {
+    "id": "feather-meh",
+    "description": "neutral face with flat mouth",
+    "synonyms": ["meh", "neutral face", "average"]
+  },
+  {
+    "id": "feather-menu",
+    "description": "three horizontal stacked bars",
+    "synonyms": ["menu", "hamburger", "navigation"]
+  },
+  {
+    "id": "feather-message-circle",
+    "description": "chat bubble inside a circle",
+    "synonyms": ["message", "chat bubble", "comments"]
+  },
+  {
+    "id": "feather-message-square",
+    "description": "square chat bubble with tail",
+    "synonyms": ["message", "chat bubble", "comments"]
+  },
+  {
+    "id": "feather-mic-off",
+    "description": "microphone with a diagonal slash",
+    "synonyms": ["mic off", "mute", "microphone disabled"]
+  },
+  {
+    "id": "feather-mic",
+    "description": "upright microphone with rounded head",
+    "synonyms": ["mic", "microphone", "voice"]
+  },
+  {
+    "id": "feather-minimize-2",
+    "description": "corner arrows pulling inward to center",
+    "synonyms": ["minimize", "shrink", "collapse"]
+  },
+  {
+    "id": "feather-minimize",
+    "description": "square corners shrinking inward",
+    "synonyms": ["minimize", "shrink", "collapse"]
+  },
+  {
+    "id": "feather-minus-circle",
+    "description": "minus sign inside a circle",
+    "synonyms": ["minus circle", "remove", "subtract"]
+  },
+  {
+    "id": "feather-minus-square",
+    "description": "minus sign inside a square",
+    "synonyms": ["minus square", "remove", "subtract"]
+  },
+  {
+    "id": "feather-minus",
+    "description": "single horizontal minus line",
+    "synonyms": ["minus", "remove", "subtract"]
+  },
+  {
+    "id": "feather-monitor",
+    "description": "desktop screen with stand base",
+    "synonyms": ["monitor", "screen", "desktop"]
+  },
+  {
+    "id": "feather-moon",
+    "description": "crescent moon outline icon",
+    "synonyms": ["moon", "night", "dark mode"]
+  },
+  {
+    "id": "feather-more-horizontal",
+    "description": "three dots in a horizontal row",
+    "synonyms": ["more", "ellipsis", "options"]
+  },
+  {
+    "id": "feather-more-vertical",
+    "description": "three dots stacked vertically",
+    "synonyms": ["more", "ellipsis", "options"]
+  },
+  {
+    "id": "feather-mouse-pointer",
+    "description": "arrow cursor with small click dot",
+    "synonyms": ["pointer", "cursor", "select"]
+  },
+  {
+    "id": "feather-move",
+    "description": "four directional arrows around center",
+    "synonyms": ["move", "drag", "reposition"]
+  },
+  {
+    "id": "feather-music",
+    "description": "musical note with curved stem",
+    "synonyms": ["music", "audio", "note"]
+  },
+  {
+    "id": "feather-navigation-2",
+    "description": "compass arrow pointing to direction",
+    "synonyms": ["navigation", "direction", "compass arrow"]
+  },
+  {
+    "id": "feather-navigation",
+    "description": "navigation arrow inside a compass",
+    "synonyms": ["navigation", "direction", "compass"]
+  },
+  {
+    "id": "feather-octagon",
+    "description": "eight sided stop sign shape",
+    "synonyms": ["octagon", "stop shape", "polygon"]
+  },
+  {
+    "id": "feather-package",
+    "description": "box package with taped top",
+    "synonyms": ["package", "box", "parcel"]
+  },
+  {
+    "id": "feather-paperclip",
+    "description": "curved paperclip fastening papers",
+    "synonyms": ["paperclip", "attach", "clip"]
+  },
+  {
+    "id": "feather-pause-circle",
+    "description": "pause bars inside a circle",
+    "synonyms": ["pause circle", "pause", "stop playback"]
+  },
+  {
+    "id": "feather-pause",
+    "description": "two vertical pause bars",
+    "synonyms": ["pause", "pause button", "stop playback"]
+  },
+  {
+    "id": "feather-pen-tool",
+    "description": "fountain pen nib with anchor points",
+    "synonyms": ["pen tool", "vector pen", "path editor"]
+  },
+  {
+    "id": "feather-percent",
+    "description": "percentage symbol with slash and dots",
+    "synonyms": ["percent", "percentage", "discount"]
+  },
+  {
+    "id": "feather-phone-call",
+    "description": "phone handset with signal waves",
+    "synonyms": ["phone call", "calling", "voice call"]
+  },
+  {
+    "id": "feather-phone-forwarded",
+    "description": "phone handset with outgoing arrow",
+    "synonyms": ["phone forwarded", "call forwarded", "outgoing call"]
+  },
+  {
+    "id": "feather-phone-incoming",
+    "description": "phone handset with incoming arrow",
+    "synonyms": ["phone incoming", "incoming call", "call received"]
+  },
+  {
+    "id": "feather-phone-missed",
+    "description": "phone handset with missed call slash",
+    "synonyms": ["phone missed", "missed call", "call missed"]
+  },
+  {
+    "id": "feather-phone-off",
+    "description": "phone handset with slash through it",
+    "synonyms": ["phone off", "disabled phone", "offline call"]
+  },
+  {
+    "id": "feather-phone-outgoing",
+    "description": "phone handset with outgoing arrow",
+    "synonyms": ["phone outgoing", "outgoing call", "dialed call"]
+  },
+  {
+    "id": "feather-phone",
+    "description": "classic phone handset outline",
+    "synonyms": ["phone", "handset", "call"]
+  },
+  {
+    "id": "feather-pie-chart",
+    "description": "circular chart with one wedge",
+    "synonyms": ["pie chart", "chart", "analytics"]
+  },
+  {
+    "id": "feather-play-circle",
+    "description": "play triangle inside a circle",
+    "synonyms": ["play circle", "play", "start playback"]
+  },
+  {
+    "id": "feather-play",
+    "description": "right pointing triangle icon",
+    "synonyms": ["play", "start", "media"]
+  },
+  {
+    "id": "feather-plus-circle",
+    "description": "plus sign inside a circle",
+    "synonyms": ["plus circle", "add", "create"]
+  },
+  {
+    "id": "feather-plus-square",
+    "description": "plus sign inside a square",
+    "synonyms": ["plus square", "add", "create"]
+  },
+  {
+    "id": "feather-plus",
+    "description": "single horizontal and vertical cross",
+    "synonyms": ["plus", "add", "create"]
+  },
+  {
+    "id": "feather-pocket",
+    "description": "pocket logo with folded pocket shape",
+    "synonyms": ["pocket", "save later", "reading app"]
+  },
+  {
+    "id": "feather-power",
+    "description": "power symbol with broken circle",
+    "synonyms": ["power", "on off", "shutdown"]
+  },
+  {
+    "id": "feather-printer",
+    "description": "desktop printer with paper tray",
+    "synonyms": ["printer", "print", "paper output"]
+  },
+  {
+    "id": "feather-radio",
+    "description": "portable radio with antenna",
+    "synonyms": ["radio", "broadcast", "tuner"]
+  },
+  {
+    "id": "feather-refresh-ccw",
+    "description": "counterclockwise arrow looping around circle",
+    "synonyms": ["refresh", "reload", "undo"]
+  },
+  {
+    "id": "feather-refresh-cw",
+    "description": "clockwise arrow looping around circle",
+    "synonyms": ["refresh", "reload", "redo"]
+  },
+  {
+    "id": "feather-repeat",
+    "description": "two arrows forming a repeat loop",
+    "synonyms": ["repeat", "loop", "replay"]
+  },
+  {
+    "id": "feather-rewind",
+    "description": "double left triangles beside a bar",
+    "synonyms": ["rewind", "back", "previous track"]
+  },
+  {
+    "id": "feather-rotate-ccw",
+    "description": "counterclockwise rotation arrow around circle",
+    "synonyms": ["rotate", "turn left", "undo rotate"]
+  },
+  {
+    "id": "feather-rotate-cw",
+    "description": "clockwise rotation arrow around circle",
+    "synonyms": ["rotate", "turn right", "redo rotate"]
+  },
+  {
+    "id": "feather-rss",
+    "description": "rss waves from a small dot",
+    "synonyms": ["rss", "feed", "subscription"]
+  },
+  {
+    "id": "feather-save",
+    "description": "floppy disk save icon",
+    "synonyms": ["save", "floppy disk", "store"]
+  },
+  {
+    "id": "feather-scissors",
+    "description": "open scissors blades crossing",
+    "synonyms": ["scissors", "cut", "trim"]
+  },
+  {
+    "id": "feather-search",
+    "description": "magnifying glass with round lens",
+    "synonyms": ["search", "find", "lookup"]
+  },
+  {
+    "id": "feather-send",
+    "description": "paper airplane pointing up right",
+    "synonyms": ["send", "submit", "paper airplane"]
+  },
+  {
+    "id": "feather-server",
+    "description": "stacked server racks with indicator lights",
+    "synonyms": ["server", "hosting", "data center"]
+  },
+  {
+    "id": "feather-settings",
+    "description": "gear with centered hole",
+    "synonyms": ["settings", "gear", "preferences"]
+  },
+  {
+    "id": "feather-share-2",
+    "description": "three nodes connected by lines",
+    "synonyms": ["share", "network share", "connections"]
+  },
+  {
+    "id": "feather-share",
+    "description": "arrow leaving a node network",
+    "synonyms": ["share", "forward", "send link"]
+  },
+  {
+    "id": "feather-shield-off",
+    "description": "shield outline with slash through center",
+    "synonyms": ["shield off", "unprotected", "disabled security"]
+  },
+  {
+    "id": "feather-shield",
+    "description": "shield outline with pointed bottom",
+    "synonyms": ["shield", "security", "protection"]
+  },
+  {
+    "id": "feather-shopping-bag",
+    "description": "shopping bag with handles and base",
+    "synonyms": ["shopping bag", "bag", "store purchase"]
+  },
+  {
+    "id": "feather-shopping-cart",
+    "description": "shopping cart with two wheels",
+    "synonyms": ["shopping cart", "cart", "checkout"]
+  },
+  {
+    "id": "feather-shuffle",
+    "description": "crossing arrows for random order",
+    "synonyms": ["shuffle", "random", "mix"]
+  },
+  {
+    "id": "feather-sidebar",
+    "description": "page layout with narrow side panel",
+    "synonyms": ["sidebar", "side panel", "layout"]
+  },
+  {
+    "id": "feather-skip-back",
+    "description": "backward double arrows with bar",
+    "synonyms": ["skip back", "previous", "back track"]
+  },
+  {
+    "id": "feather-skip-forward",
+    "description": "forward double arrows with bar",
+    "synonyms": ["skip forward", "next", "forward track"]
+  },
+  {
+    "id": "feather-slack",
+    "description": "slack logo with four colored bars",
+    "synonyms": ["slack", "team chat", "workspace"]
+  },
+  {
+    "id": "feather-slash",
+    "description": "diagonal line cutting across space",
+    "synonyms": ["slash", "diagonal line", "cut"]
+  },
+  {
+    "id": "feather-sliders",
+    "description": "three slider controls with knobs",
+    "synonyms": ["sliders", "controls", "adjustments"]
+  },
+  {
+    "id": "feather-smartphone",
+    "description": "mobile phone with small screen",
+    "synonyms": ["smartphone", "mobile", "phone"]
+  },
+  {
+    "id": "feather-smile",
+    "description": "smiling face with curved mouth",
+    "synonyms": ["smile", "happy face", "emoji"]
+  },
+  {
+    "id": "feather-speaker",
+    "description": "speaker cone with sound waves",
+    "synonyms": ["audio", "volume", "speaker", "sound"]
+  },
+  {
+    "id": "feather-square",
+    "description": "simple outlined square shape",
+    "synonyms": ["square", "box", "outline", "shape"]
+  },
+  {
+    "id": "feather-star",
+    "description": "five-point star outline icon",
+    "synonyms": ["star", "favorite", "rating", "bookmark"]
+  },
+  {
+    "id": "feather-stop-circle",
+    "description": "circle with a stop square",
+    "synonyms": ["stop", "recording", "halt", "cancel"]
+  },
+  {
+    "id": "feather-sun",
+    "description": "sun circle with short rays",
+    "synonyms": ["sun", "brightness", "daylight", "weather"]
+  },
+  {
+    "id": "feather-sunrise",
+    "description": "sun rising above a horizon",
+    "synonyms": ["sunrise", "morning", "dawn", "sun up"]
+  },
+  {
+    "id": "feather-sunset",
+    "description": "sun setting behind a horizon",
+    "synonyms": ["sunset", "evening", "dusk", "sun down"]
+  },
+  {
+    "id": "feather-table",
+    "description": "rectangular table with four legs",
+    "synonyms": ["table", "furniture", "desk", "workspace"]
+  },
+  {
+    "id": "feather-tablet",
+    "description": "flat tablet device with screen",
+    "synonyms": ["tablet", "ipad", "device", "screen"]
+  },
+  {
+    "id": "feather-tag",
+    "description": "price tag shape with hole",
+    "synonyms": ["tag", "label", "price", "ticket"]
+  },
+  {
+    "id": "feather-target",
+    "description": "bullseye target with center dot",
+    "synonyms": ["target", "bullseye", "aim", "focus"]
+  },
+  {
+    "id": "feather-terminal",
+    "description": "command window with prompt symbol",
+    "synonyms": ["terminal", "console", "command line", "shell"]
+  },
+  {
+    "id": "feather-thermometer",
+    "description": "thermometer tube with temperature bulb",
+    "synonyms": ["thermometer", "temperature", "weather", "heat"]
+  },
+  {
+    "id": "feather-thumbs-down",
+    "description": "hand showing a thumbs down",
+    "synonyms": ["thumbs down", "dislike", "bad", "reject"]
+  },
+  {
+    "id": "feather-thumbs-up",
+    "description": "hand showing a thumbs up",
+    "synonyms": ["thumbs up", "like", "approve", "good"]
+  },
+  {
+    "id": "feather-toggle-left",
+    "description": "toggle switch positioned left",
+    "synonyms": ["toggle left", "switch off", "switch", "settings"]
+  },
+  {
+    "id": "feather-toggle-right",
+    "description": "toggle switch positioned right",
+    "synonyms": ["toggle right", "switch on", "switch", "settings"]
+  },
+  {
+    "id": "feather-tool",
+    "description": "crossed wrench and screwdriver tools",
+    "synonyms": ["tool", "tools", "settings", "repair"]
+  },
+  {
+    "id": "feather-trash-2",
+    "description": "trash bin with lid and handles",
+    "synonyms": ["trash", "delete", "bin", "remove"]
+  },
+  {
+    "id": "feather-trash",
+    "description": "simple trash can outline",
+    "synonyms": ["trash", "delete", "bin", "remove"]
+  },
+  {
+    "id": "feather-trello",
+    "description": "trello board with stacked columns",
+    "synonyms": ["trello", "kanban", "board", "project management"]
+  },
+  {
+    "id": "feather-trending-down",
+    "description": "downward line graph with arrow",
+    "synonyms": ["trending down", "decline", "falling", "decrease"]
+  },
+  {
+    "id": "feather-trending-up",
+    "description": "upward line graph with arrow",
+    "synonyms": ["trending up", "growth", "rising", "increase"]
+  },
+  {
+    "id": "feather-triangle",
+    "description": "simple outlined triangle shape",
+    "synonyms": ["triangle", "warning", "shape", "polygon"]
+  },
+  {
+    "id": "feather-truck",
+    "description": "delivery truck with cargo cab",
+    "synonyms": ["truck", "delivery", "shipping", "transport"]
+  },
+  {
+    "id": "feather-tv",
+    "description": "television screen with small stand",
+    "synonyms": ["tv", "television", "screen", "monitor"]
+  },
+  {
+    "id": "feather-twitch",
+    "description": "twitch chat bubble and logo",
+    "synonyms": ["twitch", "streaming", "gaming", "chat"]
+  },
+  {
+    "id": "feather-twitter",
+    "description": "bird logo silhouette for twitter",
+    "synonyms": ["twitter", "bird", "social media", "tweet"]
+  },
+  {
+    "id": "feather-type",
+    "description": "letter t with text cursor",
+    "synonyms": ["type", "text", "font", "typing"]
+  },
+  {
+    "id": "feather-umbrella",
+    "description": "open umbrella with curved handle",
+    "synonyms": ["umbrella", "rain", "weather", "protection"]
+  },
+  {
+    "id": "feather-underline",
+    "description": "lowercase text with underline stroke",
+    "synonyms": ["underline", "text formatting", "style", "font"]
+  },
+  {
+    "id": "feather-unlock",
+    "description": "open padlock with raised shackle",
+    "synonyms": ["unlock", "open lock", "security", "access"]
+  },
+  {
+    "id": "feather-upload-cloud",
+    "description": "cloud with upward upload arrow",
+    "synonyms": ["upload cloud", "cloud upload", "send", "sync"]
+  },
+  {
+    "id": "feather-upload",
+    "description": "upward arrow leaving a tray",
+    "synonyms": ["upload", "arrow up", "send", "import"]
+  },
+  {
+    "id": "feather-user-check",
+    "description": "user silhouette with check mark",
+    "synonyms": ["user check", "verified user", "approved", "account"]
+  },
+  {
+    "id": "feather-user-minus",
+    "description": "user silhouette with minus sign",
+    "synonyms": ["user minus", "remove user", "account", "disable"]
+  },
+  {
+    "id": "feather-user-plus",
+    "description": "user silhouette with plus sign",
+    "synonyms": ["user plus", "add user", "account", "invite"]
+  },
+  {
+    "id": "feather-user-x",
+    "description": "user silhouette with x mark",
+    "synonyms": ["user x", "remove user", "account", "reject"]
+  },
+  {
+    "id": "feather-user",
+    "description": "single person bust outline",
+    "synonyms": ["user", "profile", "person", "account"]
+  },
+  {
+    "id": "feather-users",
+    "description": "two person silhouettes side by side",
+    "synonyms": ["users", "group", "people", "team"]
+  },
+  {
+    "id": "feather-video-off",
+    "description": "video camera with slash through it",
+    "synonyms": ["video off", "camera off", "mute video", "disable camera"]
+  },
+  {
+    "id": "feather-video",
+    "description": "video camera outline with lens",
+    "synonyms": ["video", "camera", "call", "record"]
+  },
+  {
+    "id": "feather-voicemail",
+    "description": "two circles linked by a thin line",
+    "synonyms": ["voicemail", "voice mail", "message", "phone"]
+  }
+]

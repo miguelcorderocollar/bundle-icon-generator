@@ -14,6 +14,7 @@
     "verify": "bun run build && bun run lint && bun run test:run",
     "generate-icons": "tsx scripts/generate-icon-catalog.ts",
     "generate-favicons": "python3 scripts/generate-favicons.py",
+    "enrichment:validate": "tsx scripts/validate-search-enrichment.ts",
     "test": "vitest",
     "test:run": "vitest run",
     "test:ui": "vitest --ui",

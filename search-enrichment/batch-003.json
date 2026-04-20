@@ -1,0 +1,642 @@
+[
+  {
+    "id": "zendesk-garden-thumbs-down-fill-16",
+    "description": "solid thumbs down hand icon",
+    "synonyms": ["thumbs down", "dislike", "negative feedback"]
+  },
+  {
+    "id": "zendesk-garden-thumbs-down-stroke-16",
+    "description": "outlined thumbs down hand icon",
+    "synonyms": ["thumbs down outline", "dislike", "negative feedback"]
+  },
+  {
+    "id": "zendesk-garden-thumbs-up-fill-16",
+    "description": "solid thumbs up hand icon",
+    "synonyms": ["thumbs up", "like", "positive feedback"]
+  },
+  {
+    "id": "zendesk-garden-thumbs-up-stroke-16",
+    "description": "outlined thumbs up hand icon",
+    "synonyms": ["thumbs up outline", "like", "positive feedback"]
+  },
+  {
+    "id": "zendesk-garden-translation-created-fill-16",
+    "description": "solid translation created document icon",
+    "synonyms": ["translation created", "new translation", "created file"]
+  },
+  {
+    "id": "zendesk-garden-translation-created-stroke-16",
+    "description": "outlined translation created document icon",
+    "synonyms": [
+      "translation created outline",
+      "new translation",
+      "created file"
+    ]
+  },
+  {
+    "id": "zendesk-garden-translation-deleted-fill-16",
+    "description": "solid translation deleted document icon",
+    "synonyms": ["translation deleted", "removed translation", "deleted file"]
+  },
+  {
+    "id": "zendesk-garden-translation-deleted-stroke-16",
+    "description": "outlined translation deleted document icon",
+    "synonyms": [
+      "translation deleted outline",
+      "removed translation",
+      "deleted file"
+    ]
+  },
+  {
+    "id": "zendesk-garden-translation-exists-fill-16",
+    "description": "solid translation exists document icon",
+    "synonyms": ["translation exists", "existing translation", "present file"]
+  },
+  {
+    "id": "zendesk-garden-translation-exists-stroke-16",
+    "description": "outlined translation exists document icon",
+    "synonyms": [
+      "translation exists outline",
+      "existing translation",
+      "present file"
+    ]
+  },
+  {
+    "id": "zendesk-garden-translation-outdated-fill-16",
+    "description": "solid outdated translation document icon",
+    "synonyms": ["translation outdated", "stale translation", "old file"]
+  },
+  {
+    "id": "zendesk-garden-translation-outdated-stroke-16",
+    "description": "outlined outdated translation document icon",
+    "synonyms": [
+      "translation outdated outline",
+      "stale translation",
+      "old file"
+    ]
+  },
+  {
+    "id": "zendesk-garden-translation-updated-fill-16",
+    "description": "solid translation updated document icon",
+    "synonyms": ["translation updated", "refreshed translation", "updated file"]
+  },
+  {
+    "id": "zendesk-garden-translation-updated-stroke-16",
+    "description": "outlined translation updated document icon",
+    "synonyms": [
+      "translation updated outline",
+      "refreshed translation",
+      "updated file"
+    ]
+  },
+  {
+    "id": "zendesk-garden-trash-fill-16",
+    "description": "solid trash bin icon",
+    "synonyms": ["trash", "delete", "bin"]
+  },
+  {
+    "id": "zendesk-garden-trash-stroke-16",
+    "description": "outlined trash bin icon",
+    "synonyms": ["trash outline", "delete", "bin"]
+  },
+  {
+    "id": "zendesk-garden-twitter-fill-16",
+    "description": "solid twitter bird logo",
+    "synonyms": ["twitter", "x logo", "social bird"]
+  },
+  {
+    "id": "zendesk-garden-twitter-stroke-16",
+    "description": "outlined twitter bird logo",
+    "synonyms": ["twitter outline", "x logo", "social bird"]
+  },
+  {
+    "id": "zendesk-garden-underline-fill-16",
+    "description": "solid underlined text formatting icon",
+    "synonyms": ["underline", "text format", "rich text"]
+  },
+  {
+    "id": "zendesk-garden-underline-stroke-16",
+    "description": "outlined underlined text formatting icon",
+    "synonyms": ["underline outline", "text format", "rich text"]
+  },
+  {
+    "id": "zendesk-garden-upload-fill-16",
+    "description": "solid upload arrow icon",
+    "synonyms": ["upload", "arrow up", "send file"]
+  },
+  {
+    "id": "zendesk-garden-upload-stroke-16",
+    "description": "outlined upload arrow icon",
+    "synonyms": ["upload outline", "arrow up", "send file"]
+  },
+  {
+    "id": "zendesk-garden-user-circle-fill-16",
+    "description": "solid user inside circle icon",
+    "synonyms": ["user circle", "profile", "account"]
+  },
+  {
+    "id": "zendesk-garden-user-circle-stroke-16",
+    "description": "outlined user inside circle icon",
+    "synonyms": ["user circle outline", "profile", "account"]
+  },
+  {
+    "id": "zendesk-garden-user-follow-fill-16",
+    "description": "solid user with follow indicator icon",
+    "synonyms": ["user follow", "add person", "follow user"]
+  },
+  {
+    "id": "zendesk-garden-user-follow-stroke-16",
+    "description": "outlined user with follow indicator icon",
+    "synonyms": ["user follow outline", "add person", "follow user"]
+  },
+  {
+    "id": "zendesk-garden-user-group-fill-16",
+    "description": "solid group of users icon",
+    "synonyms": ["users", "group", "team"]
+  },
+  {
+    "id": "zendesk-garden-user-group-stroke-16",
+    "description": "outlined group of users icon",
+    "synonyms": ["users outline", "group", "team"]
+  },
+  {
+    "id": "zendesk-garden-user-list-fill-16",
+    "description": "user list and profile icon",
+    "synonyms": ["user list", "contacts", "directory"]
+  },
+  {
+    "id": "zendesk-garden-user-list-stroke-16",
+    "description": "outlined user list icon",
+    "synonyms": ["user list outline", "contacts", "directory"]
+  },
+  {
+    "id": "zendesk-garden-user-solo-fill-16",
+    "description": "solid single user icon",
+    "synonyms": ["single user", "profile", "person"]
+  },
+  {
+    "id": "zendesk-garden-user-solo-stroke-16",
+    "description": "outlined single user icon",
+    "synonyms": ["single user outline", "profile", "person"]
+  },
+  {
+    "id": "zendesk-garden-user-unfollow-fill-16",
+    "description": "solid user unfollow indicator icon",
+    "synonyms": ["user unfollow", "remove person", "unfollow user"]
+  },
+  {
+    "id": "zendesk-garden-user-unfollow-stroke-16",
+    "description": "outlined user unfollow indicator icon",
+    "synonyms": ["user unfollow outline", "remove person", "unfollow user"]
+  },
+  {
+    "id": "zendesk-garden-voicemail-fill-16",
+    "description": "solid voicemail tape icon",
+    "synonyms": ["voicemail", "message tape", "phone message"]
+  },
+  {
+    "id": "zendesk-garden-voicemail-stroke-16",
+    "description": "outlined voicemail tape icon",
+    "synonyms": ["voicemail outline", "message tape", "phone message"]
+  },
+  {
+    "id": "zendesk-garden-volume-muted-fill-16",
+    "description": "solid muted speaker icon",
+    "synonyms": ["mute", "silent speaker", "volume off"]
+  },
+  {
+    "id": "zendesk-garden-volume-muted-stroke-16",
+    "description": "outlined muted speaker icon",
+    "synonyms": ["mute outline", "silent speaker", "volume off"]
+  },
+  {
+    "id": "zendesk-garden-volume-unmuted-fill-16",
+    "description": "solid loud speaker icon",
+    "synonyms": ["volume on", "sound", "speaker"]
+  },
+  {
+    "id": "zendesk-garden-volume-unmuted-stroke-16",
+    "description": "outlined loud speaker icon",
+    "synonyms": ["volume on outline", "sound", "speaker"]
+  },
+  {
+    "id": "zendesk-garden-wechat-fill-16",
+    "description": "solid wechat chat bubbles icon",
+    "synonyms": ["wechat", "chat app", "messaging"]
+  },
+  {
+    "id": "zendesk-garden-wechat-stroke-16",
+    "description": "outlined wechat chat bubbles icon",
+    "synonyms": ["wechat outline", "chat app", "messaging"]
+  },
+  {
+    "id": "zendesk-garden-whatsapp-fill-16",
+    "description": "solid whatsapp chat bubble icon",
+    "synonyms": ["whatsapp", "chat app", "messaging"]
+  },
+  {
+    "id": "zendesk-garden-whatsapp-stroke-16",
+    "description": "outlined whatsapp chat bubble icon",
+    "synonyms": ["whatsapp outline", "chat app", "messaging"]
+  },
+  {
+    "id": "zendesk-garden-wrap-left-fill-16",
+    "description": "solid text wrap left icon",
+    "synonyms": ["wrap left", "text wrap", "paragraph layout"]
+  },
+  {
+    "id": "zendesk-garden-wrap-left-stroke-16",
+    "description": "outlined text wrap left icon",
+    "synonyms": ["wrap left outline", "text wrap", "paragraph layout"]
+  },
+  {
+    "id": "zendesk-garden-wrap-right-fill-16",
+    "description": "solid text wrap right icon",
+    "synonyms": ["wrap right", "text wrap", "paragraph layout"]
+  },
+  {
+    "id": "zendesk-garden-wrap-right-stroke-16",
+    "description": "outlined text wrap right icon",
+    "synonyms": ["wrap right outline", "text wrap", "paragraph layout"]
+  },
+  {
+    "id": "zendesk-garden-x-circle-fill-16",
+    "description": "solid x inside circle icon",
+    "synonyms": ["close circle", "cancel", "remove"]
+  },
+  {
+    "id": "zendesk-garden-x-circle-stroke-16",
+    "description": "outlined x inside circle icon",
+    "synonyms": ["close circle outline", "cancel", "remove"]
+  },
+  {
+    "id": "zendesk-garden-x-fill-16",
+    "description": "solid x close icon",
+    "synonyms": ["close", "x mark", "cancel"]
+  },
+  {
+    "id": "zendesk-garden-x-stroke-16",
+    "description": "outlined x close icon",
+    "synonyms": ["close outline", "x mark", "cancel"]
+  },
+  {
+    "id": "zendesk-garden-zendesk-fill-16",
+    "description": "solid zendesk logo mark icon",
+    "synonyms": ["zendesk", "brand logo", "zendesk mark"]
+  },
+  {
+    "id": "zendesk-garden-zendesk-stroke-16",
+    "description": "outlined zendesk logo mark icon",
+    "synonyms": ["zendesk outline", "brand logo", "zendesk mark"]
+  },
+  {
+    "id": "feather-activity",
+    "description": "pulse line activity icon",
+    "synonyms": ["activity", "pulse", "heartbeat"]
+  },
+  {
+    "id": "feather-airplay",
+    "description": "screen casting display icon",
+    "synonyms": ["airplay", "cast", "screen share"]
+  },
+  {
+    "id": "feather-alert-circle",
+    "description": "alert symbol inside circle icon",
+    "synonyms": ["alert circle", "warning", "notice"]
+  },
+  {
+    "id": "feather-alert-octagon",
+    "description": "alert symbol inside octagon icon",
+    "synonyms": ["alert octagon", "stop warning", "danger"]
+  },
+  {
+    "id": "feather-alert-triangle",
+    "description": "alert symbol inside triangle icon",
+    "synonyms": ["alert triangle", "warning", "caution"]
+  },
+  {
+    "id": "feather-align-center",
+    "description": "center aligned text lines icon",
+    "synonyms": ["align center", "center text", "paragraph align"]
+  },
+  {
+    "id": "feather-align-justify",
+    "description": "justified text lines icon",
+    "synonyms": ["align justify", "justify text", "paragraph align"]
+  },
+  {
+    "id": "feather-align-left",
+    "description": "left aligned text lines icon",
+    "synonyms": ["align left", "left text", "paragraph align"]
+  },
+  {
+    "id": "feather-align-right",
+    "description": "right aligned text lines icon",
+    "synonyms": ["align right", "right text", "paragraph align"]
+  },
+  {
+    "id": "feather-anchor",
+    "description": "boat anchor symbol mark icon",
+    "synonyms": ["anchor", "ship anchor", "marine"]
+  },
+  {
+    "id": "feather-aperture",
+    "description": "camera aperture blades icon",
+    "synonyms": ["aperture", "camera lens", "shutter"]
+  },
+  {
+    "id": "feather-archive",
+    "description": "storage box with lid icon",
+    "synonyms": ["archive", "box", "storage"]
+  },
+  {
+    "id": "feather-arrow-down-circle",
+    "description": "down arrow inside circle icon",
+    "synonyms": ["download circle", "down arrow", "move down"]
+  },
+  {
+    "id": "feather-arrow-down-left",
+    "description": "diagonal arrow pointing down left icon",
+    "synonyms": ["arrow down left", "southwest arrow", "diagonal arrow"]
+  },
+  {
+    "id": "feather-arrow-down-right",
+    "description": "diagonal arrow pointing down right icon",
+    "synonyms": ["arrow down right", "southeast arrow", "diagonal arrow"]
+  },
+  {
+    "id": "feather-arrow-down",
+    "description": "arrow pointing down icon",
+    "synonyms": ["down arrow", "download", "move down"]
+  },
+  {
+    "id": "feather-arrow-left-circle",
+    "description": "left arrow inside circle icon",
+    "synonyms": ["back circle", "left arrow", "previous"]
+  },
+  {
+    "id": "feather-arrow-left",
+    "description": "arrow pointing left icon",
+    "synonyms": ["left arrow", "back", "previous"]
+  },
+  {
+    "id": "feather-arrow-right-circle",
+    "description": "right arrow inside circle icon",
+    "synonyms": ["forward circle", "right arrow", "next"]
+  },
+  {
+    "id": "feather-arrow-right",
+    "description": "arrow pointing right icon",
+    "synonyms": ["right arrow", "forward", "next"]
+  },
+  {
+    "id": "feather-arrow-up-circle",
+    "description": "up arrow inside circle icon",
+    "synonyms": ["upload circle", "up arrow", "move up"]
+  },
+  {
+    "id": "feather-arrow-up-left",
+    "description": "diagonal arrow pointing up left icon",
+    "synonyms": ["arrow up left", "northwest arrow", "diagonal arrow"]
+  },
+  {
+    "id": "feather-arrow-up-right",
+    "description": "diagonal arrow pointing up right icon",
+    "synonyms": ["arrow up right", "northeast arrow", "diagonal arrow"]
+  },
+  {
+    "id": "feather-arrow-up",
+    "description": "arrow pointing up icon",
+    "synonyms": ["up arrow", "upload", "move up"]
+  },
+  {
+    "id": "feather-at-sign",
+    "description": "at sign symbol icon",
+    "synonyms": ["at sign", "email address", "mention"]
+  },
+  {
+    "id": "feather-award",
+    "description": "award ribbon badge icon",
+    "synonyms": ["award", "badge", "prize"]
+  },
+  {
+    "id": "feather-bar-chart-2",
+    "description": "vertical bar chart icon",
+    "synonyms": ["bar chart", "analytics", "statistics"]
+  },
+  {
+    "id": "feather-bar-chart",
+    "description": "horizontal bar chart icon",
+    "synonyms": ["bar chart", "analytics", "statistics"]
+  },
+  {
+    "id": "feather-battery-charging",
+    "description": "battery with charging bolt icon",
+    "synonyms": ["battery charging", "power", "charging"]
+  },
+  {
+    "id": "feather-battery",
+    "description": "battery outline power level icon",
+    "synonyms": ["battery", "power level", "charge"]
+  },
+  {
+    "id": "feather-bell-off",
+    "description": "bell with slash icon",
+    "synonyms": ["notifications off", "silent bell", "mute alerts"]
+  },
+  {
+    "id": "feather-bell",
+    "description": "notification bell alert symbol icon",
+    "synonyms": ["bell", "notifications", "alerts"]
+  },
+  {
+    "id": "feather-bluetooth",
+    "description": "bluetooth wireless symbol icon",
+    "synonyms": ["bluetooth", "wireless", "pairing"]
+  },
+  {
+    "id": "feather-bold",
+    "description": "bold text formatting icon",
+    "synonyms": ["bold", "text style", "rich text"]
+  },
+  {
+    "id": "feather-book-open",
+    "description": "open book pages icon",
+    "synonyms": ["book open", "reading", "manual"]
+  },
+  {
+    "id": "feather-book",
+    "description": "closed book reading symbol icon",
+    "synonyms": ["book", "reading", "manual"]
+  },
+  {
+    "id": "feather-bookmark",
+    "description": "bookmark ribbon save symbol icon",
+    "synonyms": ["bookmark", "save", "favorite"]
+  },
+  {
+    "id": "feather-box",
+    "description": "shipping box storage container icon",
+    "synonyms": ["box", "package", "container"]
+  },
+  {
+    "id": "feather-briefcase",
+    "description": "business briefcase work bag icon",
+    "synonyms": ["briefcase", "work", "business"]
+  },
+  {
+    "id": "feather-calendar",
+    "description": "calendar page date icon",
+    "synonyms": ["calendar", "date", "schedule"]
+  },
+  {
+    "id": "feather-camera-off",
+    "description": "camera with slash icon",
+    "synonyms": ["camera off", "video disabled", "no camera"]
+  },
+  {
+    "id": "feather-camera",
+    "description": "camera lens photo symbol icon",
+    "synonyms": ["camera", "photo", "snapshot"]
+  },
+  {
+    "id": "feather-cast",
+    "description": "wireless cast screen icon",
+    "synonyms": ["cast", "screen share", "stream"]
+  },
+  {
+    "id": "feather-check-circle",
+    "description": "checkmark inside circle symbol icon",
+    "synonyms": ["check circle", "success", "done"]
+  },
+  {
+    "id": "feather-check-square",
+    "description": "checkmark inside square symbol icon",
+    "synonyms": ["check square", "completed", "selected"]
+  },
+  {
+    "id": "feather-check",
+    "description": "checkmark confirmation symbol icon",
+    "synonyms": ["check", "done", "success"]
+  },
+  {
+    "id": "feather-chevron-down",
+    "description": "downward chevron direction icon",
+    "synonyms": ["chevron down", "expand", "dropdown"]
+  },
+  {
+    "id": "feather-chevron-left",
+    "description": "left chevron direction icon",
+    "synonyms": ["chevron left", "back", "previous"]
+  },
+  {
+    "id": "feather-chevron-right",
+    "description": "right chevron direction icon",
+    "synonyms": ["chevron right", "next", "forward"]
+  },
+  {
+    "id": "feather-chevron-up",
+    "description": "upward chevron direction icon",
+    "synonyms": ["chevron up", "collapse", "expand"]
+  },
+  {
+    "id": "feather-chevrons-down",
+    "description": "double downward chevrons icon",
+    "synonyms": ["chevrons down", "collapse", "down"]
+  },
+  {
+    "id": "feather-chevrons-left",
+    "description": "double left chevrons icon",
+    "synonyms": ["chevrons left", "back", "previous"]
+  },
+  {
+    "id": "feather-chevrons-right",
+    "description": "double right chevrons icon",
+    "synonyms": ["chevrons right", "forward", "next"]
+  },
+  {
+    "id": "feather-chevrons-up",
+    "description": "double upward chevrons icon",
+    "synonyms": ["chevrons up", "collapse", "up"]
+  },
+  {
+    "id": "feather-chrome",
+    "description": "chrome browser logo icon",
+    "synonyms": ["chrome", "browser", "google chrome"]
+  },
+  {
+    "id": "feather-circle",
+    "description": "simple circle outline icon",
+    "synonyms": ["circle", "ring", "shape"]
+  },
+  {
+    "id": "feather-clipboard",
+    "description": "clipboard with paper icon",
+    "synonyms": ["clipboard", "copy", "notes"]
+  },
+  {
+    "id": "feather-clock",
+    "description": "round clock face icon",
+    "synonyms": ["clock", "time", "schedule"]
+  },
+  {
+    "id": "feather-cloud-drizzle",
+    "description": "cloud with light drizzle icon",
+    "synonyms": ["drizzle", "weather", "rain"]
+  },
+  {
+    "id": "feather-cloud-lightning",
+    "description": "cloud with lightning bolt icon",
+    "synonyms": ["storm", "thunder", "weather"]
+  },
+  {
+    "id": "feather-cloud-off",
+    "description": "cloud with slash icon",
+    "synonyms": ["cloud off", "offline", "sync disabled"]
+  },
+  {
+    "id": "feather-cloud-rain",
+    "description": "cloud with rain drops icon",
+    "synonyms": ["rain", "weather", "shower"]
+  },
+  {
+    "id": "feather-cloud-snow",
+    "description": "cloud with snow flakes icon",
+    "synonyms": ["snow", "weather", "winter"]
+  },
+  {
+    "id": "feather-cloud",
+    "description": "cloud outline weather symbol icon",
+    "synonyms": ["cloud", "weather", "sky"]
+  },
+  {
+    "id": "feather-code",
+    "description": "angle bracket code icon",
+    "synonyms": ["code", "developer", "source"]
+  },
+  {
+    "id": "feather-codepen",
+    "description": "codepen hexagon logo icon",
+    "synonyms": ["codepen", "developer", "logo"]
+  },
+  {
+    "id": "feather-codesandbox",
+    "description": "codesandbox cube logo icon",
+    "synonyms": ["codesandbox", "developer", "logo"]
+  },
+  {
+    "id": "feather-coffee",
+    "description": "coffee mug beverage cup icon",
+    "synonyms": ["coffee", "mug", "drink"]
+  },
+  {
+    "id": "feather-columns",
+    "description": "two column layout icon",
+    "synonyms": ["columns", "layout", "split view"]
+  },
+  {
+    "id": "feather-command",
+    "description": "keyboard command key symbol icon",
+    "synonyms": ["command key", "shortcut", "keyboard"]
+  }
+]

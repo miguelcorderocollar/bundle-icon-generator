@@ -1,0 +1,37 @@
+{
+  "totalIcons": 3876,
+  "completedIcons": 724,
+  "remainingIcons": 3152,
+  "currentBatch": 4,
+  "batches": [
+    {
+      "file": "batch-001.json",
+      "startIndex": 1,
+      "endIndex": 200,
+      "count": 200,
+      "status": "completed"
+    },
+    {
+      "file": "batch-002.json",
+      "startIndex": 201,
+      "endIndex": 400,
+      "count": 200,
+      "status": "completed"
+    },
+    {
+      "file": "batch-003.json",
+      "startIndex": 401,
+      "endIndex": 524,
+      "count": 124,
+      "status": "completed"
+    },
+    {
+      "file": "batch-004.json",
+      "startIndex": 525,
+      "endIndex": 724,
+      "count": 200,
+      "status": "completed"
+    }
+  ],
+  "notes": "First four batches generated from the first 724 catalog entries."
+}
