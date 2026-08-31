@@ -45,6 +45,7 @@ import {
 } from "@/src/utils/restriction-codec";
 import { importUserPresets } from "@/src/utils/preset-storage";
 import type { PresetImportResult } from "@/src/types/preset";
+import { WebMcpGeneratorBridge } from "@/src/components/WebMcpGeneratorBridge";
 
 export default function Home() {
   const { state, actions } = useIconGenerator();
@@ -189,6 +190,11 @@ export default function Home() {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-semibold">{APP_NAME}</h1>
+              <WebMcpGeneratorBridge
+                state={state}
+                actions={actions}
+                canvasState={canvasState}
+              />
               {!isRestrictionLoading && isRestricted ? (
                 <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
                   <Lock className="h-3 w-3" />
