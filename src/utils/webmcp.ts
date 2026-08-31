@@ -53,7 +53,7 @@ interface DocumentWithModelContext extends Document {
 }
 
 export interface WebMcpRegistration {
-  toolNames: WebMcpToolName[];
+  toolNames: string[];
   dispose: () => void;
 }
 
@@ -268,7 +268,7 @@ const generateIconSvgInputJsonSchema: WebMcpInputSchema = {
   additionalProperties: false,
 };
 
-function toPublicIconMetadata(icon: IconMetadata): PublicIconMetadata {
+export function toPublicIconMetadata(icon: IconMetadata): PublicIconMetadata {
   return {
     id: icon.id,
     name: icon.name,
@@ -280,7 +280,7 @@ function toPublicIconMetadata(icon: IconMetadata): PublicIconMetadata {
   };
 }
 
-function toIconDetail(icon: IconMetadata): IconDetail {
+export function toIconDetail(icon: IconMetadata): IconDetail {
   return {
     ...toPublicIconMetadata(icon),
     svg: icon.svg,
@@ -418,10 +418,10 @@ export function getDocumentModelContext(): WebMcpModelContext | null {
 }
 
 export async function registerWebMcpTools(
-  modelContext: WebMcpModelContext
+  modelContext: WebMcpModelContext,
+  tools: WebMcpToolDefinition[] = createWebMcpTools()
 ): Promise<WebMcpRegistration> {
   const controller = new AbortController();
-  const tools = createWebMcpTools();
 
   try {
     await Promise.all(
@@ -435,7 +435,7 @@ export async function registerWebMcpTools(
   }
 
   return {
-    toolNames: [...WEBMCP_TOOL_NAMES],
+    toolNames: tools.map((tool) => tool.name),
     dispose: () => controller.abort(),
   };
 }
